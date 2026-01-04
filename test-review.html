@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>海洋複習盒 - 雲端測試版</title>
+    <style>
+        /* 保持妳原本的卡片翻轉 CSS */
+        .card { width: 300px; height: 200px; perspective: 1000px; margin: 20px auto; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; }
+        .card.is-flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .card-front { background-color: #fff; color: #333; }
+        .card-back { background-color: #f8f9fa; color: #333; transform: rotateY(180deg); }
+    </style>
+</head>
+<body>
+
+    <div id="loading">載入 564 筆珍珠中...</div>
+
+    <div class="card" id="main-card">
+        <div class="card-inner">
+            <div class="card-front" id="display-char">文字</div>
+            <div class="card-back" id="display-meaning">意思</div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <button onclick="nextCard()">下一題</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 1. Firebase 配置 (妳的通行證)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMDTDwDP0mEXwgJdwsXVMB2IFi9Q5zfyU",
+            authDomain: "shizi-with-elisa.firebaseapp.com",
+            projectId: "shizi-with-elisa",
+            storageBucket: "shizi-with-elisa.firebasestorage.app",
+            messagingSenderId: "46368268308",
+            appId: "1:46368268308:web:5847aeb7b239b16d624701"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let words = [];
+        let currentIndex = 0;
+
+        // 2. 核心功能：從雲端隨機抓取 10 個字來複習
+        async function initReview() {
+            try {
+                // 我們先測試隨機抓取「識字第一課」的資料
+                const q = query(collection(db, "vocabulary"), where("lessonId", "==", "lesson1"));
+                const querySnapshot = await getDocs(q);
+                
+                words = querySnapshot.docs.map(doc => doc.data());
+                words.sort(() => Math.random() - 0.5); // 隨機洗牌
+
+                document.getElementById('loading').style.display = 'none';
+                showCard();
+            } catch (e) {
+                console.error("抓取失敗", e);
+            }
+        }
+
+        function showCard() {
+            if (words.length > 0) {
+                const card = words[currentIndex];
+                document.getElementById('display-char').innerText = card.character;
+                document.getElementById('display-meaning').innerHTML = `拼音: ${card.pinyin}<br>意思: ${card.meaning}`;
+                // 每次換題都要翻回正面
+                document.getElementById('main-card').classList.remove('is-flipped');
+            }
+        }
+
+        // 綁定翻牌動作
+        document.getElementById('main-card').addEventListener('click', function() {
+            this.classList.toggle('is-flipped');
+        });
+
+        // 暴露給按鈕使用
+        window.nextCard = function() {
+            currentIndex = (currentIndex + 1) % words.length;
+            showCard();
+        };
+
+        initReview();
+    </script>
+</body>
+</html>
