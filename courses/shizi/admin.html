@@ -981,6 +981,9 @@
     <!-- ==================== Firebase SDK ==================== -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+
 
     <script>
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -996,6 +999,8 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();  // ← 加这行
+        auth.signInAnonymously();      // ← 加这行  
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         // 区域 2: 导航切换
