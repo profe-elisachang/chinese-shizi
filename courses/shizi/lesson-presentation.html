@@ -107,16 +107,43 @@
         
         /* ==================== Sidebar Navigation ==================== */
         .sidebar {
-            width: 280px;
+            width: 180px;
+            min-width: 120px;
+            max-width: 400px;
             background: var(--bg-card);
             border-right: 2px solid var(--border-light);
             overflow-y: auto;
-            padding: var(--spacing-lg);
+            padding: 12px;
             transition: transform 0.3s ease;
+            position: relative;
         }
-        
+
         .sidebar.hidden {
             transform: translateX(-100%);
+        }
+
+        /* Sidebar resizer handle */
+        .sidebar-resizer {
+            position: absolute;
+            right: -3px;              /* 往右邊延伸一點 */
+            top: 0;
+            bottom: 0;
+            width: 12px;              /* 加寬到 12px，更容易抓取 */
+            cursor: col-resize;
+            background: rgba(8, 145, 178, 0.1);  /* 淡藍色背景，可見 */
+            z-index: 10;
+            transition: all 0.2s ease;
+            border-right: 2px solid transparent;
+        }
+
+        .sidebar-resizer:hover {
+            background: rgba(8, 145, 178, 0.3);
+            border-right: 2px solid var(--primary-color);
+        }
+
+        .sidebar-resizer.resizing {
+            background: rgba(8, 145, 178, 0.5);
+            border-right: 2px solid var(--primary-color);
         }
         
         .sidebar-header {
@@ -246,87 +273,109 @@
         
                 /* ==================== Card Display ==================== */
         .card-display {
-        flex: 1;
-        display: flex;
-        align-items: flex-start;  /* ← 改成靠上 */
-        justify-content: center;
-        padding: 20px;
-        padding-top: 40px;        /* ← 加一點上邊距 */
-        overflow-y: auto;
-        }
-        
-        .presentation-card {
-            width: 100%;
-            max-width: none;
-            background: var(--bg-card);
-            padding: var(--spacing-2xl);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
+            /* 主要內容區域直接佈局 */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px 60px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            gap: 30px;
             text-align: center;
         }
-                       /* ==================== Card Display 子體大小 ==================== */ 
-        .presentation-card .character {
-            font-size: var(--text-4xl);
+
+        /* 移除 presentation-card 容器類別 */
+        #cardContainer {
+            /* 固定大小，所有卡片統一尺寸 */
+            width: 95%;
+            max-width: 1400px;
+            height: auto;             /* 自適應內容高度 */
+            min-height: 750px;        /* 最小高度保持一致 */
+
+            /* 佈局 */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 30px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+                       /* ==================== Card Display 子體大小 ==================== */
+        #cardContainer .character {
+            font-size: 5rem;
             font-weight: var(--font-bold);
             color: var(--character-color);
-            margin-bottom: var(--spacing-lg);
+            margin: 0;
+            padding: 0;
         }
-        
-        .presentation-card .pinyin {
-            font-size: var(--text-xl);
+
+        #cardContainer .pinyin {
+            font-size: 2rem;
             color: var(--pinyin-color);
-            margin-bottom: var(--spacing-md);
+            margin: 0;
+            padding: 0;
             font-weight: var(--font-medium);
         }
-        
-        .presentation-card .meaning {
-            font-size: var(--text-4xl);
+
+        #cardContainer .meaning {
+            font-size: 2.5rem;
             color: var(--meaning-color);
-            margin-bottom: var(--spacing-xl);
+            margin: 0;
+            padding: 0;
             font-weight: var(--font-semibold);
         }
-        
-        .presentation-card .breakdown {
-            font-size: var(--text-4xl);
+
+        #cardContainer .breakdown {
+            font-size: 1.8rem;
             color: var(--text-secondary);
-            margin-bottom: var(--spacing-xl);
-            padding: var(--spacing-lg);
+            margin: 0;
+            padding: 20px;
             background: var(--bg-light);
             border-radius: var(--radius-md);
         }
-        
-        .presentation-card .image {
-            max-width: 500px;
-            width: 100%;
+
+        #cardContainer .image {
+            max-width: 800px;          /* 放大到 800px */
+            max-height: 600px;         /* 放大到 600px */
+            width: auto;
             height: auto;
+            object-fit: contain;       /* 保持比例 */
             border-radius: var(--radius-lg);
-            margin: var(--spacing-xl) auto;
+            margin: 0;
+            padding: 0;
             display: block;
         }
         
         /* ==================== Collapsible Sections ==================== */
         .collapsible-section {
             text-align: left;
-            margin-top: var(--spacing-xl);
-            border-top: 2px solid var(--border-light);
-            padding-top: var(--spacing-lg);
+            width: 100%;
+            max-width: 1200px;        /* 固定最大寬度 */
+            margin: 0;
+            padding: 0;
+            border-top: 1px solid var(--border-light);
         }
-        
+
         .collapsible-section.collapsed .section-content {
             display: none;
         }
-        
+
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            padding: var(--spacing-md);
+            padding: 12px 16px;
             background: var(--bg-light);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--spacing-md);
+            border-radius: 8px;
+            margin: 8px 0;
+            width: 100%;               /* 確保寬度一致 */
+            box-sizing: border-box;
         }
-        
+
         .section-header:hover {
             background: var(--bg-hover);
         }
@@ -346,11 +395,12 @@
         .collapsible-section.collapsed .toggle-icon {
             transform: rotate(-90deg);
         }
-         /* ==================== Card Display 子體文字描述大小改這裡 ==================== */      
+         /* ==================== Card Display 子體文字描述大小改這裡 ==================== */
         .section-content {
-            padding: var(--spacing-lg);
-            font-size: var(--text-4xl);
-            line-height: 1.8;
+            padding: 16px;
+            font-size: 1.5rem;
+            line-height: 1.6;
+            margin: 0;
         }
         
         .markdown-content {
@@ -481,19 +531,19 @@
                 transform: translateX(-100%);
             }
             
-            .presentation-card {
+            #cardContainer {
                 padding: var(--spacing-lg);
             }
-            
-            .presentation-card .character {
+
+            #cardContainer .character {
                 font-size: var(--text-4xl);
             }
-            
-            .presentation-card .pinyin {
+
+            #cardContainer .pinyin {
                 font-size: var(--text-2xl);
             }
-            
-            .presentation-card .meaning {
+
+            #cardContainer .meaning {
                 font-size: var(--text-2xl);
             }
             
@@ -510,76 +560,102 @@
 
 
 
-/* ==================== 固定周邊大小（使用 vw 單位）==================== */
+/* ==================== 固定周邊大小（最小化縮放影響）==================== */
+/*
+  說明：瀏覽器 Ctrl+/- 會影響所有 CSS 單位。
+  策略：周邊使用極小的 rem 值，主內容使用大的 rem 值
+  這樣放大時，周邊變化小，主內容變化大
+*/
 
-
+/* Sidebar - 使用小 rem 值 */
 .sidebar {
-width: 18vw;  /* 視窗寬度的 18% */
-font-size: 0.9vw;  /* 永遠是視窗寬度的 0.9% */
+  /* width: 180px !important; */  /* 移除 !important 讓拖動可以覆蓋 */
+  font-size: 0.7rem !important;  /* 很小的字體 */
 }
-
-.top-controls {
-font-size: 1vw;
-padding: 1vw;
-}
-
-.navigation-controls {
-font-size: 1vw;
-padding: 1vw;
-}
-
-/* 主內容使用 rem（會隨縮放變大）*/
-.presentation-card .character {
-font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
-}
-
 
 .nav-link {
-  padding: 0.5vw;
-  font-size: 0.7vw;
+  padding: 0.4rem !important;
 }
 
 .nav-link .char {
-  font-size: 1.2vw;
+  font-size: 1rem !important;  /* 保持小字 */
 }
 
 .nav-link .pinyin {
-  font-size: 0.6vw;
+  font-size: 0.6rem !important;
 }
 
-/* 頂端控制 */
+.sidebar-header h2 {
+  font-size: 0.9rem !important;
+}
+
+.sidebar-header .count {
+  font-size: 0.7rem !important;
+}
+
+/* 頂端控制 - 使用小 rem 值 */
 .top-controls {
-  padding: 0.4vw 0.8vw;
-  font-size: 0.6vw;
-  min-height: 2.5vw;
+  padding: 0.6rem 0.8rem !important;
+  font-size: 0.7rem !important;
+  min-height: 50px !important;
 }
 
 .btn {
-  padding: 0.4vw 0.8vw;
-  font-size: 0.6vw;
+  padding: 0.4rem 0.8rem !important;
+  font-size: 0.65rem !important;
 }
 
-/* 底部導航 */
+/* 底部導航 - 使用小 rem 值 */
 .navigation-controls {
-  padding: 0.4vw 0.8vw;
-  font-size: 0.6vw;
-  min-height: 3vw;
+  padding: 0.6rem 0.8rem !important;
+  font-size: 0.7rem !important;
+  min-height: 55px !important;
 }
 
 .nav-btn {
-  padding: 0.5vw 1vw;
-  font-size: 0.7vw;
-  min-width: 6vw;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.75rem !important;
+  min-width: 100px !important;
 }
 
 .current-position {
-  font-size: 0.7vw;
+  font-size: 0.75rem !important;
 }
 
-/* 鍵盤提示 */
+/* 鍵盤提示 - 使用小 rem 值 */
 .keyboard-hint {
-  padding: 0.4vw 0.6vw;
-  font-size: 0.6vw;
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.65rem !important;
+}
+
+/* Section 標題 - 使用小 rem 值 */
+.section-title {
+  font-size: 0.9rem !important;
+}
+
+.toggle-icon {
+  font-size: 0.8rem !important;
+}
+
+/* ==================== 主內容使用 rem（會隨 Ctrl+/- 縮放）==================== */
+#cardContainer .character {
+  font-size: 5rem !important;
+}
+
+#cardContainer .pinyin {
+  font-size: 2rem !important;
+}
+
+#cardContainer .meaning {
+  font-size: 2.5rem !important;
+}
+
+#cardContainer .breakdown {
+  font-size: 1.8rem !important;
+}
+
+.section-content {
+  font-size: 1.5rem !important;
 }
 
 
@@ -592,6 +668,7 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
     <div class="presentation-container">
         <!-- Sidebar Navigation -->
         <aside class="sidebar" id="sidebar">
+            <div class="sidebar-resizer" id="sidebarResizer"></div>
             <div class="sidebar-header">
                 <h2 id="sidebarTitle">加载中...Loading…</h2>
                 <div class="count" id="sidebarCount">0 个字</div>
@@ -640,7 +717,7 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
     
     <!-- Keyboard Hint -->
     <div class="keyboard-hint">
-        ⌨️ 使用 ← → 键翻页
+        ⌨️ ← → 翻页 | H 隱藏側邊欄
     </div>
     
 
@@ -740,30 +817,30 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
         function renderCard(index) {
             const char = characters[index];
             const container = document.getElementById('cardContainer');
-            
+
+            // 直接輸出內容，不用 presentation-card 容器
             let html = `
-                <div class="presentation-card">
-                    <div class="character">${char.character}</div>
-                    <div class="pinyin">${char.pinyin}</div>
-                    <div class="meaning">${char.meaning}</div>
+                <div class="character">${char.character}</div>
+                <div class="pinyin">${char.pinyin}</div>
+                <div class="meaning">${char.meaning}</div>
             `;
-            
+
             // Components breakdown
             if (char.components_breakdown) {
                 html += `<div class="breakdown">${char.components_breakdown}</div>`;
             }
-            
+
             // Image
             if (char.image) {
                 html += `<img src="${char.image}" class="image" alt="${char.character}" onerror="this.style.display='none'">`;
             }
-            
+
             // Book explanation
             if (char.book_explanation) {
                 html += `
                     <div class="collapsible-section" id="section-explanation">
                         <div class="section-header" onclick="toggleSection('section-explanation')">
-                            <div class="section-title">📖 解释</div>
+                            <div class="section-title">📖 解释 Explaination</div>
                             <div class="toggle-icon">▼</div>
                         </div>
                         <div class="section-content markdown-content">
@@ -772,13 +849,13 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
                     </div>
                 `;
             }
-            
+
             // Story
             if (char.story) {
                 html += `
                     <div class="collapsible-section" id="section-story">
                         <div class="section-header" onclick="toggleSection('section-story')">
-                            <div class="section-title">🧠 故事</div>
+                            <div class="section-title">🧠 故事 Story</div>
                             <div class="toggle-icon">▼</div>
                         </div>
                         <div class="section-content markdown-content">
@@ -787,13 +864,13 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
                     </div>
                 `;
             }
-            
+
             // Pronunciation cue
             if (char.pronunciation_cue) {
                 html += `
                     <div class="collapsible-section" id="section-pronunciation">
                         <div class="section-header" onclick="toggleSection('section-pronunciation')">
-                            <div class="section-title">🔊 发音</div>
+                            <div class="section-title">🔊 发音 </div>
                             <div class="toggle-icon">▼</div>
                         </div>
                         <div class="section-content markdown-content">
@@ -802,7 +879,7 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
                     </div>
                 `;
             }
-            
+
             // Phrases
             if (char.phrases) {
                 html += `
@@ -817,7 +894,7 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
                     </div>
                 `;
             }
-            
+
             // Example
             if (char.example) {
                 html += `
@@ -832,8 +909,7 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
                     </div>
                 `;
             }
-            
-            html += `</div>`;
+
             container.innerHTML = html;
             
             // Update navigation
@@ -919,11 +995,56 @@ font-size: 8rem;  /* 會隨 Ctrl+ 放大 */
                 nextCard();
             } else if (e.key === 'Escape') {
                 backToCardMode();
+            } else if (e.key === 'h' || e.key === 'H') {
+                // 按 H 鍵隱藏/顯示 Sidebar
+                toggleSidebar();
             }
         });
-        
+
+        // ==================== Sidebar Resizing ====================
+        function initSidebarResize() {
+            const sidebar = document.getElementById('sidebar');
+            const resizer = document.getElementById('sidebarResizer');
+            let isResizing = false;
+            let startX = 0;
+            let startWidth = 0;
+
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                startX = e.clientX;
+                startWidth = sidebar.offsetWidth;
+                resizer.classList.add('resizing');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+
+                const width = startWidth + (e.clientX - startX);
+                const minWidth = 120;
+                const maxWidth = 400;
+
+                if (width >= minWidth && width <= maxWidth) {
+                    sidebar.style.width = width + 'px';
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    resizer.classList.remove('resizing');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            });
+        }
+
         // ==================== Initialize ====================
-        window.addEventListener('DOMContentLoaded', loadLesson);
+        window.addEventListener('DOMContentLoaded', () => {
+            loadLesson();
+            initSidebarResize();
+        });
     </script>
 </body>
 </html>

@@ -1,153 +1,342 @@
-<!-- shizi/index.html -->
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>识字课程 - Chinese with Elisa</title>
+    <title>Mandarin with Elisa - Home</title>
+
     <style>
         :root {
-            --primary-color: #0891b2;
+            /* 藍綠色系 */
+            --primary: #0891b2;
+            --primary-dark: #0e7490;
             --primary-light: #06b6d4;
+            --bg-page: #ffffff;
             --bg-card: #ffffff;
+            --bg-hover: #f3f4f6;
+            --bg-light: #f0f9fa;
+            --border: #e5e7eb;
             --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --shadow: rgba(8, 145, 178, 0.12);
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+
         body {
-            font-family: 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+            background: linear-gradient(135deg, #f0f9fa 0%, #e0f7fa 100%);
             min-height: 100vh;
+        }
+
+        /* ==================== Top Navigation ==================== */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             display: flex;
-            align-items: center;
             justify-content: center;
-        }
-        
-        .welcome-card {
+            align-items: center;
+            gap: 30px;
+            padding: 20px;
             background: var(--bg-card);
-            padding: 60px 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid #e5e7eb;
         }
-        
-        .logo { font-size: 3em; margin-bottom: 10px; }
-        
-        h1 {
-            color: var(--primary-color);
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: var(--text-primary);
-            font-size: 1.2em;
-            margin-bottom: 40px;
-        }
-        
-        select {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
-            border: 2px solid var(--primary-color);
-            border-radius: 10px;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 18px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
+
+        .nav-link {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-bottom: 3px solid transparent;
             transition: all 0.3s;
         }
-        
-        .btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(8,145,178,0.4);
+
+        .nav-link:hover {
+            color: var(--primary);
         }
 
-          .select-section {
-            margin: 40px 0;
-            color: var(--text-primary);
-            isplay: block;
-            font-size: 1.1em;
+        .nav-link.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-separator {
+            color: #9ca3af;
+            font-size: 1rem;
+        }
+
+        /* ==================== Container ==================== */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: var(--bg-card);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px var(--shadow);
+            padding: 40px;
+        }
+
+        /* ==================== Header ==================== */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* ==================== Philosophy Banner ==================== */
+        .philosophy-banner {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e0f7fa 100%);
+            padding: 25px 30px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 30px 0;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(8, 145, 178, 0.15);
+        }
+
+        .philosophy-text {
+            font-size: 1.4rem;
             font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 10px;
-            text-align: left;
+            color: var(--primary-dark);
+            font-style: italic;
         }
 
+        /* ==================== Top Navigation Buttons ==================== */
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0 50px;
+        }
 
+        .nav-btn {
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border: 3px solid var(--primary);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
 
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(8, 145, 178, 0.3);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ==================== Section Title ==================== */
+        .section-title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        /* ==================== Lesson Grid ==================== */
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+            justify-items: center;
+        }
+
+        /* ==================== Lesson Circle ==================== */
+        .lesson-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .lesson-circle:hover:not(.locked) {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(8, 145, 178, 0.3);
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+
+        .lesson-circle:hover:not(.locked) .lesson-number {
+            color: white;
+        }
+
+        .lesson-circle.locked {
+            border-color: #d1d5db;
+            background: #f9fafb;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .lesson-number {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .lesson-circle.locked .lesson-number {
+            color: #9ca3af;
+        }
+
+        .lock-icon {
+            font-size: 1.5rem;
+            margin-top: 3px;
+        }
+
+        /* ==================== Loading ==================== */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .loader {
+            border: 5px solid #f0f7fa;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ==================== Instruction ==================== */
+        .instruction {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .top-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .lesson-grid {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                gap: 15px;
+            }
+
+            .lesson-circle {
+                width: 90px;
+                height: 90px;
+            }
+
+            .lesson-number {
+                font-size: 0.9rem;
+            }
+
+            .philosophy-text {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="welcome-card">
-        <div class="logo">🎓</div>
-        <h1>识字课程</h1>
-        <p class="subtitle">Chinese Literacy</p>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-link active">Home</a>
+        <span class="nav-separator">|</span>
+        <a href="lesson.html?id=lesson1" class="nav-link">Lessons</a>
+        <span class="nav-separator">|</span>
+        <a href="review.html" class="nav-link">Review</a>
+    </nav>
 
-        <div class="select-section">Choose a lesson</div>
-          
-        <select id="lessonSelect">
-            <option value="">-- 请选择课程 --</option>
-            <option value="lesson1">Lesson 1 - 识字一</option>
-            <option value="lesson2">Lesson 2 - 识字二</option>
-            <option value="lesson3">Lesson 3 - 识字三</option>
-            <option value="lesson4">Lesson 4 - 识字四</option>
-            <option value="lesson5">Lesson 5 - 识字五</option>
-            <option value="lesson6">Lesson 6 - 识字六</option>
-            <option value="lesson7">Lesson 7 - 识字七</option>
-            <option value="lesson8">Lesson 8 - 识字八</option>
-            <option value="lesson9">Lesson 9 - 识字九</option>
-            <option value="lesson10">Lesson 10 - 识字十</option>
-            <option value="lesson11">Lesson 11 - 识字十一</option>
-            <option value="lesson12">Lesson 12 - 识字十二</option>
-            <option value="lesson13">Lesson 13 - 识字十三</option>
-            <option value="lesson14">Lesson 14 - 识字十四</option>
-            <option value="lesson15">Lesson 15 - 识字十五</option>
-            <option value="lesson16">Lesson 16 - 识字十六</option>
-            <option value="lesson17">Lesson 17 - 识字十七</option>
-            <option value="lesson18">Lesson 18 - 识字十八</option>
-            <option value="lesson19">Lesson 19 - 识字十九</option>
-            <option value="lesson20">Lesson 20 - 识字二十</option>
-            <option value="lesson21">Lesson 21 - 识字二十一</option>
-            <option value="lesson22">Lesson 22 - 识字二十二</option>
-            <option value="lesson23">Lesson 23 - 识字二十三</option>
-            <option value="lesson24">Lesson 24 - 识字二十四</option>
-            <option value="lesson25">Lesson 25 - 识字二十五</option><!-- ... 继续到 lesson25 -->
-        </select>
-        
-        <button class="btn" onclick="startLesson()">开始学习 →</button>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🌊 Mandarin with Elisa</h1>
+            <p class="subtitle">欢迎来到你的中文课 🌊</p>
+            <p class="subtitle">Welcome to Your Chinese Class</p>
+        </header>
+
+        <!-- Philosophy Banner -->
+        <div class="philosophy-banner">
+            <p class="philosophy-text">Progress, Not Perfection.</p>
+            <p style="margin-top: 10px; font-size: 1rem; font-style: normal;">Let's explore the ocean of Chinese together!</p>
+            <p style="font-size: 1rem; font-style: normal;">让我们一起探索中文的海洋!</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 40px;">
+            <a href="lesson.html?id=lesson1" style="padding: 20px 40px; background: var(--primary); color: white; text-decoration: none; border-radius: 12px; font-size: 1.2rem; font-weight: 700; transition: all 0.3s; box-shadow: 0 4px 15px rgba(8, 145, 178, 0.3);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 25px rgba(8, 145, 178, 0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 15px rgba(8, 145, 178, 0.3)'">
+                📚 Start Lessons
+            </a>
+            <a href="review.html" style="padding: 20px 40px; background: white; color: var(--primary); text-decoration: none; border-radius: 12px; font-size: 1.2rem; font-weight: 700; border: 3px solid var(--primary); transition: all 0.3s;" onmouseover="this.style.background='var(--primary)'; this.style.color='white'" onmouseout="this.style.background='white'; this.style.color='var(--primary)'">
+                🧠 Review Words
+            </a>
+        </div>
+
+        <div style="margin-top: 50px; padding: 30px; background: linear-gradient(135deg, #f0f9fa 0%, #e0f7fa 100%); border-radius: 16px; border-left: 5px solid var(--primary);">
+            <h3 style="color: var(--primary-dark); margin-bottom: 15px;">📖 About This Course</h3>
+            <p style="line-height: 1.8; color: var(--text-primary);">
+                Simple rule: if you can have a try, we keep going.<br>
+                The goal isn't to know everything, but to start using something.<br>
+                We take our time. No rush, no forcing.<br>
+                We learn, forget sometimes, and meet words again—like old friends.
+            </p>
+        </div>
     </div>
-    
-    <script>
-        function startLesson() {
-            const lessonId = document.getElementById('lessonSelect').value;
-            if (!lessonId) {
-                alert('请先选择课程');
-                return;
-            }
-            window.location.href = `lesson.html?id=${lessonId}`;
-        }
-        
-        // 回车键快捷启动
-        document.getElementById('lessonSelect').addEventListener('change', function(e) {
-            if (e.target.value) {
-                document.querySelector('.btn').focus();
-            }
-        });
-    </script>
+
 </body>
 </html>

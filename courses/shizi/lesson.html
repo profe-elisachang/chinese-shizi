@@ -102,27 +102,65 @@
             line-height: 1.6;
         }
         
+        /* ==================== Top Navigation Bar ==================== */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            padding: 20px;
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .nav-link {
+            font-size: 1rem;
+            font-weight: var(--font-semibold);
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-separator {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
         /* ==================== Header ==================== */
         .header {
             background: var(--bg-card);
             padding: var(--spacing-xl);
-            box-shadow: var(--shadow-md);
             text-align: center;
             margin-bottom: var(--spacing-xl);
         }
-        
+
         .header h1 {
             font-size: var(--text-3xl);
             color: var(--primary-color);
             margin-bottom: var(--spacing-sm);
             font-weight: var(--font-bold);
         }
-        
+
         .header .subtitle {
             font-size: var(--text-lg);
             color: var(--text-secondary);
         }
-        
+
         /* ==================== Container ==================== */
         .container {
             max-width: 1400px;
@@ -719,100 +757,123 @@
             }
         }
 
-  /* 侧边栏样式 */
-    .course-sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 250px;
+  /* ==================== Lesson Navigation Bar (BBC Style) ==================== */
+    .lesson-navigation {
         background: var(--bg-card);
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        overflow-y: auto;
-        z-index: 1000;
-        transition: transform 0.3s ease;
+        padding: var(--spacing-xl) var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+        box-shadow: var(--shadow-sm);
+        border-bottom: 1px solid var(--border-light);
     }
-    
-    .course-sidebar.hidden {
-        transform: translateX(-100%);
+
+    .lesson-nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-lg);
     }
-    
-    .sidebar-header {
-        padding: var(--spacing-xl);
-        background: var(--primary-color);
-        color: white;
-        position: sticky;
-        top: 0;
-        z-index: 10;
+
+    .lesson-nav-title {
+        font-size: 0.75rem;
+        font-weight: var(--font-bold);
+        color: var(--text-muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
     }
-    
-    .sidebar-header h3 {
-        font-size: var(--text-lg);
-        margin-bottom: var(--spacing-xs);
+
+    .refresh-btn {
+        padding: 6px 12px;
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-medium);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.3s;
     }
-    
-    .lesson-list {
-        padding: var(--spacing-md);
+
+    .refresh-btn:hover {
+        background: var(--bg-hover);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
     }
-    
-    .lesson-item {
-        padding: var(--spacing-md);
-        margin-bottom: var(--spacing-sm);
-        border-radius: var(--radius-md);
+
+    /* BBC-style horizontal bar layout */
+    .lesson-numbers {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .lesson-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        min-width: 40px;
+    }
+
+    /* BBC-style rectangular bar */
+    .lesson-bar {
+        width: 40px;
+        height: 8px;
+        background: var(--bg-light);
+        border: 1px solid var(--border-medium);
         cursor: pointer;
         transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-sm);
+        border-radius: 2px;
     }
-    
-    .lesson-item:hover {
-        background: var(--bg-hover);
+
+    .lesson-bar:hover {
+        background: var(--primary-light);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
     }
-    
-    .lesson-item.active {
+
+    .lesson-bar.active {
         background: var(--primary-color);
-        color: white;
+        border-color: var(--primary-color);
+        height: 10px;
+    }
+
+    .lesson-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        font-weight: var(--font-medium);
+    }
+
+    .lesson-bar.active + .lesson-label {
+        color: var(--primary-color);
         font-weight: var(--font-bold);
     }
-    
-    .lesson-icon {
-        font-size: 1.2em;
-    }
-    
-    /* 切换按钮 */
-    .toggle-sidebar-btn {
-        position: fixed;
-        left: 10px;
-        top: 10px;
-        z-index: 999;
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: var(--radius-md);
-        cursor: pointer;
-        display: none; /* 默认隐藏，侧边栏收起时显示 */
-    }
-    
-    .course-sidebar.hidden + .toggle-sidebar-btn {
-        display: block;
-    }
-    
-    /* 主内容区左移 */
-    body.has-sidebar .container {
-        margin-left: 400px;
-    }
-    
-    /* 手机版 */
-    @media (max-width: 768px) {
-        .course-sidebar {
-            width: 100%;
-        }
-        
-        body.has-sidebar .container {
-            margin-left: 0;
 
+    /* Mobile: Dropdown select */
+    .lesson-dropdown {
+        display: none;
+        width: 100%;
+        padding: var(--spacing-md);
+        font-size: var(--text-base);
+        border: 2px solid var(--border-medium);
+        border-radius: var(--radius-md);
+        background: white;
+        color: var(--text-primary);
+        cursor: pointer;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .lesson-numbers {
+            display: none;
+        }
+
+        .lesson-dropdown {
+            display: block;
+        }
+
+        .lesson-nav-title {
+            font-size: 0.7rem;
         }
     }
 
@@ -824,30 +885,40 @@
 
 
 <body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <span class="nav-separator">|</span>
+        <a href="index.html" class="nav-link active">Lessons</a>
+        <span class="nav-separator">|</span>
+        <a href="review.html" class="nav-link">Review</a>
+    </nav>
 
- <!-- 侧边栏 HTML -->
-<aside class="course-sidebar" id="courseSidebar">
-    <div class="sidebar-header">
-        <h3>📚 识字课程</h3>
-        <small>Chinese Literacy</small>
-    </div>
-    
-    <div class="lesson-list" id="lessonList">
-        <!-- JavaScript 动态生成 -->
-    </div>
-</aside>
+    <!-- Lesson Navigation Bar (BBC Style) -->
+    <div class="container" style="margin-top: 20px;">
+        <!-- Page Title -->
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 id="lessonTitle" style="color: var(--primary-color); font-size: 2rem; font-weight: 700; margin-bottom: 8px;">加载中...Loading…</h1>
+            <p id="lessonSubtitle" style="color: var(--text-secondary); font-size: 1.1rem;">Rapid Literacy</p>
+        </div>
 
-<button class="toggle-sidebar-btn" onclick="toggleSidebar()">
-    ☰ 课程列表
-</button>   
-    <!-- Header -->
-    <header class="header">
-        <h1 id="lessonTitle">加载中...Loading…</h1>
-        <p class="subtitle" id="lessonSubtitle">Chinese Learning Platform</p>
-    </header>
-    
-    <!-- Main Container -->
-    <div class="container">
+        <div class="lesson-navigation">
+            <div class="lesson-nav-header">
+                <span class="lesson-nav-title">SELECT A LESSON</span>
+                <button class="refresh-btn" onclick="refreshLessonData()">🔄 Refresh</button>
+            </div>
+
+            <!-- Desktop: BBC-style horizontal bars -->
+            <div class="lesson-numbers" id="lessonNumbers">
+                <!-- JavaScript will populate this -->
+            </div>
+
+            <!-- Mobile: Dropdown -->
+            <select class="lesson-dropdown" id="lessonDropdown" onchange="navigateToLesson(this.value)">
+                <!-- JavaScript will populate this -->
+            </select>
+        </div>
+
         <!-- Loading Indicator -->
         <div class="loader" id="loader"></div>
         
@@ -989,25 +1060,43 @@
             const loader = document.getElementById('loader');
             const errorMessage = document.getElementById('errorMessage');
             const tabsNav = document.getElementById('tabsNav');
-            
+
             loader.style.display = 'block';
             errorMessage.style.display = 'none';
-            
+
             try {
-                const doc = await db.collection('lessons').doc(lessonId).get();
-                
-                if (!doc.exists) {
-                    throw new Error('课程不存在/Course not found');
+                console.time('Loading ' + lessonId);
+
+                // ========== 檢查本地緩存 ==========
+                const cacheKey = `lesson_cache_${lessonId}`;
+                const cached = localStorage.getItem(cacheKey);
+
+                if (cached) {
+                    console.log('✅ Loaded from cache:', lessonId);
+                    currentLessonData = JSON.parse(cached);
+                } else {
+                    // 從 Firebase 載入
+                    console.log('📡 Loading from Firebase:', lessonId);
+                    const doc = await db.collection('lessons').doc(lessonId).get();
+
+                    if (!doc.exists) {
+                        throw new Error('课程不存在/Course not found');
+                    }
+
+                    currentLessonData = doc.data();
+
+                    // 存入緩存
+                    localStorage.setItem(cacheKey, JSON.stringify(currentLessonData));
+                    console.log('💾 Saved to cache:', lessonId);
                 }
-                
-                currentLessonData = doc.data();
-                
-                // Update header
-                if (currentLessonData.meta) {
-                    document.getElementById('lessonTitle').textContent = currentLessonData.meta.title || lessonId;
-                    document.getElementById('lessonSubtitle').textContent = 
-                        currentLessonData.meta.title_en || 'Chinese Learning Platform';
-                }
+
+                console.timeEnd('Loading ' + lessonId);
+
+                // Update header with Chinese number format
+                const lessonNum = parseInt(lessonId.replace('lesson', ''));
+                const chineseTitle = convertToChineseNumber(lessonNum);
+                document.getElementById('lessonTitle').textContent = chineseTitle;
+                document.getElementById('lessonSubtitle').textContent = 'Chinese Learning Platform';
                 
                 // Render all content
                 renderComponents(currentLessonData.components || []);
@@ -1511,61 +1600,85 @@
 
 
 
- // 生成课程列表
-    function renderLessonList() {
+ // ==================== Render Lesson Navigation (BBC Style) ====================
+    function renderLessonNavigation() {
         const currentLesson = getLessonId();
-        const lessonList = document.getElementById('lessonList');
-        
-        const lessons = [
-            { id: 'lesson1', title: '识字一', subtitle: 'Daily Greetings' },
-            { id: 'lesson2', title: '识字二', subtitle: 'Family & Friends' },
-            { id: 'lesson3', title: '识字三', subtitle: 'Daily Activities' },
-            { id: 'lesson4', title: '识字四', subtitle: 'Time & Date' },
-            { id: 'lesson5', title: '识字五', subtitle: 'Food & Drinks' },
-            { id: 'lesson6', title: '识字六', subtitle: 'Places' },
-            { id: 'lesson7', title: '识字七', subtitle: 'Shopping' },
-            { id: 'lesson8', title: '识字八', subtitle: 'Transportation' },
-            { id: 'lesson9', title: '识字九', subtitle: 'Weather' },
-            // ... 继续到 lesson25
-{ id: 'lesson10', title: '识字十', subtitle: 'Work & Office' },
-            { id: 'lesson11', title: '识字十一', subtitle: 'Hobbies & Interests' },
-            { id: 'lesson12', title: '识字十二', subtitle: 'Body & Health' },
-            { id: 'lesson13', title: '识字十三', subtitle: 'Appearance & Personality' },
-            { id: 'lesson14', title: '识字十四', subtitle: 'House & Furniture' },
-            { id: 'lesson15', title: '识字十五', subtitle: 'Directions & Map' },
-            { id: 'lesson16', title: '识字十六', subtitle: 'Colors & Clothing' },
-            { id: 'lesson17', title: '识字十七', subtitle: 'Animals & Nature' },
-            { id: 'lesson18', title: '识字十八', subtitle: 'School & Education' },
-            { id: 'lesson19', title: '识字十九', subtitle: 'Feelings & Emotions' },
-            { id: 'lesson20', title: '识字二十', subtitle: 'Travel & Vacation' },
-            { id: 'lesson21', title: '识字二十一', subtitle: 'Festivals & Culture' },
-            { id: 'lesson22', title: '识字二十二', subtitle: 'Sports & Games' },
-            { id: 'lesson23', title: '识字二十三', subtitle: 'Technology & Internet' },
-            { id: 'lesson24', title: '识字二十四', subtitle: 'Environment & Society' },
-            { id: 'lesson25', title: '识字二十五', subtitle: 'Future & Dreams' }
-            
-        ];
-        
-        lessonList.innerHTML = lessons.map(lesson => `
-            <div class="lesson-item ${lesson.id === currentLesson ? 'active' : ''}" 
-                 onclick="window.location.href='lesson.html?id=${lesson.id}'">
-                <span class="lesson-icon">${lesson.id === currentLesson ? '→' : '•'}</span>
-                <div>
-                    <div>${lesson.title}</div>
-                    <small style="opacity: 0.7;">${lesson.subtitle}</small>
+        const currentNum = parseInt(currentLesson.replace('lesson', ''));
+
+        const lessonNumbers = document.getElementById('lessonNumbers');
+        const lessonDropdown = document.getElementById('lessonDropdown');
+
+        // Generate BBC-style horizontal bars for desktop (1-25)
+        let barsHTML = '';
+        for (let i = 1; i <= 25; i++) {
+            const isActive = i === currentNum;
+            barsHTML += `
+                <div class="lesson-unit">
+                    <div class="lesson-bar ${isActive ? 'active' : ''}"
+                         onclick="navigateToLesson(${i})"
+                         title="识字${i}">
+                    </div>
+                    <span class="lesson-label">${i}</span>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }
+        lessonNumbers.innerHTML = barsHTML;
+
+        // Generate dropdown options for mobile
+        let dropdownHTML = '';
+        for (let i = 1; i <= 25; i++) {
+            const lessonTitle = convertToChineseNumber(i);
+            const isSelected = i === currentNum;
+            dropdownHTML += `
+                <option value="${i}" ${isSelected ? 'selected' : ''}>
+                    ${lessonTitle}
+                </option>
+            `;
+        }
+        lessonDropdown.innerHTML = dropdownHTML;
     }
-    
-    // 切换侧边栏
-    function toggleSidebar() {
-        document.getElementById('courseSidebar').classList.toggle('hidden');
+
+    // ==================== Convert Number to Chinese Format ====================
+    function convertToChineseNumber(num) {
+        const digits = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+        const units = ['十', '百', '千'];
+
+        if (num <= 10) {
+            if (num === 10) return '识字十';
+            return `识字${digits[num]}`;
+        }
+
+        if (num < 20) {
+            return `识字十${digits[num - 10]}`;
+        }
+
+        if (num < 100) {
+            const tens = Math.floor(num / 10);
+            const ones = num % 10;
+            return `识字${digits[tens]}十${ones > 0 ? digits[ones] : ''}`;
+        }
+
+        return `识字${num}`;
     }
-    
-    // 初始化
-    document.body.classList.add('has-sidebar');
-    renderLessonList();
+
+    // ==================== Navigate to Lesson ====================
+    function navigateToLesson(lessonNum) {
+        window.location.href = `lesson.html?id=lesson${lessonNum}`;
+    }
+
+    // ==================== Refresh Lesson Data ====================
+    function refreshLessonData() {
+        const lessonId = getLessonId();
+        if (confirm('🔄 重新加载最新数据？\n\nReload fresh data from server?')) {
+            const cacheKey = `lesson_cache_${lessonId}`;
+            localStorage.removeItem(cacheKey);
+            console.log('🗑️ Cleared cache for:', lessonId);
+            location.reload();
+        }
+    }
+
+    // ==================== Initialize Navigation ====================
+    renderLessonNavigation();
 
 
 

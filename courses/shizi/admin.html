@@ -1127,6 +1127,12 @@
             renderCharacterLists();
         }
 
+        // Markdown 渲染輔助函數
+        function renderMarkdown(text) {
+            if (!text) return '';
+            return marked.parse(text);
+        }
+
         function renderCharacterLists() {
             document.getElementById('componentCount').textContent = components.length;
             document.getElementById('targetCount').textContent = targetCharacters.length;
@@ -1136,12 +1142,18 @@
                 if (data.length === 0) {
                     grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">尚未新增任何' + (type === 'component' ? '部件' : '目標字') + '</div>';
                 } else {
-                    grid.innerHTML = data.map((c, i) => `
+                   grid.innerHTML = data.map((c, i) => `
                         <div class="character-card">
-                            <div class="char-main">${c.character}</div>
-                            <div class="char-pinyin">${c.pinyin}</div>
-                            <div class="char-meaning">${c.meaning}</div>
+                            <div class="char-main">${renderMarkdown(c.character)}</div>
+                            <div class="char-pinyin">${renderMarkdown(c.pinyin)}</div>
+                            <div class="char-meaning">${renderMarkdown(c.meaning)}</div>
+                            ${c.components_breakdown ? `<div style="font-size:0.9em;color:var(--text-secondary);margin:5px 0;">${renderMarkdown(c.components_breakdown)}</div>` : ''}
                             ${c.image ? `<img src="${c.image}" class="char-image" onerror="this.style.display='none'">` : ''}
+                            ${c.book_explanation ? `<div style="font-size:0.9em;margin:8px 0;padding:8px;background:var(--bg-light);border-radius:5px;">${renderMarkdown(c.book_explanation)}</div>` : ''}
+                            ${c.story ? `<div style="font-size:0.9em;margin:8px 0;padding:8px;background:#fff3cd;border-radius:5px;">${renderMarkdown(c.story)}</div>` : ''}
+                            ${c.pronunciation_cue ? `<div style="font-size:0.9em;margin:8px 0;color:var(--primary-color);">${renderMarkdown(c.pronunciation_cue)}</div>` : ''}
+                            ${c.phrases ? `<div style="font-size:0.9em;margin:8px 0;color:var(--secondary-color);">${renderMarkdown(c.phrases)}</div>` : ''}
+                            ${c.example ? `<div style="font-size:0.9em;margin:8px 0;font-style:italic;color:var(--text-secondary);">${renderMarkdown(c.example)}</div>` : ''}
                             <div style="display:flex;gap:8px;margin-top:10px;">
                                 <button class="btn btn-small btn-edit" onclick="editCharacter('${type}', ${i})">✏️ 編輯</button>
                                 <button class="btn btn-small btn-delete" onclick="deleteCharacter('${type}', ${i})">🗑️ 刪除</button>
@@ -1605,7 +1617,51 @@
         });
 
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // Markdown 快捷鍵功能
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function addMarkdownFormat(textarea, prefix, suffix) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            let selectedText = textarea.value.substring(start, end);
+            
+            if (selectedText) {
+                // 處理前後空格
+                const leadingSpaces = selectedText.match(/^\s*/)[0];
+                const trailingSpaces = selectedText.match(/\s*$/)[0];
+                const trimmedText = selectedText.trim();
+                
+                const before = textarea.value.substring(0, start);
+                const after = textarea.value.substring(end);
+                
+                // 格式：保留空格在外面
+                textarea.value = before + leadingSpaces + prefix + trimmedText + suffix + trailingSpaces + after;
+                
+                // 設置光標位置（選中加粗後的文字）
+                const newStart = start + leadingSpaces.length + prefix.length;
+                const newEnd = newStart + trimmedText.length;
+                textarea.selectionStart = newStart;
+                textarea.selectionEnd = newEnd;
+                textarea.focus();
+            }
+        }
 
+            // 為所有欄位加入快捷鍵
+                    ['bookExplanation', 'story', 'pronunciationCue', 'character', 'pinyin', 'meaning', 'componentsBreakdown', 'phrases', 'example'].forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.addEventListener('keydown', (e) => {
+                                if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                                    e.preventDefault();
+                                    addMarkdownFormat(e.target, '**', '**');
+                                }
+                                if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                                    e.preventDefault();
+                                    addMarkdownFormat(e.target, '*', '*');
+                                }
+                            });
+                        }
+                    });
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         // 区域 8: 初始化
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

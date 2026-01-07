@@ -36,19 +36,57 @@
         --border: #b2ebf2;
         --shadow: rgba(0, 105, 115, 0.12);
         
-        /* Leitner 盒子纯色（无渐变） */
-        --forgot: #ff5252;
-        --hard: #ff9800;
-        --good: #40c4ff;
-        --easy: #69f0ae;
-    }
+/* Leitner 盒子纯色（无渐变） */
+--forgot: #ef4444;
+--hard: #d97706;
+--good: #059669;
+--easy: #0891b2;
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; }
-    body { background: var(--bg-page); color: var(--text-primary); min-height: 100vh; padding: 16px; }
+    body { background: linear-gradient(135deg, #f0f9fa 0%, #e0f7fa 100%); color: var(--text-primary); min-height: 100vh; }
+
+    /* ==================== Top Navigation ==================== */
+    .top-nav {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        padding: 20px;
+        background: var(--bg-card);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .nav-link {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 8px 16px;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+    }
+
+    .nav-link:hover {
+        color: var(--primary);
+    }
+
+    .nav-link.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+
+    .nav-separator {
+        color: #9ca3af;
+        font-size: 1rem;
+    }
     
     .container {
         max-width: 1000px;
-        margin: 0 auto;
+        margin: 20px auto;
         background: var(--bg-card);
         border-radius: 20px;
         box-shadow: 0 10px 40px var(--shadow);
@@ -261,11 +299,16 @@
     color: white;
 }
 
+.circle-card[data-selected="true"] .progress-text,
+.circle-card[data-selected="true"] .char-count {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 .circle-card[data-selected="true"] .circle-label {
     color: var(--primary);
     font-weight: 700;
 }
-
 /* Circle Content (center of the ring) */
 .circle-content {
     position: absolute;
@@ -364,6 +407,23 @@
         cursor: pointer;
         border: 1px solid var(--border);
     }
+
+            /* 控制 Smart Review 和 By Difficulty 的顯示/隱藏 */
+        #recommendedSection {
+            display: none;  /* 預設隱藏 */
+        }
+
+        #recommendedSection.show {
+            display: block;  /* Tab 點選時顯示 */
+        }
+
+        #difficultySection {
+            display: none;  /* 預設隱藏 */
+        }
+
+        #difficultySection.show {
+            display: block;  /* Tab 點選時顯示 */
+        }
     .recommended-section:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,172,193,0.28); }
     
     .recommended-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -472,10 +532,10 @@
     
     .card {
         perspective: 1000px;
-        height: 460px;
+        height: 600px;
         margin: 20px auto;
         cursor: pointer;
-        max-width: 600px;
+        max-width: 700px;
         width: 100%;
     }
     .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
@@ -483,8 +543,8 @@
     
     .card-front, .card-back {
         position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-        border-radius: 20px; padding: 20px; display: flex; flex-direction: column;
-        justify-content: center; align-items: center; box-shadow: 0 10px 30px var(--shadow);
+        border-radius: 20px; padding: 24px; display: flex; flex-direction: column;
+        justify-content: flex-start; align-items: center; box-shadow: 0 10px 30px var(--shadow);
         overflow-y: auto;
     }
     .card-front { background: white; border: 3px solid var(--border); }
@@ -503,7 +563,10 @@
         
         .card-image {
             max-width: 100%;
-            max-height: 200px;
+            max-height: 300px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             border-radius: 8px;
             margin: 12px 0;
         }
@@ -654,22 +717,34 @@
             .character {
                 font-size: 100px;
             }
-            
+
             .card {
-                height: 400px;
+                height: 500px;
+            }
+
+            .card-image {
+                max-height: 200px;
             }
         }
 </style>
 </head>
 <body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <span class="nav-separator">|</span>
+        <a href="lesson.html?id=lesson1" class="nav-link">Lessons</a>
+        <span class="nav-separator">|</span>
+        <a href="review.html" class="nav-link active">Review</a>
+    </nav>
+
     <div class="container">
         <!-- Header -->
         <header>
             <h1>📚 Chinese Character Review System</h1>
             <div class="subtitle">Cloud Sync • Spaced Repetition</div>
-           
         </header>
-        
+
         <!-- Loading -->
         <div id="loadingContainer">
             <div class="loader"></div>
@@ -688,16 +763,23 @@
             
             <!-- Lesson Selection -->
             <div class="lesson-selector">
-                <div class="selector-header" id="selectorHeader">
-                    <span>📚 Select Lessons <span class="selector-count" id="selectedCount">(0/18)</span></span>
-                    <span class="selector-arrow">▼</span>
-                </div>
+            <div style="padding: 20px 0; font-size: 1.3rem; font-weight: bold; color: var(--text-primary);">
+                📚 Select Lessons <span class="selector-count" id="selectedCount">(0/25)</span>
+            </div>
                 <div class="selector-content" id="selectorContent">
                     <div id="lessonCheckboxes"></div>
                 </div>
                 <div class="selector-actions">
                     <button class="btn btn-primary" onclick="selectAllLessons()">Select All</button>
                     <button class="btn btn-secondary" onclick="clearAllLessons()">Clear All</button>
+                </div>
+            </div>
+
+                        <!-- Layer 3: Review Method Tab -->
+            <div class="tab-system" id="reviewMethodTabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="smart-review">🎯 Smart Review</button>
+                    <button class="tab-btn" data-tab="by-difficulty">⚙️ By Difficulty</button>
                 </div>
             </div>
             
@@ -739,34 +821,30 @@
                 </div>
             </div>
             
-            <!-- Manual Selection Hint -->
-            <div class="manual-selection-header collapsed" id="manualHeader" style="text-align: center; margin: 28px 0; color: var(--text-secondary); font-size: 1.2em; font-weight: 500; cursor: pointer;">
-                <span class="collapse-arrow">▼</span>
-                Or review by difficulty level 
-                <span class="collapse-arrow">▼</span>
-            </div>
-            
-            <!-- Mastery Boxes -->
-            <div class="mastery-boxes collapsed" id="masteryBoxes" style="display: none;">
-                <div class="mastery-box forgot" onclick="startBoxReview('forgot')">
-                    <div class="box-title">Forgotten</div>
-                    <div class="box-count" id="count-forgot">0</div>
-                    <div class="box-description">Needs frequent review</div>
-                </div>
-                <div class="mastery-box hard" onclick="startBoxReview('hard')">
-                    <div class="box-title">Hard</div>
-                    <div class="box-count" id="count-hard">0</div>
-                    <div class="box-description">Still challenging</div>
-                </div>
-                <div class="mastery-box good" onclick="startBoxReview('good')">
-                    <div class="box-title">Good</div>
-                    <div class="box-count" id="count-good">0</div>
-                    <div class="box-description">Doing well</div>
-                </div>
-                <div class="mastery-box easy" onclick="startBoxReview('easy')">
-                    <div class="box-title">Easy</div>
-                    <div class="box-count" id="count-easy">0</div>
-                    <div class="box-description">Mastered</div>
+            <!-- Difficulty Section (By Difficulty Tab) -->
+            <div id="difficultySection" style="display: none;">
+                <!-- Mastery Boxes -->
+                <div class="mastery-boxes" id="masteryBoxes" style="display: grid;">
+                    <div class="mastery-box forgot" onclick="startBoxReview('forgot')">
+                        <div class="box-title">Forgotten</div>
+                        <div class="box-count" id="count-forgot">0</div>
+                        <div class="box-description">Needs frequent review</div>
+                    </div>
+                    <div class="mastery-box hard" onclick="startBoxReview('hard')">
+                        <div class="box-title">Hard</div>
+                        <div class="box-count" id="count-hard">0</div>
+                        <div class="box-description">Still challenging</div>
+                    </div>
+                    <div class="mastery-box good" onclick="startBoxReview('good')">
+                        <div class="box-title">Good</div>
+                        <div class="box-count" id="count-good">0</div>
+                        <div class="box-description">Doing well</div>
+                    </div>
+                    <div class="mastery-box easy" onclick="startBoxReview('easy')">
+                        <div class="box-title">Easy</div>
+                        <div class="box-count" id="count-easy">0</div>
+                        <div class="box-description">Mastered</div>
+                    </div>
                 </div>
             </div>
             
@@ -903,14 +981,17 @@
                         deviceCode = user.uid.substring(0, 6).toUpperCase();
                         document.getElementById('deviceCode').textContent = deviceCode;
                         
-                        // Load data
+                        // Load data in correct order
                         await loadLessonsFromFirebase();
                         await loadUserProgress();
-                        
+
+                        // Render with progress data
+                        renderLessonCheckboxes();
+
                         // Show main content
                         document.getElementById('loadingContainer').classList.add('hidden');
                         document.getElementById('mainContent').classList.remove('hidden');
-                        
+
                         updateStats();
                     }
                 });
@@ -931,7 +1012,6 @@
             componentCharacters = data.components;
             targetCharacters = data.targets;
             console.log('✅ Loaded from cache!');
-            renderLessonCheckboxes();
             console.timeEnd('Loading');
             return;
         }
@@ -980,8 +1060,6 @@ for (let i = 1; i <= 25; i++) {
                     }));
                     console.log('💾 Saved to cache!');
                     // ========== 到这里 ==========
-                // Render lesson checkboxes
-                renderLessonCheckboxes();
                  console.timeEnd('Loading');  // ← 加这行
                 
             } catch (error) {
@@ -990,7 +1068,12 @@ for (let i = 1; i <= 25; i++) {
             }
         }
         
-        // ==================== Render Lesson Checkboxes ====================
+        // ==================== Reset Layer 3 ====================
+        function resetLayer3() {
+            document.getElementById('reviewMethodTabs').style.display = 'none';
+            document.getElementById('recommendedSection').style.display = 'none';
+            document.getElementById('difficultySection').style.display = 'none';
+        }
         function renderLessonCheckboxes() {
         console.time('Rendering');  // ← 加这行
             const container = document.getElementById('lessonCheckboxes');
@@ -1002,8 +1085,15 @@ for (let i = 1; i <= 25; i++) {
                     ? componentCharacters.filter(c => c.lesson === lessonId)
                     : targetCharacters.filter(c => c.lesson === lessonId);
                 
-                // Calculate progress (placeholder - will be replaced with real data)
-                const progress = 0; // TODO: Calculate from userProgress
+                        // ✅ 計算進度：Easy 字數 / 總字數
+        let easyCount = 0;
+        if (chars.length > 0) {
+            easyCount = chars.filter(char => {
+                const progress = userProgress[char.character];
+                return progress && progress.box === 'easy';
+            }).length;
+        }
+        const progress = chars.length > 0 ? Math.round((easyCount / chars.length) * 100) : 0;
                 
                 if (chars.length > 0) {
                     lessons.push({ 
@@ -1055,7 +1145,7 @@ for (let i = 1; i <= 25; i++) {
         </svg>
         <div class="circle-content">
     <div class="progress-text">${lesson.progress}%</div>
-    <div style="font-size: 0.75rem; color: var(--text-muted);">${lesson.count} chars</div>
+    <div class="char-count" style="font-size: 0.75rem;">${lesson.count}字</div>
         </div>
             </div>
             <div class="circle-label">Lesson ${lesson.num}</div>
@@ -1074,6 +1164,31 @@ for (let i = 1; i <= 25; i++) {
             card.dataset.selected = !isSelected;
             
             updateSelectedCount();
+            updateLayer3Visibility();
+        }
+        
+        // ==================== Update Layer 3 Visibility ====================
+        function updateLayer3Visibility() {
+            const selectedLessons = getSelectedLessons();
+            const layer3 = document.getElementById('reviewMethodTabs');
+            
+            if (selectedLessons.length > 0) {
+                // 顯示層 3 Tab
+                layer3.style.display = 'block';
+                
+                // 重設為 Smart Review（預設）
+                document.querySelectorAll('#reviewMethodTabs .tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('#reviewMethodTabs .tab-btn[data-tab="smart-review"]').classList.add('active');
+                
+                // 只顯示 Smart Review 內容
+                document.getElementById('recommendedSection').style.display = 'block';
+                document.getElementById('difficultySection').style.display = 'none';
+            } else {
+                // 沒選課程時隱藏層 3 及其內容
+                layer3.style.display = 'none';
+                document.getElementById('recommendedSection').style.display = 'none';
+                document.getElementById('difficultySection').style.display = 'none';
+            }
         }
         
         // Get selected lessons
@@ -1085,38 +1200,25 @@ for (let i = 1; i <= 25; i++) {
             return selected;
         }
         
-        // ==================== Tab Switching ====================
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        // ==================== Layer 1: Tab Switching (Components vs Characters) ====================
+        document.querySelectorAll('.tab-system:first-of-type .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                // Remove active from all Layer 1 buttons
+                document.querySelectorAll('.tab-system:first-of-type .tab-btn').forEach(b => b.classList.remove('active'));
+                // Add active to clicked button
                 btn.classList.add('active');
                 currentTab = btn.dataset.tab;
                 
+                // Render and reset
                 renderLessonCheckboxes();
                 clearAllLessons();
                 updateStats();
             });
         });
         
-        // ==================== Selector Toggle ====================
-        document.getElementById('selectorHeader').addEventListener('click', function() {
-            this.classList.toggle('collapsed');
-            document.getElementById('selectorContent').classList.toggle('collapsed');
-        });
+
         
 
-        // ==================== Manual Selection Toggle ====================
-document.getElementById('manualHeader').addEventListener('click', function() {
-    this.classList.toggle('collapsed');
-    const boxes = document.getElementById('masteryBoxes');
-    if (boxes.style.display === 'none') {
-        boxes.style.display = 'grid';
-        this.textContent = 'Or review by difficulty level ▲';
-    } else {
-        boxes.style.display = 'none';
-        this.textContent = 'Or review by difficulty level ▼';
-    }
-});
 
         // ==================== Select/Clear All Lessons ====================
         function selectAllLessons() {
@@ -1131,6 +1233,7 @@ document.getElementById('manualHeader').addEventListener('click', function() {
                 card.dataset.selected = 'false';
             });
             updateSelectedCount();
+            resetLayer3();
         }
         
         function updateSelectedCount() {
@@ -1266,20 +1369,30 @@ document.getElementById('manualHeader').addEventListener('click', function() {
             startReview();
         }
         
-        function startReview() {
-            currentReviewIndex = 0;
-            document.getElementById('reviewArea').classList.remove('hidden');
-            document.querySelector('.mastery-boxes').style.display = 'none';
-            document.querySelector('.recommended-section').style.display = 'none';
-            document.querySelector('.lesson-selector').style.display = 'none';
-            showCard();
-        }
+function startReview() {
+    currentReviewIndex = 0;
+    // Hide all controls during review
+    document.querySelectorAll('.tab-system').forEach(tab => tab.style.display = 'none');
+    document.querySelector('.lesson-selector').style.display = 'none';
+    document.querySelector('.recommended-section').style.display = 'none';
+    document.querySelector('#difficultySection').style.display = 'none';
+    // Show review area
+    document.getElementById('reviewArea').classList.remove('hidden');
+    showCard();
+}
         
         function endReview() {
             document.getElementById('reviewArea').classList.add('hidden');
-            document.querySelector('.mastery-boxes').style.display = 'grid';
-            document.querySelector('.recommended-section').style.display = 'block';
+            document.querySelectorAll('.tab-system').forEach(tab => tab.style.display = 'block');
             document.querySelector('.lesson-selector').style.display = 'block';
+            document.getElementById('reviewMethodTabs').style.display = 'block';
+            
+            // Reset to Smart Review tab
+            document.querySelectorAll('#reviewMethodTabs .tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('#reviewMethodTabs .tab-btn[data-tab="smart-review"]').classList.add('active');
+            document.getElementById('recommendedSection').style.display = 'block';
+            document.getElementById('difficultySection').style.display = 'none';
+            
             updateStats();
         }
         
@@ -1375,17 +1488,27 @@ document.getElementById('manualHeader').addEventListener('click', function() {
         function showCompletion() {
             document.getElementById('reviewArea').classList.add('hidden');
             const msg = document.getElementById('completionMessage');
-            msg.textContent = `🎉 Great job! You've reviewed ${reviewQueue.length} characters！`;
+            
+            // 改成顯示完成訊息 + 按鈕，不要自動跳回
+            msg.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 16px;">🎉</div>
+                    <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px;">Great job!</div>
+                    <div style="font-size: 1rem; margin-bottom: 24px;">You've reviewed ${reviewQueue.length} characters</div>
+                    <button class="btn btn-primary" onclick="returnToReviewHome()" style="padding: 14px 32px; font-size: 1rem;">
+                        ← Back to Review Home
+                    </button>
+                </div>
+            `;
             msg.className = 'message success';
             msg.classList.remove('hidden');
-            
-            setTimeout(() => {
-                msg.classList.add('hidden');
-                endReview();
-            }, 3000);
         }
         
-        // ==================== Text-to-Speech ====================
+        // ==================== Return to Review Home ====================
+        function returnToReviewHome() {
+            document.getElementById('completionMessage').classList.add('hidden');
+            endReview();
+        }
         function speakPinyin(event) {
     event.stopPropagation();
     const character = document.getElementById('backCharacter').textContent;
@@ -1518,6 +1641,40 @@ document.getElementById('manualHeader').addEventListener('click', function() {
                 }
             }
             // ========== 到这里 ==========
+            
+// ==================== Layer 3: Tab Switching (Smart Review vs By Difficulty) ====================
+document.querySelectorAll('#reviewMethodTabs .tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const tab = e.target.dataset.tab;
+        
+        // Remove active from all Layer 3 buttons
+        document.querySelectorAll('#reviewMethodTabs .tab-btn').forEach(b => {
+            b.classList.remove('active');
+        });
+        
+        // Add active to clicked button
+        e.target.classList.add('active');
+        
+        // Hide all content first
+        document.getElementById('recommendedSection').style.display = 'none';
+        document.getElementById('difficultySection').style.display = 'none';
+        
+        // Show selected content
+        if (tab === 'smart-review') {
+            document.getElementById('recommendedSection').style.display = 'block';
+        } else if (tab === 'by-difficulty') {
+            document.getElementById('difficultySection').style.display = 'block';
+        }
+    });
+});
+
+// 頁面載入時，預設顯示 Smart Review（但層 3 Tab 應該隱藏，除非層 2 有選課程）
+window.addEventListener('load', () => {
+    document.getElementById('reviewMethodTabs').style.display = 'none';
+    document.getElementById('recommendedSection').style.display = 'none';
+    document.getElementById('difficultySection').style.display = 'none';
+});
+             
     </script>
 </body>
 </html>
