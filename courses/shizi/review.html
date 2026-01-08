@@ -83,6 +83,23 @@
         color: #9ca3af;
         font-size: 1rem;
     }
+
+    /* Mobile navigation */
+    @media (max-width: 640px) {
+        .top-nav {
+            gap: 12px;
+            padding: 12px 8px;
+        }
+
+        .nav-link {
+            font-size: 0.85rem;
+            padding: 6px 10px;
+        }
+
+        .nav-separator {
+            font-size: 0.85rem;
+        }
+    }
     
     .container {
         max-width: 1000px;
@@ -94,10 +111,24 @@
         border: 1px solid #e0f7fa;
     }
 
+    @media (max-width: 640px) {
+        .container {
+            margin: 10px;
+            padding: 16px;
+            border-radius: 16px;
+        }
+    }
+
     /* ==================== Header ==================== */
     header { text-align: center; margin-bottom: 32px; }
     h1 { color: var(--primary-dark); font-size: 2.3rem; font-weight: 700; margin-bottom: 8px; }
     .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+
+    @media (max-width: 640px) {
+        header { margin-bottom: 20px; }
+        h1 { font-size: 1.6rem; }
+        .subtitle { font-size: 0.95rem; }
+    }
     
     .device-code-display {
         margin-top: 20px;
@@ -113,6 +144,17 @@
         font-size: 1.8rem;
         letter-spacing: 4px;
         font-weight: bold;
+    }
+
+    @media (max-width: 640px) {
+        .device-code-display {
+            min-width: auto;
+            padding: 12px 16px;
+        }
+        .device-code-display strong {
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+        }
     }
 
     /* ==================== Loading ==================== */
@@ -145,6 +187,14 @@
     .tab-btn.active::after {
         content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
         background: var(--primary);
+    }
+
+    @media (max-width: 640px) {
+        .tab-system { margin: 16px 0; }
+        .tab-btn {
+            padding: 14px 8px;
+            font-size: 0.95rem;
+        }
     }
 
     /* ==================== Lesson Selection ==================== */
@@ -186,7 +236,23 @@
     gap: 16px;
     max-height: 480px;
     overflow-y: auto;
+    overflow-x: hidden;
     transition: all 0.4s ease;
+}
+
+@media (max-width: 640px) {
+    .selector-content {
+        grid-template-columns: repeat(3, 1fr);
+        max-height: 360px;
+        padding: 16px 12px;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .selector-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .selector-content.collapsed {
@@ -365,24 +431,22 @@
 }
 
 @media (max-width: 640px) {
-    .selector-content {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 12px;
-        padding: 16px;
-    }
-    
     .circle-progress {
         width: 80px;
         height: 80px;
     }
-    
+
     .circle-content {
         width: 64px;
         height: 64px;
     }
-    
+
     .progress-text {
         font-size: 1.1rem;
+    }
+
+    .circle-label {
+        font-size: 0.85rem;
     }
 }
 
@@ -396,6 +460,17 @@
     background: transparent;
     border-top: none;
 }
+
+@media (max-width: 640px) {
+    .selector-actions {
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px 0 0;
+    }
+    .selector-actions .btn {
+        width: 100%;
+    }
+}
     /* ==================== Smart Recommendation ==================== */
     .recommended-section {
         background: var(--primary-light);   /* 纯色浅蓝绿 */
@@ -406,6 +481,14 @@
         transition: 0.3s;
         cursor: pointer;
         border: 1px solid var(--border);
+    }
+
+    @media (max-width: 640px) {
+        .recommended-section {
+            padding: 20px 16px;
+            margin: 20px 0;
+            border-radius: 16px;
+        }
     }
 
             /* 控制 Smart Review 和 By Difficulty 的顯示/隱藏 */
@@ -433,8 +516,15 @@
     .collapse-arrow { font-size: 1.8rem; transition: 0.3s; color: var(--primary-dark); }
     .recommended-section.collapsed .collapse-arrow { transform: rotate(180deg); }
     .recommended-section.collapsed .recommended-content { display: none; }
-    
+
     .recommended-subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 15px; }
+
+    @media (max-width: 640px) {
+        .recommended-icon { font-size: 28px; }
+        .recommended-title { font-size: 1.3rem; }
+        .recommended-subtitle { font-size: 0.85rem; margin-bottom: 16px; }
+        .recommended-header { margin-bottom: 16px; }
+    }
     .due-info {
         text-align: center;
         background: white;
@@ -466,6 +556,19 @@
     .breakdown-item.easy   { background: white; color: var(--text-primary); border: 3px solid var(--easy); }
    .breakdown-count { font-size: 36px; font-weight: bold; }
     .breakdown-label { font-size: 14px; color: var(--text-secondary); }
+
+    @media (max-width: 640px) {
+        .recommended-breakdown {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .breakdown-item {
+            padding: 14px 10px;
+        }
+        .breakdown-count { font-size: 28px; }
+        .breakdown-label { font-size: 0.8rem; }
+    }
     
     .amount-selector { text-align: center; margin: 28px 0; }
     .amount-selector label { font-size: 17px; color: var(--text-primary); display: block; margin-bottom: 12px; }
@@ -478,6 +581,18 @@
         color: var(--primary-dark);
         min-width: 320px;
         cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+        .amount-selector { margin: 20px 0; }
+        .amount-selector label { font-size: 0.95rem; }
+        .amount-selector select {
+            min-width: auto;
+            width: 100%;
+            max-width: 100%;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+        }
     }
     
     .recommended-btn {
@@ -495,6 +610,13 @@
         transition: 0.3s;
     }
     .recommended-btn:hover { background: var(--primary-dark); transform: translateY(-4px); }
+
+    @media (max-width: 640px) {
+        .recommended-btn {
+            padding: 14px 32px;
+            font-size: 1rem;
+        }
+    }
 
     /* ==================== Mastery Boxes ==================== */
     .mastery-boxes {
@@ -526,10 +648,19 @@
     .box-count { font-size: 42px; font-weight: bold; color: #ffffff; margin: 12px 0; }
     .box-description { font-size: 14px; color:#ffffff; }
 
+    @media (max-width: 640px) {
+        .mastery-box {
+            padding: 24px 16px;
+        }
+        .box-title { font-size: 1rem; }
+        .box-count { font-size: 32px; }
+        .box-description { font-size: 0.8rem; }
+    }
+
     /* ==================== Review Area (你原本的卡片区保持完美) ==================== */
     .review-area { text-align: center; margin: 30px 0; }
     .current-session { font-size: 20px; color: var(--text-secondary); font-weight: bold; margin: 20px 0; }
-    
+
     .card {
         perspective: 1000px;
         height: 600px;
@@ -537,6 +668,16 @@
         cursor: pointer;
         max-width: 700px;
         width: 100%;
+    }
+
+    @media (max-width: 640px) {
+        .review-area { margin: 20px 0; }
+        .current-session { font-size: 1.1rem; margin: 16px 0; }
+        .card {
+            height: auto;
+            min-height: 450px;
+            margin: 16px auto;
+        }
     }
     .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
     .card.flipped .card-inner { transform: rotateY(180deg); }
@@ -554,6 +695,13 @@
     .back-character { font-size: 80px; color: var(--primary-dark); }
     .pinyin { font-size: 30px; color: var(--primary); margin: 10px 0; font-weight: bold; }
     .meaning { font-size: 22px; color: var(--text-primary); line-height: 1.5; }
+
+    @media (max-width: 640px) {
+        .character { font-size: 100px; }
+        .back-character { font-size: 60px; }
+        .pinyin { font-size: 24px; margin: 8px 0; }
+        .meaning { font-size: 1.1rem; }
+    }
         .meaning {
             font-size: 20px;
             color: var(--secondary-color);
@@ -569,6 +717,12 @@
             object-fit: contain;
             border-radius: 8px;
             margin: 12px 0;
+        }
+
+        @media (max-width: 640px) {
+            .card-image {
+                max-height: 200px;
+            }
         }
         
         .card-content {
@@ -609,7 +763,7 @@
         margin: 30px auto;
     }
     @media (min-width: 768px) { .review-buttons { grid-template-columns: repeat(4, 1fr); } }
-    
+
     .review-btn {
         padding: 18px;
         border: none;
@@ -625,6 +779,17 @@
     .btn-good   { background: var(--good); }
     .btn-easy   { background: var(--easy); }
     .review-btn:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+
+    @media (max-width: 640px) {
+        .review-buttons {
+            gap: 12px;
+            margin: 20px auto;
+        }
+        .review-btn {
+            padding: 14px 8px;
+            font-size: 0.9rem;
+        }
+    }
 
     /* Progress Bar */
     .progress-bar {
@@ -661,6 +826,13 @@
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-secondary { background: #94a3b8; color: white; }
 
+    @media (max-width: 640px) {
+        .btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
+
     /* Messages & Data Section */
     .message { padding: 18px; border-radius: 14px; margin: 20px 0; text-align: center; font-weight: bold; }
     .message.success { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
@@ -675,6 +847,17 @@
     }
     .data-section h3 { color: var(--primary-dark); margin-bottom: 16px; font-size: 1.3rem; }
     .data-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: flex-start; }
+
+    @media (max-width: 640px) {
+        .data-section {
+            margin: 20px 0 12px;
+            padding: 16px;
+        }
+        .data-section h3 { font-size: 1.1rem; margin-bottom: 12px; }
+        .data-actions {
+            gap: 10px;
+        }
+    }
 
     .hidden { display: none !important; }
 
@@ -703,27 +886,35 @@
             .mastery-boxes {
                 grid-template-columns: repeat(4, 1fr);
             }
-            
+
             .review-buttons {
                 grid-template-columns: repeat(4, 1fr);
             }
-            
+
             .character {
                 font-size: 150px;
             }
         }
-        
+
         @media (max-width: 480px) {
             .character {
-                font-size: 100px;
+                font-size: 90px;
             }
 
             .card {
-                height: 500px;
+                min-height: 400px;
             }
 
             .card-image {
-                max-height: 200px;
+                max-height: 180px;
+            }
+
+            .back-character {
+                font-size: 50px;
+            }
+
+            .pinyin {
+                font-size: 20px;
             }
         }
 </style>
@@ -765,6 +956,10 @@
             <div class="lesson-selector">
             <div style="padding: 20px 0; font-size: 1.3rem; font-weight: bold; color: var(--text-primary);">
                 📚 Select Lessons <span class="selector-count" id="selectedCount">(0/25)</span>
+            </div>
+            <div style="text-align: center; color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 16px; line-height: 1.5;">
+                Select lessons to review the due cards<br>
+                <span style="font-size: 0.85rem; opacity: 0.9;">(click multiple lessons to combine)</span>
             </div>
                 <div class="selector-content" id="selectorContent">
                     <div id="lessonCheckboxes"></div>
@@ -926,15 +1121,39 @@
 <div style="margin-top: 20px; padding: 16px; background: rgba(0,172,193,0.1); border-radius: 10px; text-align: center;">
     <span style="font-size: 0.9em; color: var(--text-secondary);">Device Code:</span>
     <strong style="font-size: 1.5em; color: var(--primary); margin: 0 10px;" id="deviceCode">------</strong>
-    <span style="font-size: 0.85em; color: var(--text-muted);">(Enter this code on another device to sync progress)</span>
+    <span style="font-size: 0.85em; color: var(--text-muted); display: inline-block; margin-top: 8px;">(Enter this code on another device to sync progress)</span>
 </div>
+
+<style>
+@media (max-width: 640px) {
+    .data-section > div[style*="padding: 16px"] {
+        padding: 12px !important;
+    }
+    .data-section > div[style*="padding: 16px"] span {
+        font-size: 0.8rem !important;
+    }
+    .data-section > div[style*="padding: 16px"] strong {
+        font-size: 1.2em !important;
+        display: block;
+        margin: 8px 0 !important;
+    }
+}
+</style>
     
     
     <!-- 说明文字 -->
-    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 14px; line-height: 1.5; text-align: center;">
+    <div style="font-size: 13px; color: var(--text-secondary); margin-top: 14px; line-height: 1.5; text-align: center;" class="sync-info">
         💡 Your progress is automatically synced to the cloud.<br>
         To continue on another device, simply enter the Device Code shown above.
     </div>
+
+<style>
+@media (max-width: 640px) {
+    .sync-info {
+        font-size: 0.75rem !important;
+    }
+}
+</style>
 </div>
             </div>
         </div> <!-- end of #mainContent -->
