@@ -674,8 +674,9 @@
         .review-area { margin: 20px 0; }
         .current-session { font-size: 1.1rem; margin: 16px 0; }
         .card {
-            height: auto;
-            min-height: 450px;
+            height: 70vh;
+            min-height: 500px;
+            max-height: 800px;
             margin: 16px auto;
         }
     }
@@ -688,6 +689,13 @@
         justify-content: flex-start; align-items: center; box-shadow: 0 10px 30px var(--shadow);
         overflow-y: auto;
     }
+
+    @media (max-width: 640px) {
+        .card-front, .card-back {
+            padding: 16px 12px;
+            justify-content: flex-start;
+        }
+    }
     .card-front { background: white; border: 3px solid var(--border); }
     .card-back { background: var(--bg-light); border: 3px solid var(--primary); transform: rotateY(180deg); }
 
@@ -698,9 +706,9 @@
 
     @media (max-width: 640px) {
         .character { font-size: 100px; }
-        .back-character { font-size: 60px; }
-        .pinyin { font-size: 24px; margin: 8px 0; }
-        .meaning { font-size: 1.1rem; }
+        .back-character { font-size: 50px; }
+        .pinyin { font-size: 20px; margin: 6px 0; }
+        .meaning { font-size: 1rem; }
     }
         .meaning {
             font-size: 20px;
@@ -721,7 +729,7 @@
 
         @media (max-width: 640px) {
             .card-image {
-                max-height: 200px;
+                max-height: 150px;
             }
         }
         
@@ -751,9 +759,17 @@
             margin: 8px 0;
             transition: all 0.3s;
         }
-        
+
         .speak-btn:hover {
             background: var(--success);
+        }
+
+        @media (max-width: 640px) {
+            .speak-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+                margin: 6px 0;
+            }
         }
     .review-buttons {
         display: grid;
@@ -898,23 +914,34 @@
 
         @media (max-width: 480px) {
             .character {
-                font-size: 90px;
+                font-size: 80px;
             }
 
             .card {
-                min-height: 400px;
+                height: 75vh;
+                min-height: 500px;
+                max-height: 900px;
             }
 
             .card-image {
-                max-height: 180px;
+                max-height: 120px;
             }
 
             .back-character {
-                font-size: 50px;
+                font-size: 40px;
             }
 
             .pinyin {
-                font-size: 20px;
+                font-size: 18px;
+            }
+
+            .meaning {
+                font-size: 0.9rem;
+            }
+
+            .card-content {
+                padding: 8px;
+                font-size: 0.85rem;
             }
         }
 </style>
