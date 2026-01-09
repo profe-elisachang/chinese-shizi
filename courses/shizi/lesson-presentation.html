@@ -271,7 +271,7 @@
             background: var(--text-secondary);
         }
         
-                /* ==================== Card Display ==================== */
+                /* ==================== Card Display - 65吋電視優化 ==================== */
         .card-display {
             /* 主要內容區域直接佈局 */
             flex: 1;
@@ -288,11 +288,12 @@
 
         /* 移除 presentation-card 容器類別 */
         #cardContainer {
-            /* 固定大小，所有卡片統一尺寸 */
+            /* 限制最大寬度避免視覺疲勞 */
             width: 95%;
-            max-width: 1400px;
-            height: auto;             /* 自適應內容高度 */
-            min-height: 750px;        /* 最小高度保持一致 */
+            max-width: 1200px;        /* 65吋電視最佳視覺寬度 */
+            height: auto;
+            min-height: 750px;
+            margin: 0 auto;           /* 置中 */
 
             /* 佈局 */
             display: flex;
@@ -337,19 +338,58 @@
             border-radius: var(--radius-md);
         }
 
-        #cardContainer .image {
-            max-width: 800px;          /* 放大到 800px */
-            max-height: 600px;         /* 放大到 600px */
+        /* ==================== 三層圖片樣式系統 ==================== */
+
+        /* 1. 部件小圖 - 固定尺寸，行內顯示 */
+        #cardContainer .img-comp {
+            width: 120px;
+            height: 120px;
+            display: inline-block;
+            vertical-align: middle;
+            object-fit: contain;
+            margin: 0 8px;
+            border-radius: var(--radius-md);
+        }
+
+        /* 2. 象形/演變圖 - 適中尺寸，置中 */
+        #cardContainer .img-origin {
+            max-height: 30vh;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            margin: 20px auto;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 3. 故事聯想圖 - 視覺重心，震撼感 */
+        #cardContainer .img-story {
+            max-height: 45vh;
+            width: 90%;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            margin: 30px auto;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 預設圖片樣式（fallback） */
+        #cardContainer .image,
+        #cardContainer img:not([class]) {
+            max-width: 800px;
+            max-height: 600px;
             width: auto;
             height: auto;
-            object-fit: contain;       /* 保持比例 */
+            object-fit: contain;
             border-radius: var(--radius-lg);
-            margin: 0;
+            margin: 20px auto;
             padding: 0;
             display: block;
         }
         
-        /* ==================== Collapsible Sections ==================== */
+        /* ==================== Collapsible Sections - 視覺統一 ==================== */
         .collapsible-section {
             text-align: left;
             width: 100%;
@@ -363,20 +403,23 @@
             display: none;
         }
 
-        .section-header {
-            display: flex;
+        /* 強制所有摺疊區標題橫跨整個寬度 */
+        .section-header,
+        .collapsible-section summary {
+            display: flex !important;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            padding: 12px 16px;
+            padding: 16px 20px;
             background: var(--bg-light);
             border-radius: 8px;
             margin: 8px 0;
-            width: 100%;               /* 確保寬度一致 */
-            box-sizing: border-box;
+            width: 100% !important;     /* 強制 100% 寬度 */
+            box-sizing: border-box !important;
         }
 
-        .section-header:hover {
+        .section-header:hover,
+        .collapsible-section summary:hover {
             background: var(--bg-hover);
         }
         
@@ -417,19 +460,45 @@
             font-style: italic;
         }
         
-        .markdown-content img {
+        /* Markdown 內的圖片會被 JavaScript 自動分類 */
+        .markdown-content .img-comp {
+            width: 120px;
+            height: 120px;
+            display: inline-block;
+            vertical-align: middle;
+            object-fit: contain;
+            margin: 0 8px;
+            border-radius: var(--radius-md);
+        }
+
+        .markdown-content .img-origin {
+            max-height: 30vh;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            margin: 20px auto;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .markdown-content .img-story {
+            max-height: 45vh;
+            width: 90%;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            margin: 30px auto;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 預設 Markdown 圖片樣式（沒有被分類的圖片） */
+        .markdown-content img:not([class]) {
             max-width: 100%;
             height: auto;
             border-radius: var(--radius-md);
             margin: var(--spacing-md) 0;
-        }
-        
-        .markdown-content img.small {
-            max-width: 200px;
-        }
-        
-        .markdown-content img.large {
-            max-width: 600px;
         }
         
         /* ==================== Navigation Buttons ==================== */
@@ -637,25 +706,30 @@
   font-size: 0.8rem !important;
 }
 
-/* ==================== 主內容使用 rem（會隨 Ctrl+/- 縮放）==================== */
+/* ==================== 65吋電視字體設定（會隨 Ctrl+/- 縮放）==================== */
 #cardContainer .character {
-  font-size: 5rem !important;
+  font-size: 6rem !important;         /* 漢字標題 */
 }
 
 #cardContainer .pinyin {
-  font-size: 2rem !important;
+  font-size: 2.2rem !important;       /* 拼音 */
 }
 
 #cardContainer .meaning {
-  font-size: 2.5rem !important;
+  font-size: 2.8rem !important;       /* 釋義 */
 }
 
 #cardContainer .breakdown {
-  font-size: 1.8rem !important;
+  font-size: 2rem !important;         /* 部件拆解 */
+}
+
+.section-title {
+  font-size: 2.8rem !important;       /* 摺疊區標題 */
 }
 
 .section-content {
-  font-size: 1.5rem !important;
+  font-size: 2.2rem !important;       /* 內文 */
+  line-height: 1.8 !important;        /* 增加行高便於閱讀 */
 }
 
 
@@ -813,6 +887,34 @@
             `).join('');
         }
         
+        // ==================== 圖片類別自動分類函數 ====================
+        function processMarkdownImages(htmlContent) {
+            // 使用 DOM parser 處理 HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+
+            // 找到所有圖片
+            const images = tempDiv.querySelectorAll('img');
+            images.forEach(img => {
+                const alt = img.getAttribute('alt') || '';
+                const altLower = alt.toLowerCase();
+
+                // 根據 alt 文字自動添加對應 class
+                if (altLower.includes('comp')) {
+                    img.className = 'img-comp';
+                } else if (altLower.includes('origin')) {
+                    img.className = 'img-origin';
+                } else if (altLower.includes('story')) {
+                    img.className = 'img-story';
+                }
+
+                // 添加錯誤處理
+                img.setAttribute('onerror', "this.style.display='none'");
+            });
+
+            return tempDiv.innerHTML;
+        }
+
         // ==================== Render Card ====================
         function renderCard(index) {
             const char = characters[index];
@@ -837,6 +939,7 @@
 
             // Book explanation
             if (char.book_explanation) {
+                const processedExplanation = processMarkdownImages(marked.parse(char.book_explanation));
                 html += `
                     <div class="collapsible-section" id="section-explanation">
                         <div class="section-header" onclick="toggleSection('section-explanation')">
@@ -844,7 +947,7 @@
                             <div class="toggle-icon">▼</div>
                         </div>
                         <div class="section-content markdown-content">
-                            ${marked.parse(char.book_explanation)}
+                            ${processedExplanation}
                         </div>
                     </div>
                 `;
@@ -852,6 +955,7 @@
 
             // Story
             if (char.story) {
+                const processedStory = processMarkdownImages(marked.parse(char.story));
                 html += `
                     <div class="collapsible-section" id="section-story">
                         <div class="section-header" onclick="toggleSection('section-story')">
@@ -859,7 +963,7 @@
                             <div class="toggle-icon">▼</div>
                         </div>
                         <div class="section-content markdown-content">
-                            ${marked.parse(char.story)}
+                            ${processedStory}
                         </div>
                     </div>
                 `;
@@ -867,6 +971,7 @@
 
             // Pronunciation cue
             if (char.pronunciation_cue) {
+                const processedPronunciation = processMarkdownImages(marked.parse(char.pronunciation_cue));
                 html += `
                     <div class="collapsible-section" id="section-pronunciation">
                         <div class="section-header" onclick="toggleSection('section-pronunciation')">
@@ -874,7 +979,7 @@
                             <div class="toggle-icon">▼</div>
                         </div>
                         <div class="section-content markdown-content">
-                            ${marked.parse(char.pronunciation_cue)}
+                            ${processedPronunciation}
                         </div>
                     </div>
                 `;
@@ -882,6 +987,7 @@
 
             // Phrases
             if (char.phrases) {
+                const processedPhrases = processMarkdownImages(marked.parse(char.phrases));
                 html += `
                     <div class="collapsible-section" id="section-phrases">
                         <div class="section-header" onclick="toggleSection('section-phrases')">
@@ -889,7 +995,7 @@
                             <div class="toggle-icon">▼</div>
                         </div>
                         <div class="section-content markdown-content">
-                            ${marked.parse(char.phrases)}
+                            ${processedPhrases}
                         </div>
                     </div>
                 `;
