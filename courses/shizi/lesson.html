@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>识字课程</title>
-    
+    <link rel="stylesheet" href="../../assets/css/nav-global.css">
+
     <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    
+
     <style>
         /* ==================== CSS Variables ==================== */
         :root {
@@ -102,44 +103,7 @@
             line-height: 1.6;
         }
         
-        /* ==================== Top Navigation Bar ==================== */
-        .top-nav {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            padding: 20px;
-            background: var(--bg-card);
-            box-shadow: var(--shadow-sm);
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .nav-link {
-            font-size: 1rem;
-            font-weight: var(--font-semibold);
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: 8px 16px;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .nav-link:hover {
-            color: var(--primary-color);
-        }
-
-        .nav-link.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .nav-separator {
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
+        /* Top Navigation styles are now in nav-global.css */
 
         /* ==================== Header ==================== */
         .header {
@@ -1202,24 +1166,72 @@
 <body>
     <!-- Top Navigation -->
     <nav class="top-nav">
-        <a href="../../index.html" class="nav-link">Home</a>
-        <span class="nav-separator">|</span>
-        <a href="lesson.html" class="nav-link active">Literacy</a>
-        <span class="nav-separator">|</span>
-        <a href="review.html" class="nav-link">Review Lit.</a>
-        <span class="nav-separator">|</span>
-        <a href="../bct/lessons/lesson.html" class="nav-link">Lessons</a>
-        <span class="nav-separator">|</span>
-        <a href="../../pages/grammar.html" class="nav-link">Grammar</a>
-        <span class="nav-separator">|</span>
-        <a href="../../pages/mini-story.html" class="nav-link">Mini Story</a>
-        <span class="nav-separator">|</span>
-        <a href="../../pages/reading-material.html" class="nav-link">Reading Material</a>
-        <span class="nav-separator">|</span>
-        <a href="../../pages/music.html" class="nav-link">Music</a>
-        <span class="nav-separator">|</span>
-        <a href="../../pages/timeline.html" class="nav-link">Timeline</a>
+        <!-- Desktop Navigation -->
+        <div class="nav-content">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <span class="nav-separator">|</span>
+            <a href="../bct/lessons/lesson.html" class="nav-link">Lessons</a>
+            <span class="nav-separator">|</span>
+            <a href="lesson.html" class="nav-link active">Literacy</a>
+            <span class="nav-separator">|</span>
+            <a href="review.html" class="nav-link">Review Lit.</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="../../pages/grammar.html" class="nav-link">Grammar</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/extras.html" class="nav-link">Extras</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/mini-story.html" class="nav-link">Mini Story</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/music.html" class="nav-link">Music</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="../../pages/timeline.html" class="nav-link">Timeline</a>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav">
+            <button class="hamburger-btn" aria-label="Open menu">☰</button>
+            <span class="site-title">Chinese with Elisa</span>
+        </div>
     </nav>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar">
+        <button class="close-sidebar" aria-label="Close menu">✕</button>
+
+        <a href="../../index.html" class="mobile-menu-single">
+            <span class="icon">🏠</span>
+            <span>Home</span>
+        </a>
+
+        <div class="mobile-menu-group">
+            <div class="mobile-menu-title">
+                <span class="icon">📚</span>
+                <span>Courses</span>
+            </div>
+            <a href="../bct/lessons/lesson.html" class="mobile-menu-item">Lessons</a>
+            <a href="lesson.html" class="mobile-menu-item active">Literacy</a>
+            <a href="review.html" class="mobile-menu-item">Review Lit.</a>
+        </div>
+
+        <div class="mobile-menu-group">
+            <div class="mobile-menu-title">
+                <span class="icon">📖</span>
+                <span>Resources</span>
+            </div>
+            <a href="../../pages/grammar.html" class="mobile-menu-item">Grammar</a>
+            <a href="../../pages/extras.html" class="mobile-menu-item">Extras</a>
+            <a href="../../pages/mini-story.html" class="mobile-menu-item">Mini Story</a>
+            <a href="../../pages/music.html" class="mobile-menu-item">Music</a>
+        </div>
+
+        <a href="../../pages/timeline.html" class="mobile-menu-single">
+            <span class="icon">📅</span>
+            <span>Timeline</span>
+        </a>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
 
     <!-- Lesson Navigation Bar (BBC Style) -->
     <div class="container" style="margin-top: 20px;">
@@ -2276,5 +2288,6 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
     </script>
+    <script src="../../assets/js/nav-global.js"></script>
 </body>
 </html>

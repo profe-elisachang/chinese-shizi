@@ -4,25 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Chinese - Mandarin with Elisa</title>
+    <link rel="stylesheet" href="../../assets/css/nav-global.css">
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
     <!-- Top Navigation -->
     <nav class="top-nav">
-        <a href="./" class="nav-link active">Home</a>
-        <span class="nav-separator">|</span>
-        <a href="./lessons/lesson.html" class="nav-link">Lessons</a>
-        <span class="nav-separator">|</span>
-        <a href="#" class="nav-link">Grammar</a>
-        <span class="nav-separator">|</span>
-        <a href="#" class="nav-link">Mini Story</a>
-        <span class="nav-separator">|</span>
-        <a href="#" class="nav-link">Reading Material</a>
-        <span class="nav-separator">|</span>
-        <a href="#" class="nav-link">Music</a>
-        <span class="nav-separator">|</span>
-        <a href="#" class="nav-link">Timeline</a>
+        <!-- Desktop Navigation -->
+        <div class="nav-content">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <span class="nav-separator">|</span>
+            <a href="./lessons/lesson.html" class="nav-link">Lessons</a>
+            <span class="nav-separator">|</span>
+            <a href="../shizi/lesson.html" class="nav-link">Literacy</a>
+            <span class="nav-separator">|</span>
+            <a href="../shizi/review.html" class="nav-link">Review Lit.</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="../../pages/grammar.html" class="nav-link">Grammar</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/extras.html" class="nav-link">Extras</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/mini-story.html" class="nav-link">Mini Story</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/music.html" class="nav-link">Music</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="../../pages/timeline.html" class="nav-link">Timeline</a>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav">
+            <button class="hamburger-btn" aria-label="Open menu">☰</button>
+            <span class="site-title">Chinese with Elisa</span>
+        </div>
     </nav>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar">
+        <button class="close-sidebar" aria-label="Close menu">✕</button>
+
+        <a href="../../index.html" class="mobile-menu-single">
+            <span class="icon">🏠</span>
+            <span>Home</span>
+        </a>
+
+        <div class="mobile-menu-group">
+            <div class="mobile-menu-title">
+                <span class="icon">📚</span>
+                <span>Courses</span>
+            </div>
+            <a href="./lessons/lesson.html" class="mobile-menu-item">Lessons</a>
+            <a href="../shizi/lesson.html" class="mobile-menu-item">Literacy</a>
+            <a href="../shizi/review.html" class="mobile-menu-item">Review Lit.</a>
+        </div>
+
+        <div class="mobile-menu-group">
+            <div class="mobile-menu-title">
+                <span class="icon">📖</span>
+                <span>Resources</span>
+            </div>
+            <a href="../../pages/grammar.html" class="mobile-menu-item">Grammar</a>
+            <a href="../../pages/extras.html" class="mobile-menu-item">Extras</a>
+            <a href="../../pages/mini-story.html" class="mobile-menu-item">Mini Story</a>
+            <a href="../../pages/music.html" class="mobile-menu-item">Music</a>
+        </div>
+
+        <a href="../../pages/timeline.html" class="mobile-menu-single">
+            <span class="icon">📅</span>
+            <span>Timeline</span>
+        </a>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
 
     <!-- Main Content -->
     <div class="container">
@@ -48,6 +101,7 @@
         </div>
     </div>
 
+    <script src="../../assets/js/nav-global.js"></script>
     <script src="./assets/js/tabs.js"></script>
 </body>
 </html>

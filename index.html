@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mandarin with Elisa - Home</title>
+    <link rel="stylesheet" href="assets/css/nav-global.css">
     <style>
         :root {
             /* 藍綠色系 */
@@ -32,46 +33,7 @@
             min-height: 100vh;
         }
 
-        /* ==================== Top Navigation ==================== */
-        .top-nav {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 20px;
-            background: var(--bg-card);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .nav-link {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: 8px 16px;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .nav-link:hover {
-            color: var(--primary);
-        }
-
-        .nav-link.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .nav-separator {
-            color: #9ca3af;
-            font-size: 1rem;
-        }
+        /* Top Navigation styles are now in nav-global.css */
 
         /* ==================== Container ==================== */
         .container {
@@ -159,20 +121,6 @@
 
         /* ==================== Responsive ==================== */
         @media (max-width: 768px) {
-            .top-nav {
-                gap: 10px;
-                padding: 15px 10px;
-            }
-
-            .nav-link {
-                font-size: 0.9rem;
-                padding: 6px 12px;
-            }
-
-            .nav-separator {
-                display: none;
-            }
-
             .container {
                 padding: 25px;
                 margin: 15px;
@@ -195,24 +143,72 @@
 <body>
     <!-- Top Navigation -->
     <nav class="top-nav">
-        <a href="index.html" class="nav-link active">Home</a>
-        <span class="nav-separator">|</span>
-        <a href="courses/shizi/lesson.html" class="nav-link">Literacy</a>
-        <span class="nav-separator">|</span>
-        <a href="courses/shizi/review.html" class="nav-link">Review Lit.</a>
-        <span class="nav-separator">|</span>
-        <a href="courses/bct/lessons/lesson.html" class="nav-link">Lessons</a>
-        <span class="nav-separator">|</span>
-        <a href="pages/grammar.html" class="nav-link">Grammar</a>
-        <span class="nav-separator">|</span>
-        <a href="pages/mini-story.html" class="nav-link">Mini Story</a>
-        <span class="nav-separator">|</span>
-        <a href="pages/reading-material.html" class="nav-link">Reading Material</a>
-        <span class="nav-separator">|</span>
-        <a href="pages/music.html" class="nav-link">Music</a>
-        <span class="nav-separator">|</span>
-        <a href="pages/timeline.html" class="nav-link">Timeline</a>
+        <!-- Desktop Navigation -->
+        <div class="nav-content">
+            <a href="index.html" class="nav-link">Home</a>
+            <span class="nav-separator">|</span>
+            <a href="courses/bct/lessons/lesson.html" class="nav-link">Lessons</a>
+            <span class="nav-separator">|</span>
+            <a href="courses/shizi/lesson.html" class="nav-link">Literacy</a>
+            <span class="nav-separator">|</span>
+            <a href="courses/shizi/review.html" class="nav-link">Review Lit.</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="pages/grammar.html" class="nav-link">Grammar</a>
+            <span class="nav-separator">|</span>
+            <a href="pages/extras.html" class="nav-link">Extras</a>
+            <span class="nav-separator">|</span>
+            <a href="pages/mini-story.html" class="nav-link">Mini Story</a>
+            <span class="nav-separator">|</span>
+            <a href="pages/music.html" class="nav-link">Music</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="pages/timeline.html" class="nav-link">Timeline</a>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav">
+            <button class="hamburger-btn" aria-label="Open menu">☰</button>
+            <span class="site-title">Chinese with Elisa</span>
+        </div>
     </nav>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar">
+        <button class="close-sidebar" aria-label="Close menu">✕</button>
+
+        <a href="index.html" class="mobile-menu-single">
+            <span class="icon">🏠</span>
+            <span>Home</span>
+        </a>
+
+        <div class="mobile-menu-group">
+            <div class="mobile-menu-title">
+                <span class="icon">📚</span>
+                <span>Courses</span>
+            </div>
+            <a href="courses/bct/lessons/lesson.html" class="mobile-menu-item">Lessons</a>
+            <a href="courses/shizi/lesson.html" class="mobile-menu-item">Literacy</a>
+            <a href="courses/shizi/review.html" class="mobile-menu-item">Review Lit.</a>
+        </div>
+
+        <div class="mobile-menu-group">
+            <div class="mobile-menu-title">
+                <span class="icon">📖</span>
+                <span>Resources</span>
+            </div>
+            <a href="pages/grammar.html" class="mobile-menu-item">Grammar</a>
+            <a href="pages/extras.html" class="mobile-menu-item">Extras</a>
+            <a href="pages/mini-story.html" class="mobile-menu-item">Mini Story</a>
+            <a href="pages/music.html" class="mobile-menu-item">Music</a>
+        </div>
+
+        <a href="pages/timeline.html" class="mobile-menu-single">
+            <span class="icon">📅</span>
+            <span>Timeline</span>
+        </a>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
 
     <!-- Main Content -->
     <div class="container">
@@ -237,5 +233,7 @@
             </p>
         </div>
     </div>
+
+    <script src="assets/js/nav-global.js"></script>
 </body>
 </html>

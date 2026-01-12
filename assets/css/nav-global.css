@@ -1,0 +1,273 @@
+/* ========================================
+   Global Navigation Bar Styles
+   Used across all pages for consistency
+   Version: 2.0 - Force unified styling
+   ======================================== */
+
+:root {
+    --primary: #0891b2;
+    --primary-dark: #0e7490;
+    --primary-light: #06b6d4;
+    --primary-lightest: #ecfeff;
+    --bg-card: #ffffff;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border: #e5e7eb;
+}
+
+/* ========================================
+   Desktop Navigation Bar
+   ======================================== */
+
+.top-nav {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 12px 20px !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+.nav-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-link {
+    font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    line-height: 1.5 !important;
+    height: 40px !important;
+    color: #6b7280 !important;
+    text-decoration: none !important;
+    padding: 8px 16px !important;
+    border-bottom: 3px solid transparent !important;
+    transition: all 0.3s ease !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    vertical-align: middle !important;
+    box-sizing: border-box !important;
+}
+
+.nav-link:hover {
+    color: #0891b2 !important;
+    background-color: rgba(8, 145, 178, 0.05) !important;
+    border-bottom: 3px solid transparent !important;
+}
+
+.nav-link.active {
+    color: #0891b2 !important;
+    border-bottom-color: #0891b2 !important;
+    background-color: transparent !important;
+}
+
+/* Separator styles */
+.nav-separator {
+    color: #9ca3af !important;
+    font-size: 1rem !important;
+    user-select: none !important;
+}
+
+.nav-separator.group-separator {
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+    margin: 0 15px !important;
+}
+
+/* ========================================
+   Mobile Navigation - Hamburger Menu
+   ======================================== */
+
+.mobile-nav {
+    display: none;
+}
+
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.hamburger-btn:hover {
+    color: var(--primary);
+}
+
+.site-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-left: 12px;
+}
+
+/* Mobile Sidebar */
+.mobile-sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background: var(--bg-card);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: 2000;
+    overflow-y: auto;
+    padding: 20px 0;
+}
+
+.mobile-sidebar.open {
+    left: 0;
+}
+
+/* Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1500;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Close button */
+.close-sidebar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    transition: color 0.3s ease;
+}
+
+.close-sidebar:hover {
+    color: var(--primary);
+}
+
+/* Mobile menu groups */
+.mobile-menu-group {
+    margin-bottom: 24px;
+}
+
+.mobile-menu-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.mobile-menu-title .icon {
+    font-size: 1.2rem;
+}
+
+.mobile-menu-item {
+    display: block;
+    padding: 12px 20px 12px 48px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.mobile-menu-item:hover {
+    background-color: var(--primary-lightest);
+    border-left-color: var(--primary);
+    color: var(--primary);
+}
+
+.mobile-menu-item.active {
+    background-color: var(--primary-lightest);
+    border-left-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Single item (no group) */
+.mobile-menu-single {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.mobile-menu-single .icon {
+    font-size: 1.2rem;
+}
+
+.mobile-menu-single:hover {
+    background-color: var(--primary-lightest);
+    border-left-color: var(--primary);
+    color: var(--primary);
+}
+
+.mobile-menu-single.active {
+    background-color: var(--primary-lightest);
+    border-left-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Hide desktop nav */
+    .top-nav .nav-content {
+        display: none;
+    }
+
+    /* Show mobile nav */
+    .mobile-nav {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .hamburger-btn {
+        display: block;
+    }
+
+    .top-nav {
+        padding: 10px 16px;
+    }
+}
+
+/* Prevent body scroll when sidebar is open */
+body.sidebar-open {
+    overflow: hidden;
+}
