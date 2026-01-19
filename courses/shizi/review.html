@@ -1325,15 +1325,24 @@
             try {
             console.time('Loading');  // ← 加这行
 
-            // ========== 加这段（缓存检查）==========
+            // ========== 緩存檢查（含版本控制）==========
+        const CACHE_VERSION = 2;  // 發布機制版本
+        const MAX_CACHE_AGE = 1000 * 60 * 30;  // 30 分鐘緩存過期
         const cached = localStorage.getItem('lessons_cache');
         if (cached) {
             const data = JSON.parse(cached);
-            componentCharacters = data.components;
-            targetCharacters = data.targets;
-            console.log('✅ Loaded from cache!');
-            console.timeEnd('Loading');
-            return;
+            const cacheAge = Date.now() - (data.cacheTime || 0);
+            // 檢查版本和時效
+            if (data.version === CACHE_VERSION && cacheAge < MAX_CACHE_AGE) {
+                componentCharacters = data.components;
+                targetCharacters = data.targets;
+                console.log('✅ Loaded from cache!');
+                console.timeEnd('Loading');
+                return;
+            } else {
+                console.log('🔄 Cache expired or version mismatch, reloading...');
+                localStorage.removeItem('lessons_cache');
+            }
         }
                 componentCharacters = [];
                 targetCharacters = [];
@@ -1344,27 +1353,31 @@ for (let i = 1; i <= 25; i++) {
         const doc = await db.collection('lessons').doc(`lesson${i}`).get();
         if (doc.exists) {
             const data = doc.data();
-            
-            // Components
+
+            // Components - 只載入已發布的 (is_published !== false，undefined 視為已發布以向後兼容)
             if (data.components && data.components.length > 0) {
-                data.components.forEach(comp => {
-                    componentCharacters.push({
-                        ...comp,
-                        lesson: `lesson${i}`,
-                        type: 'component'
+                data.components
+                    .filter(comp => comp.is_published !== false)
+                    .forEach(comp => {
+                        componentCharacters.push({
+                            ...comp,
+                            lesson: `lesson${i}`,
+                            type: 'component'
+                        });
                     });
-                });
             }
-            
-            // Target characters
+
+            // Target characters - 只載入已發布的
             if (data.target_characters && data.target_characters.length > 0) {
-                data.target_characters.forEach(target => {
-                    targetCharacters.push({
-                        ...target,
-                        lesson: `lesson${i}`,
-                        type: 'target'
+                data.target_characters
+                    .filter(target => target.is_published !== false)
+                    .forEach(target => {
+                        targetCharacters.push({
+                            ...target,
+                            lesson: `lesson${i}`,
+                            type: 'target'
+                        });
                     });
-                });
             }
         }
     } catch (error) {
@@ -1373,10 +1386,12 @@ for (let i = 1; i <= 25; i++) {
 }
                 
                 console.log(`Loaded ${componentCharacters.length} components, ${targetCharacters.length} targets`);
-                // ========== 加这段（存缓存）==========
+                // ========== 存緩存（含版本和時間戳）==========
                     localStorage.setItem('lessons_cache', JSON.stringify({
                         components: componentCharacters,
-                        targets: targetCharacters
+                        targets: targetCharacters,
+                        version: 2,  // 發布機制版本
+                        cacheTime: Date.now()
                     }));
                     console.log('💾 Saved to cache!');
                     // ========== 到这里 ==========

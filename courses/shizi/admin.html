@@ -151,17 +151,33 @@
         /* ==================== 主内容区 ==================== */
         .main-content {
             flex: 1;
-            margin-top: 80px;
+            margin-top: 0;
             padding: 30px;
             overflow-y: auto;
+            height: calc(100vh - 80px); /* 減去導航欄高度 */
         }
-        
+
         .page {
             display: none;
         }
-        
+
         .page.active {
             display: block;
+            height: 100%;
+        }
+
+        /* 字卡管理頁面的左右兩欄獨立滾動 */
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            height: calc(100vh - 200px); /* 減去導航欄和 header */
+        }
+
+        .main-content-grid > .card {
+            overflow-y: auto;
+            margin-bottom: 0;
+            max-height: 100%;
         }
         
         header {
@@ -653,6 +669,80 @@ img.img-comp {
     vertical-align: middle !important;
     margin: 0 2px !important;
 }
+
+/* ==================== 發布開關樣式 ==================== */
+.publish-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0;
+    padding: 8px 12px;
+    background: var(--bg-light);
+    border-radius: 8px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 26px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: var(--secondary-color);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.publish-status {
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.publish-status.published {
+    color: var(--secondary-color);
+}
+
+.publish-status.unpublished {
+    color: var(--text-muted);
+}
+
+.character-card.unpublished {
+    opacity: 0.6;
+    border-style: dashed;
+}
     </style>
 </head>
 <body>
@@ -694,7 +784,7 @@ img.img-comp {
                 <p class="subtitle">部件與目標字管理</p>
             </header>
             
-            <div class="main-content-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div class="main-content-grid">
                 <!-- 左侧：新增/编辑表单 -->
                 <div class="card">
                     <h2>📝 新增/編輯字卡</h2>
@@ -845,7 +935,13 @@ img.img-comp {
                 <div class="card">
                     <h2>📚 已新增的字卡</h2>
                     <div class="loader" id="loader"></div>
-                    
+
+                    <!-- 批量發佈按鈕 -->
+                    <div class="batch-publish-buttons" style="display:flex;gap:10px;margin-bottom:15px;">
+                        <button class="btn btn-success" onclick="batchPublish(true)">✅ 本課全部發佈</button>
+                        <button class="btn btn-secondary" onclick="batchPublish(false)">⛔ 本課全部取消發佈</button>
+                    </div>
+
                     <div class="character-lists">
                         <div class="character-section">
                             <h3><span>🧩 部件區</span><span class="count-badge" id="componentCount">0</span></h3>
@@ -1168,10 +1264,17 @@ img.img-comp {
                 image: document.getElementById('image').value.trim(),
                 phrases: document.getElementById('phrases').value.trim(),
                 example: document.getElementById('example').value.trim(),
-                display_image: document.getElementById('displayImage').value.trim()
+                display_image: document.getElementById('displayImage').value.trim(),
+                is_published: false,  // 新增字卡預設為未發布
+                published_at: null
             };
 
             if (currentEditIndex !== null) {
+                // 編輯時保留原有的發布狀態
+                const originalData = currentEditType === 'component' ? components[currentEditIndex] : targetCharacters[currentEditIndex];
+                charData.is_published = originalData.is_published;
+                charData.published_at = originalData.published_at;
+
                 if (currentEditType === 'component') components[currentEditIndex] = charData;
                 else targetCharacters[currentEditIndex] = charData;
                 showMessage('字卡更新成功！', 'success');
@@ -1180,7 +1283,7 @@ img.img-comp {
             } else {
                 if (charType === 'component') components.push(charData);
                 else targetCharacters.push(charData);
-                showMessage('字卡新增成功！', 'success');
+                showMessage('字卡新增成功！（預設未發布，請手動發布讓學生可見）', 'success');
             }
 
             renderCharacterLists();
@@ -1215,6 +1318,113 @@ img.img-comp {
             else targetCharacters.splice(index, 1);
             renderCharacterLists();
             showMessage('已刪除', 'success');
+        }
+
+        async function togglePublish(type, index, isPublished) {
+            const lessonId = document.getElementById('lessonSelect').value;
+            console.log('togglePublish called:', { type, index, isPublished, lessonId });
+
+            if (!lessonId) {
+                showMessage('請先選擇課程', 'error');
+                return;
+            }
+
+            // 更新本地數據
+            if (type === 'component') {
+                components[index].is_published = isPublished;
+                if (isPublished && !components[index].published_at) {
+                    components[index].published_at = new Date().toISOString();
+                }
+            } else {
+                targetCharacters[index].is_published = isPublished;
+                if (isPublished && !targetCharacters[index].published_at) {
+                    targetCharacters[index].published_at = new Date().toISOString();
+                }
+            }
+
+            console.log('Local data updated, components[0]:', components[0]);
+
+            // 立即保存到 Firebase
+            showLoader();
+            try {
+                const dataToSave = {
+                    components,
+                    target_characters: targetCharacters,
+                    meta: {
+                        component_count: components.length,
+                        target_count: targetCharacters.length,
+                        published_component_count: components.filter(c => c.is_published !== false).length,
+                        published_target_count: targetCharacters.filter(c => c.is_published !== false).length,
+                        last_updated: firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                };
+                console.log('Saving to Firebase:', lessonId, dataToSave);
+
+                await db.collection('lessons').doc(lessonId).set(dataToSave, { merge: true });
+
+                console.log('Firebase write SUCCESS');
+                showMessage(isPublished ? '已發布！學生現在可以複習此字' : '已取消發布', 'success');
+                renderCharacterLists();
+            } catch (error) {
+                console.error('Firebase write FAILED:', error);
+                showMessage('發布狀態更新失敗: ' + error.message, 'error');
+                // 還原本地變更
+                if (type === 'component') {
+                    components[index].is_published = !isPublished;
+                } else {
+                    targetCharacters[index].is_published = !isPublished;
+                }
+                renderCharacterLists();
+            }
+            hideLoader();
+        }
+
+        async function batchPublish(publish) {
+            const lessonId = document.getElementById('lessonSelect').value;
+            if (!lessonId) return showMessage('請先選擇課程', 'error');
+            if (components.length === 0 && targetCharacters.length === 0) return showMessage('沒有字卡可操作', 'error');
+
+            const action = publish ? '發佈' : '取消發佈';
+            if (!confirm(`確定要${action}本課所有字卡嗎？`)) return;
+
+            const now = new Date().toISOString();
+
+            // 更新所有部件
+            components.forEach(c => {
+                c.is_published = publish;
+                if (publish && !c.published_at) {
+                    c.published_at = now;
+                }
+            });
+
+            // 更新所有目標字
+            targetCharacters.forEach(c => {
+                c.is_published = publish;
+                if (publish && !c.published_at) {
+                    c.published_at = now;
+                }
+            });
+
+            showLoader();
+            try {
+                await db.collection('lessons').doc(lessonId).set({
+                    components,
+                    target_characters: targetCharacters,
+                    meta: {
+                        component_count: components.length,
+                        target_count: targetCharacters.length,
+                        published_component_count: components.filter(c => c.is_published !== false).length,
+                        published_target_count: targetCharacters.filter(c => c.is_published !== false).length,
+                        last_updated: firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                }, { merge: true });
+
+                showMessage(publish ? '✅ 本課全部已發佈！' : '⛔ 本課全部已取消發佈', 'success');
+                renderCharacterLists();
+            } catch (error) {
+                showMessage('批量操作失敗: ' + error.message, 'error');
+            }
+            hideLoader();
         }
 
         function clearForm() {
@@ -1273,8 +1483,9 @@ img.img-comp {
                    grid.innerHTML = data.map((c, i) => {
                        // 使用 renderCharacterDisplay 處理字符顯示
                        const charDisplay = renderCharacterDisplay(c);
+                       const isPublished = c.is_published !== false; // undefined 視為已發布（向後兼容）
                        return `
-                        <div class="character-card">
+                        <div class="character-card ${isPublished ? '' : 'unpublished'}">
                             <div class="char-main">${charDisplay}</div>
                             <div class="char-pinyin">${c.pinyin || ''}</div>
                             <div class="char-meaning">${c.meaning || ''}</div>
@@ -1285,6 +1496,15 @@ img.img-comp {
                             ${c.pronunciation_cue ? `<div style="font-size:0.9em;margin:8px 0;color:var(--primary-color);">${renderMarkdown(c.pronunciation_cue)}</div>` : ''}
                             ${c.phrases ? `<div style="font-size:0.9em;margin:8px 0;color:var(--secondary-color);">${renderMarkdown(c.phrases)}</div>` : ''}
                             ${c.example ? `<div style="font-size:0.9em;margin:8px 0;font-style:italic;color:var(--text-secondary);">${renderMarkdown(c.example)}</div>` : ''}
+                            <div class="publish-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${isPublished ? 'checked' : ''} onchange="togglePublish('${type}', ${i}, this.checked)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="publish-status ${isPublished ? 'published' : 'unpublished'}">
+                                    ${isPublished ? '已發布' : '未發布'}
+                                </span>
+                            </div>
                             <div style="display:flex;gap:8px;margin-top:10px;">
                                 <button class="btn btn-small btn-edit" onclick="editCharacter('${type}', ${i})">✏️ 編輯</button>
                                 <button class="btn btn-small btn-delete" onclick="deleteCharacter('${type}', ${i})">🗑️ 刪除</button>
