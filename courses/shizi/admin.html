@@ -1342,31 +1342,45 @@ img.img-comp {
                 }
             }
 
-            console.log('Local data updated, components[0]:', components[0]);
-
-            // 立即保存到 Firebase
+            // 立即保存到 Firestore
             showLoader();
             try {
-                const dataToSave = {
-                    components,
-                    target_characters: targetCharacters,
-                    meta: {
-                        component_count: components.length,
-                        target_count: targetCharacters.length,
-                        published_component_count: components.filter(c => c.is_published !== false).length,
-                        published_target_count: targetCharacters.filter(c => c.is_published !== false).length,
-                        last_updated: firebase.firestore.FieldValue.serverTimestamp()
-                    }
+                const lessonRef = db.collection('lessons').doc(lessonId);
+                
+                // 準備更新數據
+                const updateData = {};
+                
+                if (type === 'component') {
+                    // 更新整個 components 數組（包含已修改的元素）
+                    updateData['components'] = components;
+                } else {
+                    // 更新整個 target_characters 數組（包含已修改的元素）
+                    updateData['target_characters'] = targetCharacters;
+                }
+                
+                // 更新 meta 信息
+                updateData['meta'] = {
+                    component_count: components.length,
+                    target_count: targetCharacters.length,
+                    published_component_count: components.filter(c => c.is_published !== false).length,
+                    published_target_count: targetCharacters.filter(c => c.is_published !== false).length,
+                    last_updated: firebase.firestore.FieldValue.serverTimestamp()
                 };
-                console.log('Saving to Firebase:', lessonId, dataToSave);
+                
+                console.log('Updating Firestore:', lessonId, {
+                    field: type === 'component' ? 'components' : 'target_characters',
+                    index: index,
+                    is_published: isPublished
+                });
+                
+                // 使用 updateDoc 更新文檔
+                await lessonRef.update(updateData);
 
-                await db.collection('lessons').doc(lessonId).set(dataToSave, { merge: true });
-
-                console.log('Firebase write SUCCESS');
+                console.log('Firestore update SUCCESS - is_published persisted');
                 showMessage(isPublished ? '已發布！學生現在可以複習此字' : '已取消發布', 'success');
                 renderCharacterLists();
             } catch (error) {
-                console.error('Firebase write FAILED:', error);
+                console.error('Firestore update FAILED:', error);
                 showMessage('發布狀態更新失敗: ' + error.message, 'error');
                 // 還原本地變更
                 if (type === 'component') {
