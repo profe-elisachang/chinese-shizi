@@ -115,7 +115,7 @@
                 }
                 
                 return `
-                    <a href="${contentPath}" class="list-item-button">
+                    <a href="${contentPath}" class="list-item-button" target="_blank" rel="noopener noreferrer">
                         <div class="list-item-content">
                             <h3 class="list-item-title">${escapeHtml(title)}</h3>
                             ${description ? `<p class="list-item-description">${escapeHtml(description)}</p>` : ''}
