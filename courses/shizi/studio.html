@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>識字課程管理 Studio</title>
+    <link rel="stylesheet" href="../../assets/css/nav-global.css">
+
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <!-- Cloudinary Upload Widget -->
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+
+    <style>
+        /* ==================== CSS Variables (對齊 structure.md) ==================== */
+        :root {
+            /* 主色调 */
+            --primary-color: #0891b2;
+            --primary-light: #06b6d4;
+            --primary-dark: #0e7490;
+            
+            /* 辅助色 */
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --danger-color: #ef4444;
+            
+            /* 中性色 */
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            
+            /* 背景色 */
+            --bg-page: #f9fafb;
+            --bg-card: #ffffff;
+            --bg-hover: #f3f4f6;
+            --bg-light: #e5e7eb;
+            
+            /* 边框色 */
+            --border-light: #e5e7eb;
+            --border-medium: #d1d5db;
+            --border-dark: #9ca3af;
+            
+            /* 特殊用途 */
+            --pinyin-color: #dc2626;
+            --character-color: #1f2937;
+            --meaning-color: #059669;
+            
+            /* 字体 */
+            --font-primary: 'Microsoft JhengHei', 'Noto Sans TC', 'PingFang TC', sans-serif;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 2rem;
+            --char-size-medium: 2rem;
+            --char-size-large: 3rem;
+            
+            /* 间距 */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            /* 圆角 */
+            --radius-sm: 0.25rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            /* 阴影 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+            
+            /* 字重 */
+            --font-normal: 400;
+            --font-medium: 500;
+            --font-semibold: 600;
+            --font-bold: 700;
+
+            /* Studio 專用變數 */
+            --edit-panel-min-width: 5%;
+            --edit-panel-max-width: 60%;
+            --edit-panel-default-width: 40%;
+            --edit-panel-collapsed-width: 60px;
+            --resizer-width: 4px;
+        }
+        
+        /* ==================== Global Styles ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            font-size: var(--text-base);
+            color: var(--text-primary);
+            background: var(--bg-page);
+            line-height: 1.6;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* ==================== Top Navigation ==================== */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* ==================== Studio Header ==================== */
+        .studio-header {
+            background: var(--bg-card);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            border-bottom: 2px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .studio-title {
+            font-size: var(--text-2xl);
+            font-weight: var(--font-bold);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .studio-controls {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .control-group label {
+            font-weight: var(--font-semibold);
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .control-group select {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-family: var(--font-primary);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-group select:hover {
+            border-color: var(--primary-color);
+        }
+
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        /* ==================== Main Container ==================== */
+        .studio-container {
+            display: flex;
+            height: calc(100vh - 140px); /* 減去導航和標題高度 */
+            position: relative;
+        }
+
+        /* ==================== Edit Panel ==================== */
+        .edit-panel {
+            background: var(--bg-card);
+            border-right: 2px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            width: var(--edit-panel-default-width);
+            min-width: var(--edit-panel-min-width);
+            max-width: var(--edit-panel-max-width);
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .edit-panel.collapsed {
+            width: var(--edit-panel-collapsed-width);
+        }
+
+        .edit-panel-header {
+            padding: var(--spacing-lg);
+            border-bottom: 2px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--primary-color);
+            color: white;
+            min-height: 60px;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        .edit-panel-header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            flex: 1;
+        }
+
+        .edit-panel-header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .edit-panel.collapsed .edit-panel-header {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            justify-content: center;
+            padding: var(--spacing-md);
+        }
+
+        .edit-panel-title {
+            font-size: var(--text-xl);
+            font-weight: var(--font-bold);
+        }
+
+        .edit-panel.collapsed .edit-panel-title {
+            font-size: var(--text-base);
+        }
+
+        .btn-add,
+        .btn-expand-all,
+        .btn-collapse-all {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-add:hover,
+        .btn-expand-all:hover,
+        .btn-collapse-all:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-expand-all,
+        .btn-collapse-all {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-lg);
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-expand-all:hover,
+        .btn-collapse-all:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 1);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .edit-panel.collapsed .btn-add,
+        .edit-panel.collapsed .btn-expand-all,
+        .edit-panel.collapsed .btn-collapse-all {
+            display: none;
+        }
+
+        .edit-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+        }
+
+        .edit-panel.collapsed .edit-panel-content {
+            display: none;
+        }
+
+        /* ==================== Form Item Card ==================== */
+        .form-item-card {
+            background: var(--bg-light);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .form-item-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-item-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .form-item-card.collapsed {
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+
+        .form-item-card.collapsed .form-item-body {
+            display: none;
+        }
+
+        .form-item-card.expanded {
+            padding: var(--spacing-lg);
+        }
+
+        .form-item-card.highlighted {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.2);
+            background: rgba(8, 145, 178, 0.05);
+        }
+
+        .form-item-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s;
+        }
+
+        .form-item-header:hover {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-xs));
+        }
+
+        .form-item-card.collapsed .form-item-header {
+            margin-bottom: 0;
+        }
+
+        .form-item-toggle-icon {
+            font-size: var(--text-lg);
+            color: var(--text-muted);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .form-item-card.expanded .form-item-toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .form-item-preview {
+            flex: 1;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: var(--font-bold);
+            color: var(--character-color);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-item-card.collapsed .form-item-preview {
+            font-size: 2rem;
+        }
+
+        .form-item-body {
+            transition: all 0.3s ease;
+        }
+
+        .drag-handle {
+            font-size: var(--text-xl);
+            color: var(--text-muted);
+            cursor: grab;
+            user-select: none;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .form-item-title {
+            flex: 1;
+            font-weight: var(--font-semibold);
+            color: var(--text-primary);
+        }
+
+        .btn-delete-item {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: var(--spacing-md);
+        }
+
+        .btn-delete-item:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-item-header .publish-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            flex-shrink: 0;
+        }
+
+        .form-item-header .publish-status {
+            font-size: 0.75rem;
+            font-weight: var(--font-semibold);
+            color: rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
+        }
+
+        .form-item-header .publish-status.published {
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .form-item-header .publish-status.unpublished {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-item-header .toggle-switch {
+            flex-shrink: 0;
+        }
+
+        .form-field {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-field label {
+            display: block;
+            font-weight: var(--font-semibold);
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+            font-size: var(--text-sm);
+        }
+
+        .form-field.required label::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-family: var(--font-primary);
+            transition: all 0.3s;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus,
+        .form-field select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .form-field textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-field small {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: var(--spacing-xs);
+        }
+
+        .publish-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--secondary-color);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* ==================== Resizer ==================== */
+        .resizer {
+            width: var(--resizer-width);
+            background: var(--border-light);
+            cursor: col-resize;
+            position: relative;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+
+        .resizer:hover {
+            background: var(--primary-color);
+        }
+
+        .resizer.resizing {
+            background: var(--primary-color);
+        }
+
+        .resizer::before {
+            content: '';
+            position: absolute;
+            left: -2px;
+            right: -2px;
+            top: 0;
+            bottom: 0;
+        }
+
+        /* ==================== Preview Panel ==================== */
+        .preview-panel {
+            flex: 1;
+            background: var(--bg-page);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .preview-panel-header {
+            padding: var(--spacing-lg);
+            border-bottom: 2px solid var(--border-light);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-panel-title {
+            font-size: var(--text-xl);
+            font-weight: var(--font-bold);
+            color: var(--primary-color);
+        }
+
+        .btn-toggle-edit {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-lg);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-toggle-edit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .preview-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+        }
+
+        /* ==================== Character Grid (對齊 lesson.html) ==================== */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .character-card {
+            background: var(--bg-card);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--border-light);
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            min-height: 180px;
+            max-height: 180px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            position: relative;
+        }
+
+        .character-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-3px);
+        }
+
+        .character-card.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.2);
+        }
+
+        .character-card .character {
+            font-size: var(--char-size-large);
+            font-weight: var(--font-bold);
+            color: var(--character-color);
+        }
+
+        .character-card .pinyin {
+            font-size: var(--text-xl);
+            color: var(--pinyin-color);
+            font-weight: var(--font-medium);
+        }
+
+        .character-card .meaning {
+            font-size: var(--text-base);
+            color: var(--meaning-color);
+            font-weight: var(--font-medium);
+        }
+
+        /* 字形補丁系統 (對齊 structure.md) */
+        .img-comp {
+            height: 1.8em;
+            width: auto;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 4px;
+            object-fit: contain;
+        }
+
+        /* ==================== Teaching Modal (65寸電視) ==================== */
+        .teaching-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 3000;
+            overflow-y: auto;
+            padding: var(--spacing-xl);
+            cursor: pointer;
+        }
+
+        .teaching-modal.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .teaching-modal-content {
+            cursor: default;
+        }
+
+        .teaching-modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            max-width: 1400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            padding: var(--spacing-2xl);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .teaching-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-2xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .teaching-modal-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: var(--font-bold);
+            color: var(--primary-color);
+        }
+
+        .btn-close-modal {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-lg);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-close-modal:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .teaching-modal-body {
+            text-align: center;
+        }
+
+        .teaching-modal-body .character {
+            font-size: clamp(4rem, 7vw, 6rem);
+            font-weight: var(--font-bold);
+            color: var(--character-color);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .teaching-modal-body .pinyin {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            color: var(--pinyin-color);
+            margin-bottom: var(--spacing-md);
+            font-weight: var(--font-medium);
+        }
+
+        .teaching-modal-body .meaning {
+            font-size: clamp(1.4rem, 2.8vw, 2.8rem);
+            color: var(--meaning-color);
+            margin-bottom: var(--spacing-xl);
+            font-weight: var(--font-semibold);
+        }
+
+        .teaching-modal-section {
+            margin-bottom: var(--spacing-xl);
+            text-align: left;
+            padding: var(--spacing-lg);
+            background: var(--bg-light);
+            border-radius: var(--radius-lg);
+        }
+
+        .teaching-modal-section-title {
+            font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+            font-weight: var(--font-bold);
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .teaching-modal-section-content {
+            font-size: clamp(1.2rem, 2.2vw, 2.2rem);
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        /* 教學模態框中的字形補丁（65寸電視：120px） */
+        .teaching-modal-body .img-comp {
+            height: 120px;
+            width: auto;
+        }
+
+        .teaching-modal-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-2xl);
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--border-light);
+        }
+
+        .btn-nav {
+            padding: var(--spacing-md) var(--spacing-xl);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-lg);
+            font-weight: var(--font-semibold);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-nav:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-nav:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .modal-position {
+            font-size: var(--text-lg);
+            color: var(--text-secondary);
+            font-weight: var(--font-semibold);
+        }
+
+        /* ==================== Markdown 渲染 ==================== */
+        .markdown-content {
+            line-height: 1.8;
+        }
+
+        .markdown-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: var(--spacing-md) auto;
+        }
+
+        .markdown-content img.img-origin {
+            width: 55%;
+            min-width: 180px;
+            margin: var(--spacing-lg) auto;
+            border: 1px solid var(--border-light);
+            padding: var(--spacing-sm);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+        }
+
+        .markdown-content img.img-story {
+            width: 90%;
+            margin: var(--spacing-xl) auto;
+            border-radius: var(--radius-lg);
+        }
+
+        /* ==================== Status Message ==================== */
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            font-weight: var(--font-bold);
+            box-shadow: var(--shadow-lg);
+            z-index: 4000;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .status-success {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .status-error {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .status-info {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* ==================== Empty State ==================== */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .empty-state-text {
+            font-size: var(--text-lg);
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 1024px) {
+            .studio-container {
+                flex-direction: column;
+            }
+
+            .edit-panel {
+                width: 100%;
+                max-width: 100%;
+                height: 50%;
+            }
+
+            .resizer {
+                display: none;
+            }
+
+            .preview-panel {
+                height: 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-content">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <span class="nav-separator">|</span>
+            <a href="../bct/lessons/lesson.html" class="nav-link">Lessons</a>
+            <span class="nav-separator">|</span>
+            <a href="lesson.html" class="nav-link">Literacy</a>
+            <span class="nav-separator">|</span>
+            <a href="review.html" class="nav-link">Review Lit.</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="../../pages/grammar.html" class="nav-link">Grammar</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/extras.html" class="nav-link">Extras</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/mini-story.html" class="nav-link">Mini Story</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/music.html" class="nav-link">Music</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="../../pages/timeline.html" class="nav-link">Timeline</a>
+        </div>
+    </nav>
+
+    <!-- Studio Header -->
+    <div class="studio-header">
+        <div class="studio-title">
+            <span>🎓 識字課程管理 Studio</span>
+        </div>
+        <div class="studio-controls">
+            <div class="control-group">
+                <label for="typeSelect">類型：</label>
+                <select id="typeSelect">
+                    <option value="component">部件</option>
+                    <option value="target">目標字</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="lessonSelect">課次：</label>
+                <select id="lessonSelect">
+                    <option value="">-- 請選擇課次 --</option>
+                    <option value="lesson1">Lesson 1</option>
+                    <option value="lesson2">Lesson 2</option>
+                    <option value="lesson3">Lesson 3</option>
+                    <option value="lesson4">Lesson 4</option>
+                    <option value="lesson5">Lesson 5</option>
+                    <option value="lesson6">Lesson 6</option>
+                    <option value="lesson7">Lesson 7</option>
+                    <option value="lesson8">Lesson 8</option>
+                    <option value="lesson9">Lesson 9</option>
+                    <option value="lesson10">Lesson 10</option>
+                    <option value="lesson11">Lesson 11</option>
+                    <option value="lesson12">Lesson 12</option>
+                    <option value="lesson13">Lesson 13</option>
+                    <option value="lesson14">Lesson 14</option>
+                    <option value="lesson15">Lesson 15</option>
+                    <option value="lesson16">Lesson 16</option>
+                    <option value="lesson17">Lesson 17</option>
+                    <option value="lesson18">Lesson 18</option>
+                    <option value="lesson19">Lesson 19</option>
+                    <option value="lesson20">Lesson 20</option>
+                    <option value="lesson21">Lesson 21</option>
+                    <option value="lesson22">Lesson 22</option>
+                    <option value="lesson23">Lesson 23</option>
+                    <option value="lesson24">Lesson 24</option>
+                    <option value="lesson25">Lesson 25</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="studio-container">
+        <!-- Edit Panel -->
+        <div class="edit-panel" id="editPanel">
+            <div class="edit-panel-header">
+                <div class="edit-panel-header-left">
+                    <div class="edit-panel-title">編輯表單</div>
+                </div>
+                <div class="edit-panel-header-right">
+                    <button class="btn-expand-all" id="btnExpandAll" title="全部展開">↑</button>
+                    <button class="btn-collapse-all" id="btnCollapseAll" title="全部折疊">↓</button>
+                    <button class="btn-add" id="btnAdd">+ 新增</button>
+                </div>
+            </div>
+            <div class="edit-panel-content" id="editPanelContent">
+                <div class="empty-state" id="emptyEditState">
+                    <div class="empty-state-icon">📝</div>
+                    <div class="empty-state-text">請選擇等級和類型開始編輯</div>
+                </div>
+                <!-- Form items will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Resizer -->
+        <div class="resizer" id="resizer"></div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="preview-panel-header">
+                <div class="preview-panel-title">實時預覽</div>
+                <button class="btn-toggle-edit" id="btnToggleEdit">◀</button>
+            </div>
+            <div class="preview-panel-content" id="previewPanelContent">
+                <div class="empty-state" id="emptyPreviewState">
+                    <div class="empty-state-icon">👁️</div>
+                    <div class="empty-state-text">預覽將在此顯示</div>
+                </div>
+                <!-- Preview cards will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Teaching Modal (65寸電視) -->
+    <div class="teaching-modal" id="teachingModal">
+        <div class="teaching-modal-content">
+            <div class="teaching-modal-header">
+                <div class="teaching-modal-title" id="modalTitle">字卡詳情</div>
+                <button class="btn-close-modal" id="btnCloseModal">✕ 關閉</button>
+            </div>
+            <div class="teaching-modal-body" id="modalBody">
+                <!-- Modal content will be inserted here -->
+            </div>
+            <div class="teaching-modal-navigation">
+                <button class="btn-nav" id="btnPrev">← 上一個</button>
+                <div class="modal-position" id="modalPosition">第 1 / 共 10 個</div>
+                <button class="btn-nav" id="btnNext">下一個 →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== Firebase 配置 ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMDTDwDP0mEXwgJdwsXVMB2IFi9Q5zfyU",
+            authDomain: "shizi-with-elisa.firebaseapp.com",
+            projectId: "shizi-with-elisa",
+            storageBucket: "shizi-with-elisa.firebasestorage.app",
+            messagingSenderId: "46368268308",
+            appId: "1:46368268308:web:5847aeb7b239b16d624701"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        auth.signInAnonymously();
+
+        // ==================== 全局變數 ====================
+        let currentData = [];
+        let currentType = 'component';
+        let currentLesson = '';
+        let currentModalIndex = -1;
+        let saveTimeout = null;
+        let draggedElement = null;
+        let clickTimeout = null;
+
+        // ==================== 工具函數 ====================
+        function showMessage(text, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status-message status-${type}`;
+            div.textContent = text;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+
+        function sanitizeData(data) {
+            return data.map(item => {
+                const clean = {};
+                Object.entries(item).forEach(([key, value]) => {
+                    if (value !== undefined && value !== '') {
+                        clean[key] = value;
+                    }
+                });
+                return clean;
+            });
+        }
+
+        // 字形補丁顯示邏輯（對齊 structure.md）
+        function renderCharacterDisplay(char) {
+            if (char.display_image && char.display_image.trim()) {
+                return `<img src="${char.display_image.trim()}" class="img-comp" alt="comp" onerror="this.style.display='none';">`;
+            }
+            if (char.character && typeof char.character === 'string' && char.character.trim().toLowerCase().startsWith('http')) {
+                return `<img src="${char.character.trim()}" class="img-comp" alt="comp" onerror="this.style.display='none';">`;
+            }
+            return char.character || '';
+        }
+
+        // Markdown 渲染（對齊 structure.md）
+        function renderMarkdown(text) {
+            if (!text) return '';
+            let html = marked.parse(text);
+            // 處理圖片分類
+            html = html.replace(
+                /<img src="([^"]+)" alt="--Image of: --([^"]+)"/g,
+                (match, src, type) => {
+                    return `<img src="${src}" class="img-${type}" alt="${type}" loading="lazy">`;
+                }
+            );
+            return html;
+        }
+
+        // 防抖保存
+        function debounceSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveToFirebase();
+            }, 1000);
+        }
+
+        // ==================== 載入資料 ====================
+        async function loadData() {
+            const type = document.getElementById('typeSelect').value;
+            const lesson = document.getElementById('lessonSelect').value;
+
+            if (!lesson) {
+                currentData = [];
+                renderEditPanel();
+                renderPreviewPanel();
+                return;
+            }
+
+            currentType = type;
+            currentLesson = lesson;
+
+            try {
+                const lessonId = lesson;
+                const doc = await db.collection('lessons').doc(lessonId).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    const fieldName = type === 'component' ? 'components' : 'target_characters';
+                    currentData = data[fieldName] || [];
+                    
+                    // 按 order 排序
+                    currentData.sort((a, b) => (a.order || 0) - (b.order || 0));
+                } else {
+                    currentData = [];
+                }
+            } catch (error) {
+                showMessage('載入失敗：' + error.message, 'error');
+                currentData = [];
+            }
+
+            renderEditPanel();
+            renderPreviewPanel();
+        }
+
+        // ==================== 保存到 Firebase ====================
+        async function saveToFirebase() {
+            if (!currentLesson) return;
+
+            const lessonId = currentLesson;
+            const fieldName = currentType === 'component' ? 'components' : 'target_characters';
+
+            try {
+                const sanitized = sanitizeData(currentData);
+                await db.collection('lessons').doc(lessonId).set({
+                    [fieldName]: sanitized,
+                    meta: {
+                        [`${fieldName}_count`]: sanitized.length,
+                        last_updated: firebase.firestore.FieldValue.serverTimestamp()
+                    }
+                }, { merge: true });
+                
+                showMessage('✅ 已自動保存', 'success');
+            } catch (error) {
+                showMessage('保存失敗：' + error.message, 'error');
+            }
+        }
+
+        // ==================== 渲染編輯面板 ====================
+        function renderEditPanel() {
+            const container = document.getElementById('editPanelContent');
+            const emptyState = document.getElementById('emptyEditState');
+
+            if (currentData.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = currentData.map((item, index) => createFormItem(item, index)).join('');
+            
+            // 綁定事件
+            attachFormEvents();
+        }
+
+        function createFormItem(item, index) {
+            const charDisplay = renderCharacterDisplay(item);
+            const isPublished = item.is_published !== false;
+            return `
+                <div class="form-item-card collapsed" data-index="${index}" draggable="true">
+                    <div class="form-item-header" onclick="toggleFormItem(${index})">
+                        <span class="form-item-toggle-icon">▶</span>
+                        <span class="drag-handle" onclick="event.stopPropagation();">≡</span>
+                        <div class="form-item-preview">${charDisplay || '新項目'}</div>
+                        <div class="publish-toggle" onclick="event.stopPropagation();">
+                            <label class="toggle-switch">
+                                <input type="checkbox" ${isPublished ? 'checked' : ''} onchange="togglePublish(${index}, this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="publish-status ${isPublished ? 'published' : 'unpublished'}">
+                                ${isPublished ? '已發布' : '未發布'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-item-body">
+                        <div class="form-field required">
+                            <label>字</label>
+                            <input type="text" data-field="character" value="${item.character || ''}" placeholder="例如：夬">
+                        </div>
+                        <div class="form-field">
+                            <label>顯示圖片（字形補丁）</label>
+                            <input type="text" data-field="display_image" value="${item.display_image || ''}" placeholder="https://res.cloudinary.com/...">
+                            <small>當字無法正常顯示時使用</small>
+                        </div>
+                        <div class="form-field required">
+                            <label>拼音</label>
+                            <input type="text" data-field="pinyin" value="${item.pinyin || ''}" placeholder="例如：guài">
+                        </div>
+                        <div class="form-field required">
+                            <label>意思（英文）</label>
+                            <input type="text" data-field="meaning" value="${item.meaning || ''}" placeholder="例如：to cut apart / separate">
+                        </div>
+                        <div class="form-field">
+                            <label>部件拆解</label>
+                            <input type="text" data-field="components_breakdown" value="${item.components_breakdown || ''}" placeholder="例如：ユ + 人">
+                        </div>
+                        <div class="form-field">
+                            <label>書本解釋（支援 Markdown）</label>
+                            <textarea data-field="book_explanation" placeholder="可使用 Markdown 格式...">${item.book_explanation || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>記憶故事（支援 Markdown）</label>
+                            <textarea data-field="story" placeholder="可使用 Markdown 格式...">${item.story || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>發音提示（支援 Markdown）</label>
+                            <textarea data-field="pronunciation_cue" placeholder="例如：Sounds like **Gwhy**">${item.pronunciation_cue || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>圖片網址（輔助插圖）</label>
+                            <input type="text" data-field="image" value="${item.image || ''}" placeholder="https://res.cloudinary.com/...">
+                            <small>故事圖、象形演變圖等</small>
+                        </div>
+                        <div class="form-field">
+                            <label>詞組範例</label>
+                            <textarea data-field="phrases" placeholder="例如：刚才 gāngcái (just now)">${item.phrases || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>記憶例句</label>
+                            <input type="text" data-field="example" value="${item.example || ''}" placeholder="例如：COW needs a TOWEL">
+                        </div>
+                        <div class="form-field">
+                            <label>課次</label>
+                            <select data-field="lesson">
+                                <option value="">-- 請選擇 --</option>
+                                ${Array.from({length: 25}, (_, i) => 
+                                    `<option value="lesson${i+1}" ${item.lesson === `lesson${i+1}` ? 'selected' : ''}>Lesson ${i+1}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label>排序</label>
+                            <input type="number" data-field="order" value="${item.order || index}" min="0">
+                        </div>
+                        <button class="btn-delete-item" onclick="deleteItem(${index})">🗑️ 刪除此項目</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleFormItem(index) {
+            const card = document.querySelector(`.form-item-card[data-index="${index}"]`);
+            if (card) {
+                card.classList.toggle('collapsed');
+                card.classList.toggle('expanded');
+            }
+        }
+
+        function expandAllItems() {
+            document.querySelectorAll('.form-item-card').forEach(card => {
+                card.classList.remove('collapsed');
+                card.classList.add('expanded');
+            });
+            showMessage('已展開所有項目', 'success');
+        }
+
+        function collapseAllItems() {
+            document.querySelectorAll('.form-item-card').forEach(card => {
+                card.classList.remove('expanded');
+                card.classList.add('collapsed');
+            });
+            showMessage('已折疊所有項目', 'success');
+        }
+
+        function togglePublish(index, checked) {
+            if (!currentData[index]) return;
+            
+            currentData[index].is_published = checked;
+            
+            // 更新狀態文字顯示
+            const statusText = document.querySelector(`.form-item-card[data-index="${index}"] .publish-status`);
+            if (statusText) {
+                if (checked) {
+                    statusText.classList.add('published');
+                    statusText.classList.remove('unpublished');
+                    statusText.textContent = '已發布';
+                } else {
+                    statusText.classList.remove('published');
+                    statusText.classList.add('unpublished');
+                    statusText.textContent = '未發布';
+                }
+            }
+            
+            debounceSave();
+            renderPreviewPanel();
+            showMessage(checked ? '已發布' : '已取消發布', 'success');
+        }
+
+        function scrollToFormItem(index) {
+            const card = document.querySelector(`.form-item-card[data-index="${index}"]`);
+            if (card) {
+                // 展開卡片
+                card.classList.remove('collapsed');
+                card.classList.add('expanded');
+                // 高亮顯示
+                card.classList.add('highlighted');
+                // 移除其他卡片的高亮
+                document.querySelectorAll('.form-item-card').forEach(c => {
+                    if (c !== card) c.classList.remove('highlighted');
+                });
+                // 滾動到該位置
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // 3秒後移除高亮
+                setTimeout(() => {
+                    card.classList.remove('highlighted');
+                }, 3000);
+            }
+        }
+
+        function attachFormEvents() {
+            document.querySelectorAll('.form-item-card input, .form-item-card textarea, .form-item-card select').forEach(input => {
+                input.addEventListener('input', function() {
+                    const card = this.closest('.form-item-card');
+                    const index = parseInt(card.dataset.index);
+                    const field = this.dataset.field;
+                    const value = this.type === 'checkbox' ? this.checked : this.value;
+                    
+                    if (!currentData[index]) return;
+                    
+                    // 移除 is_published 的處理，因為現在用按鈕處理
+                    if (field !== 'is_published') {
+                        currentData[index][field] = value;
+                    }
+                    
+                    // 如果修改的是 character 或 display_image，更新預覽
+                    if (field === 'character' || field === 'display_image') {
+                        const preview = card.querySelector('.form-item-preview');
+                        if (preview) {
+                            const item = currentData[index];
+                            preview.innerHTML = renderCharacterDisplay(item) || '新項目';
+                        }
+                    }
+                    
+                    debounceSave();
+                    renderPreviewPanel();
+                });
+            });
+        }
+
+        // ==================== 新增項目 ====================
+        function addItem() {
+            if (!currentLesson) {
+                showMessage('請先選擇課次', 'error');
+                return;
+            }
+
+            const newItem = {
+                character: '',
+                pinyin: '',
+                meaning: '',
+                type: currentType,
+                is_published: false,
+                order: currentData.length
+            };
+
+            currentData.push(newItem);
+            renderEditPanel();
+            renderPreviewPanel();
+            // 自動展開新項目
+            setTimeout(() => {
+                scrollToFormItem(currentData.length - 1);
+            }, 100);
+            showMessage('已新增項目', 'success');
+        }
+
+        // ==================== 刪除項目 ====================
+        function deleteItem(index) {
+            if (!confirm('確定要刪除此項目？')) return;
+            
+            currentData.splice(index, 1);
+            // 重新排序
+            currentData.forEach((item, i) => {
+                item.order = i;
+            });
+            
+            debounceSave();
+            renderEditPanel();
+            renderPreviewPanel();
+            showMessage('已刪除', 'success');
+        }
+
+        // ==================== 渲染預覽面板 ====================
+        function renderPreviewPanel() {
+            const container = document.getElementById('previewPanelContent');
+            const emptyState = document.getElementById('emptyPreviewState');
+
+            if (currentData.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = `
+                <div class="character-grid">
+                    ${currentData.map((item, index) => createPreviewCard(item, index)).join('')}
+                </div>
+            `;
+
+            // 綁定點擊事件：單擊跳轉，雙擊開啟模態框
+            document.querySelectorAll('.character-card').forEach((card, index) => {
+                let clickTimer = null;
+                card.addEventListener('click', (e) => {
+                    if (clickTimer === null) {
+                        clickTimer = setTimeout(() => {
+                            // 單擊：跳轉到對應編輯欄位
+                            scrollToFormItem(index);
+                            clickTimer = null;
+                        }, 300);
+                    }
+                });
+                card.addEventListener('dblclick', (e) => {
+                    if (clickTimer) {
+                        clearTimeout(clickTimer);
+                        clickTimer = null;
+                    }
+                    // 雙擊：開啟教學模態框
+                    openTeachingModal(index);
+                });
+            });
+        }
+
+        function createPreviewCard(item, index) {
+            const charDisplay = renderCharacterDisplay(item);
+            const isPublished = item.is_published !== false;
+            
+            return `
+                <div class="character-card ${isPublished ? '' : 'unpublished'}" data-index="${index}">
+                    <div class="character">${charDisplay}</div>
+                    <div class="pinyin">${item.pinyin || ''}</div>
+                    <div class="meaning">${item.meaning || ''}</div>
+                </div>
+            `;
+        }
+
+        // ==================== 教學模態框 ====================
+        function openTeachingModal(index) {
+            currentModalIndex = index;
+            const item = currentData[index];
+            if (!item) return;
+
+            const modal = document.getElementById('teachingModal');
+            const modalBody = document.getElementById('modalBody');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalPosition = document.getElementById('modalPosition');
+
+            modalTitle.textContent = `字卡詳情 - ${item.character || '新項目'}`;
+            modalPosition.textContent = `第 ${index + 1} / 共 ${currentData.length} 個`;
+
+            const charDisplay = renderCharacterDisplay(item);
+            
+            let sectionsHTML = '';
+            if (item.components_breakdown) {
+                sectionsHTML += `
+                    <div class="teaching-modal-section">
+                        <div class="teaching-modal-section-title">部件拆解</div>
+                        <div class="teaching-modal-section-content markdown-content">${renderMarkdown(item.components_breakdown)}</div>
+                    </div>
+                `;
+            }
+            if (item.book_explanation) {
+                sectionsHTML += `
+                    <div class="teaching-modal-section">
+                        <div class="teaching-modal-section-title">書本解釋</div>
+                        <div class="teaching-modal-section-content markdown-content">${renderMarkdown(item.book_explanation)}</div>
+                    </div>
+                `;
+            }
+            if (item.story) {
+                sectionsHTML += `
+                    <div class="teaching-modal-section">
+                        <div class="teaching-modal-section-title">記憶故事</div>
+                        <div class="teaching-modal-section-content markdown-content">${renderMarkdown(item.story)}</div>
+                    </div>
+                `;
+            }
+            if (item.pronunciation_cue) {
+                sectionsHTML += `
+                    <div class="teaching-modal-section">
+                        <div class="teaching-modal-section-title">發音提示</div>
+                        <div class="teaching-modal-section-content markdown-content">${renderMarkdown(item.pronunciation_cue)}</div>
+                    </div>
+                `;
+            }
+            if (item.image) {
+                sectionsHTML += `
+                    <div class="teaching-modal-section">
+                        <div class="teaching-modal-section-title">輔助插圖</div>
+                        <div class="teaching-modal-section-content">
+                            <img src="${item.image}" style="max-width: 100%; height: auto; border-radius: var(--radius-lg);">
+                        </div>
+                    </div>
+                `;
+            }
+
+            modalBody.innerHTML = `
+                <div class="character">${charDisplay}</div>
+                <div class="pinyin">${item.pinyin || ''}</div>
+                <div class="meaning">${item.meaning || ''}</div>
+                ${sectionsHTML}
+            `;
+
+            // 更新導航按鈕狀態
+            document.getElementById('btnPrev').disabled = index === 0;
+            document.getElementById('btnNext').disabled = index === currentData.length - 1;
+
+            modal.classList.add('active');
+        }
+
+        function closeTeachingModal() {
+            document.getElementById('teachingModal').classList.remove('active');
+        }
+
+        // 點擊背景關閉模態框
+        function initModalClose() {
+            const modal = document.getElementById('teachingModal');
+            const modalContent = document.querySelector('.teaching-modal-content');
+            
+            modal.addEventListener('click', (e) => {
+                // 如果點擊的是背景（不是內容區域），則關閉
+                if (e.target === modal) {
+                    closeTeachingModal();
+                }
+            });
+            
+            // 防止點擊內容區域時關閉
+            if (modalContent) {
+                modalContent.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+        }
+
+        function navigateModal(direction) {
+            if (direction === 'prev' && currentModalIndex > 0) {
+                openTeachingModal(currentModalIndex - 1);
+            } else if (direction === 'next' && currentModalIndex < currentData.length - 1) {
+                openTeachingModal(currentModalIndex + 1);
+            }
+        }
+
+        // ==================== 拖拽排序 ====================
+        function initDragAndDrop() {
+            const container = document.getElementById('editPanelContent');
+            
+            container.addEventListener('dragstart', (e) => {
+                if (e.target.closest('.form-item-card')) {
+                    draggedElement = e.target.closest('.form-item-card');
+                    draggedElement.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                }
+            });
+
+            container.addEventListener('dragend', (e) => {
+                if (draggedElement) {
+                    draggedElement.classList.remove('dragging');
+                    draggedElement = null;
+                }
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(container, e.clientY);
+                const dragging = document.querySelector('.dragging');
+                if (dragging && afterElement == null) {
+                    container.appendChild(dragging);
+                } else if (dragging && afterElement) {
+                    container.insertBefore(dragging, afterElement);
+                }
+            });
+
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (draggedElement) {
+                    const newIndex = Array.from(container.children).indexOf(draggedElement);
+                    const oldIndex = parseInt(draggedElement.dataset.index);
+                    
+                    // 更新資料順序
+                    const [movedItem] = currentData.splice(oldIndex, 1);
+                    currentData.splice(newIndex, 0, movedItem);
+                    
+                    // 更新 order
+                    currentData.forEach((item, i) => {
+                        item.order = i;
+                    });
+                    
+                    debounceSave();
+                    renderEditPanel();
+                    renderPreviewPanel();
+                }
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.form-item-card:not(.dragging)')];
+            
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        // ==================== 面板寬度調整 ====================
+        function initResizer() {
+            const resizer = document.getElementById('resizer');
+            const editPanel = document.getElementById('editPanel');
+            let isResizing = false;
+
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                resizer.classList.add('resizing');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+
+                const containerRect = document.querySelector('.studio-container').getBoundingClientRect();
+                const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+                
+                if (newWidth >= 5 && newWidth <= 60) {
+                    editPanel.style.width = `${newWidth}%`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    resizer.classList.remove('resizing');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            });
+        }
+
+        // ==================== 切換編輯面板 ====================
+        function initToggleEdit() {
+            const btn = document.getElementById('btnToggleEdit');
+            const editPanel = document.getElementById('editPanel');
+
+            btn.addEventListener('click', () => {
+                editPanel.classList.toggle('collapsed');
+                btn.textContent = editPanel.classList.contains('collapsed') ? '▶' : '◀';
+            });
+        }
+
+        // ==================== 鍵盤快捷鍵 ====================
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                const modal = document.getElementById('teachingModal');
+                if (modal.classList.contains('active')) {
+                    if (e.key === 'Escape') {
+                        closeTeachingModal();
+                    } else if (e.key === 'ArrowLeft') {
+                        navigateModal('prev');
+                    } else if (e.key === 'ArrowRight') {
+                        navigateModal('next');
+                    }
+                }
+            });
+        }
+
+        // ==================== 初始化 ====================
+        document.getElementById('typeSelect').addEventListener('change', loadData);
+        document.getElementById('lessonSelect').addEventListener('change', loadData);
+        document.getElementById('btnAdd').addEventListener('click', addItem);
+        document.getElementById('btnExpandAll').addEventListener('click', expandAllItems);
+        document.getElementById('btnCollapseAll').addEventListener('click', collapseAllItems);
+        document.getElementById('btnCloseModal').addEventListener('click', closeTeachingModal);
+        document.getElementById('btnPrev').addEventListener('click', () => navigateModal('prev'));
+        document.getElementById('btnNext').addEventListener('click', () => navigateModal('next'));
+
+        initResizer();
+        initToggleEdit();
+        initDragAndDrop();
+        initKeyboardShortcuts();
+        initModalClose();
+
+        // 載入全域導航腳本
+        const navScript = document.createElement('script');
+        navScript.src = '../../assets/js/nav-global.js';
+        document.body.appendChild(navScript);
+    </script>
+</body>
+</html>
+
