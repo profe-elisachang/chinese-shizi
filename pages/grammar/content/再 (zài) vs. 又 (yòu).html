@@ -1,0 +1,1091 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>再 (zài) vs. 又 (yòu) - Chinese Grammar</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --primary-light: #3b82f6;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-hover: #f1f5f9;
+            --bg-light: #eff6ff;
+            --border: #e2e8f0;
+            --border-dark: #cbd5e1;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --correct-color: #16a34a;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background: var(--bg-page);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* ==================== Container ==================== */
+        .container {
+            max-width: 900px;
+            margin: 60px auto 40px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        /* ==================== Header ==================== */
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 40px 40px 30px;
+            text-align: center;
+            border-bottom: 3px solid var(--primary-dark);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        /* ==================== Main Tab Switcher ==================== */
+        .main-tabs-wrapper {
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border);
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-tab {
+            padding: 18px 40px;
+            background: transparent;
+            border: none;
+            font-size: 1.05rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            position: relative;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            outline: none;
+        }
+
+        .main-tab:hover {
+            color: var(--primary);
+            background-color: var(--bg-hover);
+        }
+
+        .main-tab.active {
+            color: var(--primary);
+            font-weight: 600;
+            border-bottom-color: var(--primary);
+            background-color: var(--bg-light);
+        }
+
+        .main-tab-content {
+            display: none;
+        }
+
+        .main-tab-content.active {
+            display: block;
+        }
+
+        /* ==================== Content Section ==================== */
+        .content-section {
+            padding: 40px;
+        }
+
+        h2 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 30px 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 25px 0 15px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        /* ==================== Table Styles ==================== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--bg-light);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ==================== Highlight Box ==================== */
+        .highlight {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        /* ==================== Example Box ==================== */
+        .example-box {
+            background-color: var(--bg-light);
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .chinese-example {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .pinyin {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .translation {
+            color: var(--text-secondary);
+        }
+
+        /* ==================== Practice Section ==================== */
+        .practice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .toggle-answers-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-answers-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .question {
+            background-color: var(--bg-card);
+            border-radius: 4px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .question:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .question-number {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 36px;
+            margin-right: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .answer-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--bg-light);
+            border-radius: 4px;
+            border-left: 4px solid var(--correct-color);
+            display: none;
+        }
+
+        .answer-section.show {
+            display: block;
+        }
+
+        .answer-label {
+            font-weight: 600;
+            color: var(--correct-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .answer-label::before {
+            content: "✓";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: var(--correct-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.9rem;
+        }
+
+        .answer-explanation {
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-top: 8px;
+        }
+
+        /* ==================== Comparison Practice Styles ==================== */
+        .comparison-question {
+            background-color: var(--bg-card);
+            border-radius: 4px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .comparison-question:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .comparison-number {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .comparison-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .original-sentence {
+            background-color: var(--bg-light);
+            padding: 18px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .rewrite-sentence {
+            background-color: var(--bg-hover);
+            padding: 18px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-dark);
+        }
+
+        .sentence-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .sentence-text {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+
+        .sentence-translation {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .toggle-answer-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .toggle-answer-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .comparison-answer {
+            margin-top: 15px;
+            padding: 18px;
+            background-color: var(--bg-light);
+            border-radius: 4px;
+            border-left: 4px solid var(--correct-color);
+            display: none;
+            border: 1px solid var(--border);
+        }
+
+        .comparison-answer.show {
+            display: block;
+        }
+
+        .answer-header {
+            font-weight: 600;
+            color: var(--correct-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .answer-header::before {
+            content: "✓";
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            background: var(--correct-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 22px;
+            font-size: 0.9rem;
+        }
+
+        .answer-content {
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .practice-instruction {
+            background: var(--bg-light);
+            padding: 25px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+        }
+
+        .practice-instruction h3 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+
+        .practice-instruction p {
+            margin-bottom: 12px;
+        }
+
+        ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        ol li {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        code {
+            background-color: var(--bg-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 30px 0;
+        }
+
+        strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        em {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* ==================== Memory Tip ==================== */
+        .memory-tip {
+            background: var(--bg-light);
+            padding: 25px;
+            border-radius: 4px;
+            margin: 30px 0;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+        }
+
+        .memory-tip h3 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 768px) {
+            .container {
+                margin: 30px 15px 20px;
+                border-radius: 4px;
+            }
+
+            header {
+                padding: 30px 20px 20px;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content-section {
+                padding: 25px 20px;
+            }
+
+            .main-tab {
+                padding: 14px 20px;
+                font-size: 0.95rem;
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .practice-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .toggle-answers-btn {
+                width: 100%;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 12px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>再 (zài) vs. 又 (yòu)</h1>
+            <div class="subtitle">Understanding the Difference Between "Again" in Chinese</div>
+        </header>
+
+             <!-- Main Tab Switcher -->
+             <div class="main-tabs-wrapper">
+                <div class="main-tabs">
+                    <button class="main-tab active" data-main-tab="grammar-insight">Grammar Insight</button>
+                    <button class="main-tab" data-main-tab="interactive-practice">Interactive Practice</button>
+                    <button class="main-tab" data-main-tab="comparison-practice">Comparison Practice</button>
+                </div>
+            </div>
+
+        <!-- Grammar Insight Tab Content -->
+        <div id="grammar-insight" class="main-tab-content active">
+            <div class="content-section">
+                <h2>The Core Rule: Time</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Word</th>
+                            <th>Time & Function</th>
+                            <th>Feeling</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>再 (zài)</strong></td>
+                            <td><strong>Future / Not Yet Happened</strong><br>Used for an action you <em>will repeat</em> or <em>add later</em>.</td>
+                            <td><strong>Subjective:</strong> Shows your plan, wish, request, or suggestion.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>又 (yòu)</strong></td>
+                            <td><strong>Past / Already Happened</strong><br>Used for an action that <em>has already been repeated</em>.</td>
+                            <td><strong>Objective:</strong> Just states a fact that happened.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <h3>1. 再 (zài) - For the Future</h3>
+
+                <p>Use <strong>再</strong> when you are talking about doing something <strong>again in the future</strong>.</p>
+
+                <ul>
+                    <li><strong>Common Patterns:</strong>
+                        <ul>
+                            <li><code>想再 + Verb</code> (want to do again)</li>
+                            <li><code>要再 + Verb</code> (will do again)</li>
+                            <li><code>可以再 + Verb</code> (can do again)</li>
+                            <li><code>请再 + Verb</code> (please do again)</li>
+                            <li><code>下次再 + Verb</code> (next time do again)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Examples:</strong>
+                        <ul>
+                            <li>
+                                <div class="example-box">
+                                    <div class="chinese-example"><strong>今天我很忙，明天再见。</strong></div>
+                                    <div class="pinyin">(Jīntiān wǒ hěn máng, míngtiān <strong>zài</strong> jiàn.)</div>
+                                    <div class="translation"><em>I'm busy today, see you <strong>again</strong> tomorrow.</em></div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="example-box">
+                                    <div class="chinese-example"><strong>这杯咖啡很好，我要再买一杯。</strong></div>
+                                    <div class="pinyin">(Zhè bēi kāfēi hěn hǎo, wǒ yào <strong>zài</strong> mǎi yì bēi.)</div>
+                                    <div class="translation"><em>This coffee is great, I <strong>will</strong> buy another cup.</em></div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="example-box">
+                                    <div class="chinese-example"><strong>你说得太快了，请再说一次。</strong></div>
+                                    <div class="pinyin">(Nǐ shuō de tài kuài le, qǐng <strong>zài</strong> shuō yī cì.)</div>
+                                    <div class="translation"><em>You spoke too fast, please say it <strong>again</strong>.</em></div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <hr>
+
+                <h3>2. 又 (yòu) - For the Past</h3>
+
+                <p>Use <strong>又</strong> when you are talking about something that <strong>happened again in the past</strong>. It is often used with <strong>了 (le)</strong>.</p>
+
+                <ul>
+                    <li><strong>Common Patterns:</strong>
+                        <ul>
+                            <li><code>又 + Verb + 了</code> (did something again)</li>
+                            <li><code>昨天又...了</code> (yesterday did... again)</li>
+                            <li><code>他又来了。</code> (Tā <strong>yòu</strong> lái le.) - He came again.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Examples:</strong>
+                        <ul>
+                            <li>
+                                <div class="example-box">
+                                    <div class="chinese-example"><strong>他昨天迟到了，今天又迟到了。</strong></div>
+                                    <div class="pinyin">(Tā zuótiān chídào le, jīntiān <strong>yòu</strong> chídào le.)</div>
+                                    <div class="translation"><em>He was late yesterday, and he was late <strong>again</strong> today.</em></div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="example-box">
+                                    <div class="chinese-example"><strong>我很饱，可是她又给了我一个苹果。</strong></div>
+                                    <div class="pinyin">(Wǒ hěn bǎo, kěshì tā <strong>yòu</strong> gěi le wǒ yí gè píngguǒ.)</div>
+                                    <div class="translation"><em>I was full, but she gave me an apple <strong>again</strong>.</em></div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="example-box">
+                                    <div class="chinese-example"><strong>天气预报说，明天又下雨。</strong></div>
+                                    <div class="pinyin">(Tiānqì yùbào shuō, míngtiān <strong>yòu</strong> xià yǔ.)</div>
+                                    <div class="translation"><em><strong>Special Case: 又 for Future</strong> - This is only used for <strong>predicting a repeated situation</strong>, often with a feeling of complaint or impatience. (e.g., "Oh no, it's going to rain <em>again</em> tomorrow.")</em></div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <hr>
+
+                <h3>Quick Test: Can You Feel the Difference?</h3>
+
+                <p>Compare these two sentences:</p>
+
+                <ol>
+                    <li>
+                        <div class="example-box">
+                            <div class="chinese-example"><strong>明天我想再去那家餐厅。</strong></div>
+                            <div class="pinyin">(Míngtiān wǒ xiǎng <strong>zài</strong> qù nà jiā cāntīng.)</div>
+                            <div class="translation"><strong>Time:</strong> <strong>Future</strong> (tomorrow).<br>
+                            <strong>Feeling:</strong> My <strong>plan</strong> or <strong>wish</strong>.<br>
+                            <strong>Translation:</strong> I want to go to that restaurant <strong>again</strong> tomorrow.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="example-box">
+                            <div class="chinese-example"><strong>昨天我又去了那家餐厅。</strong></div>
+                            <div class="pinyin">(Zuótiān wǒ <strong>yòu</strong> qù le nà jiā cāntīng.)</div>
+                            <div class="translation"><strong>Time:</strong> <strong>Past</strong> (yesterday).<br>
+                            <strong>Feeling:</strong> Just a <strong>fact</strong>.<br>
+                            <strong>Translation:</strong> I went to that restaurant <strong>again</strong> yesterday.</div>
+                        </div>
+                    </li>
+                </ol>
+
+                <div class="memory-tip">
+                    <h3>Memory Tip</h3>
+                    <ul>
+                        <li><strong>再 (zài)</strong> sounds like "<strong>在</strong>" (zài - at/in), which can point to a time <strong>in the future</strong>.</li>
+                        <li><strong>又 (yòu)</strong> looks like a hand doing an action, and that action has <strong>already</strong> left a mark.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Practice Tab Content -->
+        <div id="interactive-practice" class="main-tab-content">
+            <div class="content-section">
+                <div class="practice-header">
+                    <h2>Practice: Fill in the blanks with 再 or 又</h2>
+                </div>
+
+                <p>Try to complete these sentences. Remember: <strong>Future = 再, Past = 又</strong>.</p>
+
+                <div class="question">
+                    <div class="question-text">
+                        <span class="question-number">1</span>
+                        这本书我看完了，明天我想（&nbsp;&nbsp;&nbsp;）看一遍。
+                    </div>
+                    <p style="margin-left: 48px; color: var(--text-secondary); font-style: italic;">
+                        (I finished this book, I want to read it _____ tomorrow.)
+                    </p>
+                    <button class="toggle-answers-btn per-question-btn" data-answer="1">显示答案</button>
+                    <div class="answer-section" id="answer1" style="display:none;">
+                        <div class="answer-label">正确答案</div>
+                        <div class="answer-explanation">
+                            <strong>再</strong> - This is about a future action (tomorrow), so we use 再.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">
+                        <span class="question-number">2</span>
+                        他昨天迟到了，今天（&nbsp;&nbsp;&nbsp;）迟到了。
+                    </div>
+                    <p style="margin-left: 48px; color: var(--text-secondary); font-style: italic;">
+                        (He was late yesterday, and he was late _____ today.)
+                    </p>
+                    <button class="toggle-answers-btn per-question-btn" data-answer="2">显示答案</button>
+                    <div class="answer-section" id="answer2" style="display:none;">
+                        <div class="answer-label">正确答案</div>
+                        <div class="answer-explanation">
+                            <strong>又</strong> - This describes something that already happened (he was late again today), so we use 又.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">
+                        <span class="question-number">3</span>
+                        别着急，我们可以（&nbsp;&nbsp;&nbsp;）试一次。
+                    </div>
+                    <p style="margin-left: 48px; color: var(--text-secondary); font-style: italic;">
+                        (Don't worry, we can try _____.)
+                    </p>
+                    <button class="toggle-answers-btn per-question-btn" data-answer="3">显示答案</button>
+                    <div class="answer-section" id="answer3" style="display:none;">
+                        <div class="answer-label">正确答案</div>
+                        <div class="answer-explanation">
+                            <strong>再</strong> - This is about a future possibility (we can try again), so we use 再.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">
+                        <span class="question-number">4</span>
+                        你（&nbsp;&nbsp;&nbsp;）把钥匙忘在家里了？下次要小心。
+                    </div>
+                    <p style="margin-left: 48px; color: var(--text-secondary); font-style: italic;">
+                        (You forgot your keys at home _____? Be careful next time.)
+                    </p>
+                    <button class="toggle-answers-btn per-question-btn" data-answer="4">显示答案</button>
+                    <div class="answer-section" id="answer4" style="display:none;">
+                        <div class="answer-label">正确答案</div>
+                        <div class="answer-explanation">
+                            <strong>又</strong> - This describes something that already happened (you forgot again), so we use 又.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">
+                        <span class="question-number">5</span>
+                        音乐很好听，请（&nbsp;&nbsp;&nbsp;）放一次。
+                    </div>
+                    <p style="margin-left: 48px; color: var(--text-secondary); font-style: italic;">
+                        (The music is nice, please play it _____.)
+                    </p>
+                    <button class="toggle-answers-btn per-question-btn" data-answer="5">显示答案</button>
+                    <div class="answer-section" id="answer5" style="display:none;">
+                        <div class="answer-label">正确答案</div>
+                        <div class="answer-explanation">
+                            <strong>再</strong> - This is a request for a future action (please play it again), so we use 再.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">
+                        <span class="question-number">6</span>
+                        我去年去了北京，今年我（&nbsp;&nbsp;&nbsp;）去了。
+                    </div>
+                    <p style="margin-left: 48px; color: var(--text-secondary); font-style: italic;">
+                        (I went to Beijing last year, and I went _____ this year.)
+                    </p>
+                    <button class="toggle-answers-btn per-question-btn" data-answer="6">显示答案</button>
+                    <div class="answer-section" id="answer6" style="display:none;">
+                        <div class="answer-label">正确答案</div>
+                        <div class="answer-explanation">
+                            <strong>又</strong> - This describes something that already happened (I went again this year), so we use 又.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Practice Tab Content -->
+        <div id="comparison-practice" class="main-tab-content">
+            <div class="content-section">
+                <div class="practice-instruction">
+                    <h3>练习指引</h3>
+                    <p><strong>Instructions:</strong></p>
+                    <p>请将原句（描述计划或建议），参照例句，改写成句子（描述已发生的事实）。注意动词和时间词的变化，并正确使用 再 或 又。</p>
+                    <p><em>Please rewrite the original sentence (describing plans or suggestions) into a sentence (describing facts that have already happened). Pay attention to changes in verbs and time words, and use 再 or 又 correctly.</em></p>
+                    <p>此设计能让你清晰对比「再」（用于主观意愿、未来）与「又」（用于客观描述、过去）的语境差异，强化语感与应用能力。</p>
+                    <p><em>This design helps you clearly compare the contextual differences between "再" (used for subjective intentions, future) and "又" (used for objective descriptions, past), strengthening your language sense and application ability.</em></p>
+                </div>
+
+                <div class="comparison-question">
+                    <div class="comparison-header">
+                        <span class="comparison-number">一</span>
+                        <span class="comparison-title">练习一</span>
+                    </div>
+                    <div class="original-sentence">
+                        <div class="sentence-label">原句（未发生）：</div>
+                        <div class="sentence-text">菜单上的甜点看起来很美味，如果我们还吃得下，饭后<strong>再</strong>点一份巧克力蛋糕吧。</div>
+                        <div class="sentence-translation">The desserts on the menu look delicious. If we still have room, let's order another chocolate cake after the meal.</div>
+                    </div>
+                    <div class="rewrite-sentence">
+                        <div class="sentence-label">改写（已发生）：</div>
+                        <div class="sentence-text" style="color: var(--text-secondary); font-style: italic;">请在此处写出你的改写句子...</div>
+                        <div class="sentence-translation" style="color: var(--text-secondary); font-style: italic;">Please write your rewritten sentence here...</div>
+                    </div>
+                    <button class="toggle-answer-btn" data-answer="comp1">显示答案</button>
+                    <div class="comparison-answer" id="comp1">
+                        <div class="answer-header">正确答案</div>
+                        <div class="answer-content">
+                            <div class="sentence-text">菜单上的甜点看起来很美味，因为我们还吃得下，饭后<strong>又</strong>点了一份巧克力蛋糕。</div>
+                            <div class="sentence-translation">The desserts on the menu looked delicious. Since we still had room, we ordered another chocolate cake after the meal.</div>
+                            <p style="margin-top: 12px; color: var(--text-primary);"><strong>解析：</strong>原句是未来的计划（"再点"），改写后描述已发生的事实（"又点了"）。注意时间词从"如果"变为"因为"，动词从"点"变为"点了"。</p>
+                            <p style="color: var(--text-secondary); font-style: italic;"><strong>Explanation:</strong> The original sentence is a future plan ("再点"), while the rewritten sentence describes a fact that has already happened ("又点了"). Note the time word changes from "如果" (if) to "因为" (because), and the verb changes from "点" to "点了".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-question">
+                    <div class="comparison-header">
+                        <span class="comparison-number">二</span>
+                        <span class="comparison-title">练习二</span>
+                    </div>
+                    <div class="original-sentence">
+                        <div class="sentence-label">原句（未发生）：</div>
+                        <div class="sentence-text">这个游戏太好玩了，我们明天<strong>再</strong>玩一次好不好？</div>
+                        <div class="sentence-translation">This game is so fun. How about we play it again tomorrow?</div>
+                    </div>
+                    <div class="rewrite-sentence">
+                        <div class="sentence-label">改写（已发生）：</div>
+                        <div class="sentence-text" style="color: var(--text-secondary); font-style: italic;">请在此处写出你的改写句子...</div>
+                        <div class="sentence-translation" style="color: var(--text-secondary); font-style: italic;">Please write your rewritten sentence here...</div>
+                    </div>
+                    <button class="toggle-answer-btn" data-answer="comp2">显示答案</button>
+                    <div class="comparison-answer" id="comp2">
+                        <div class="answer-header">正确答案</div>
+                        <div class="answer-content">
+                            <div class="sentence-text">这个游戏太好玩了，我们今天下午<strong>又</strong>玩了一次。</div>
+                            <div class="sentence-translation">This game was so fun. We played it again this afternoon.</div>
+                            <p style="margin-top: 12px; color: var(--text-primary);"><strong>解析：</strong>原句是未来的建议（"明天再玩"），改写后描述已发生的事实（"今天下午又玩了"）。时间词从"明天"变为"今天下午"，动词从"玩"变为"玩了"。</p>
+                            <p style="color: var(--text-secondary); font-style: italic;"><strong>Explanation:</strong> The original sentence is a future suggestion ("明天再玩"), while the rewritten sentence describes a fact that has already happened ("今天下午又玩了"). The time word changes from "明天" (tomorrow) to "今天下午" (this afternoon), and the verb changes from "玩" to "玩了".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-question">
+                    <div class="comparison-header">
+                        <span class="comparison-number">三</span>
+                        <span class="comparison-title">练习三</span>
+                    </div>
+                    <div class="original-sentence">
+                        <div class="sentence-label">原句（未发生）：</div>
+                        <div class="sentence-text">你的解释很清楚，但我没记住，可以请你<strong>再</strong>解释一遍吗？</div>
+                        <div class="sentence-translation">Your explanation is very clear, but I didn't remember it. Could you please explain it again?</div>
+                    </div>
+                    <div class="rewrite-sentence">
+                        <div class="sentence-label">改写（已发生）：</div>
+                        <div class="sentence-text" style="color: var(--text-secondary); font-style: italic;">请在此处写出你的改写句子...</div>
+                        <div class="sentence-translation" style="color: var(--text-secondary); font-style: italic;">Please write your rewritten sentence here...</div>
+                    </div>
+                    <button class="toggle-answer-btn" data-answer="comp3">显示答案</button>
+                    <div class="comparison-answer" id="comp3">
+                        <div class="answer-header">正确答案</div>
+                        <div class="answer-content">
+                            <div class="sentence-text">你的解释很清楚，但我刚才没听懂，所以请你<strong>又</strong>解释了一遍。</div>
+                            <div class="sentence-translation">Your explanation was very clear, but I didn't understand it just now, so you explained it again.</div>
+                            <p style="margin-top: 12px; color: var(--text-primary);"><strong>解析：</strong>原句是未来的请求（"可以再解释吗"），改写后描述已发生的事实（"又解释了一遍"）。时间词从"没记住"变为"刚才没听懂"，动词从"解释"变为"解释了一遍"。</p>
+                            <p style="color: var(--text-secondary); font-style: italic;"><strong>Explanation:</strong> The original sentence is a future request ("可以再解释吗"), while the rewritten sentence describes a fact that has already happened ("又解释了一遍"). The time word changes from "没记住" (didn't remember) to "刚才没听懂" (didn't understand just now), and the verb changes from "解释" to "解释了一遍".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-question">
+                    <div class="comparison-header">
+                        <span class="comparison-number">四</span>
+                        <span class="comparison-title">练习四</span>
+                    </div>
+                    <div class="original-sentence">
+                        <div class="sentence-label">原句（未发生）：</div>
+                        <div class="sentence-text">这家旅馆的服务真好，我们下次来这个城市，一定要<strong>再</strong>住这里。</div>
+                        <div class="sentence-translation">This hotel's service is really good. When we come to this city next time, we must stay here again.</div>
+                    </div>
+                    <div class="rewrite-sentence">
+                        <div class="sentence-label">改写（已发生）：</div>
+                        <div class="sentence-text" style="color: var(--text-secondary); font-style: italic;">请在此处写出你的改写句子...</div>
+                        <div class="sentence-translation" style="color: var(--text-secondary); font-style: italic;">Please write your rewritten sentence here...</div>
+                    </div>
+                    <button class="toggle-answer-btn" data-answer="comp4">显示答案</button>
+                    <div class="comparison-answer" id="comp4">
+                        <div class="answer-header">正确答案</div>
+                        <div class="answer-content">
+                            <div class="sentence-text">这家旅馆的服务真好，我们这次来这个城市，<strong>又</strong>住了这里。</div>
+                            <div class="sentence-translation">This hotel's service was really good. When we came to this city this time, we stayed here again.</div>
+                            <p style="margin-top: 12px; color: var(--text-primary);"><strong>解析：</strong>原句是未来的计划（"下次再住"），改写后描述已发生的事实（"这次又住了"）。时间词从"下次"变为"这次"，动词从"住"变为"住了"。</p>
+                            <p style="color: var(--text-secondary); font-style: italic;"><strong>Explanation:</strong> The original sentence is a future plan ("下次再住"), while the rewritten sentence describes a fact that has already happened ("这次又住了"). The time word changes from "下次" (next time) to "这次" (this time), and the verb changes from "住" to "住了".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-question">
+                    <div class="comparison-header">
+                        <span class="comparison-number">五</span>
+                        <span class="comparison-title">练习五</span>
+                    </div>
+                    <div class="original-sentence">
+                        <div class="sentence-label">原句（未发生）：</div>
+                        <div class="sentence-text">会议还没结束，如果有新的想法，欢迎你<strong>再</strong>发言。</div>
+                        <div class="sentence-translation">The meeting hasn't ended yet. If you have new ideas, you're welcome to speak again.</div>
+                    </div>
+                    <div class="rewrite-sentence">
+                        <div class="sentence-label">改写（已发生）：</div>
+                        <div class="sentence-text" style="color: var(--text-secondary); font-style: italic;">请在此处写出你的改写句子...</div>
+                        <div class="sentence-translation" style="color: var(--text-secondary); font-style: italic;">Please write your rewritten sentence here...</div>
+                    </div>
+                    <button class="toggle-answer-btn" data-answer="comp5">显示答案</button>
+                    <div class="comparison-answer" id="comp5">
+                        <div class="answer-header">正确答案</div>
+                        <div class="answer-content">
+                            <div class="sentence-text">会议中，他有了新的想法，所以<strong>又</strong>发言了。</div>
+                            <div class="sentence-translation">During the meeting, he had new ideas, so he spoke again.</div>
+                            <p style="margin-top: 12px; color: var(--text-primary);"><strong>解析：</strong>原句是未来的邀请（"欢迎再发言"），改写后描述已发生的事实（"又发言了"）。时间词从"如果"变为"所以"，动词从"发言"变为"发言了"。</p>
+                            <p style="color: var(--text-secondary); font-style: italic;"><strong>Explanation:</strong> The original sentence is a future invitation ("欢迎再发言"), while the rewritten sentence describes a fact that has already happened ("又发言了"). The time word changes from "如果" (if) to "所以" (so), and the verb changes from "发言" to "发言了".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-question">
+                    <div class="comparison-header">
+                        <span class="comparison-number">六</span>
+                        <span class="comparison-title">练习六</span>
+                    </div>
+                    <div class="original-sentence">
+                        <div class="sentence-label">原句（未发生）：</div>
+                        <div class="sentence-text">这部电影的结局让我很好奇，我打算上网<strong>再</strong>找一些资料看看。</div>
+                        <div class="sentence-translation">The ending of this movie made me very curious. I plan to search online for more information.</div>
+                    </div>
+                    <div class="rewrite-sentence">
+                        <div class="sentence-label">改写（已发生）：</div>
+                        <div class="sentence-text" style="color: var(--text-secondary); font-style: italic;">请在此处写出你的改写句子...</div>
+                        <div class="sentence-translation" style="color: var(--text-secondary); font-style: italic;">Please write your rewritten sentence here...</div>
+                    </div>
+                    <button class="toggle-answer-btn" data-answer="comp6">显示答案</button>
+                    <div class="comparison-answer" id="comp6">
+                        <div class="answer-header">正确答案</div>
+                        <div class="answer-content">
+                            <div class="sentence-text">这部电影的结局让我很好奇，我昨晚<strong>又</strong>上网找了很多资料。</div>
+                            <div class="sentence-translation">The ending of this movie made me very curious. Last night, I searched online for a lot of information again.</div>
+                            <p style="margin-top: 12px; color: var(--text-primary);"><strong>解析：</strong>原句是未来的计划（"打算再找"），改写后描述已发生的事实（"昨晚又找了"）。时间词从"打算"变为"昨晚"，动词从"找"变为"找了"。</p>
+                            <p style="color: var(--text-secondary); font-style: italic;"><strong>Explanation:</strong> The original sentence is a future plan ("打算再找"), while the rewritten sentence describes a fact that has already happened ("昨晚又找了"). The time word changes from "打算" (plan to) to "昨晚" (last night), and the verb changes from "找" to "找了".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Main Tab Switcher Functionality
+        document.querySelectorAll('.main-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all main tabs
+                document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+                // Hide all main tab contents
+                document.querySelectorAll('.main-tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Activate current main tab
+                tab.classList.add('active');
+                // Show corresponding main tab content
+                const tabId = tab.getAttribute('data-main-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Per-question Toggle Answers Button Functionality
+        document.querySelectorAll('.per-question-btn').forEach(function(btn){
+            btn.addEventListener('click', function() {
+                const number = this.getAttribute('data-answer');
+                const answerSection = document.getElementById('answer' + number);
+                if (answerSection.style.display === 'none' || answerSection.style.display === '') {
+                    answerSection.style.display = 'block';
+                    this.textContent = '隐藏答案';
+                } else {
+                    answerSection.style.display = 'none';
+                    this.textContent = '显示答案';
+                }
+            });
+        });
+
+        // Comparison Practice Toggle Answers Button Functionality
+        document.querySelectorAll('.toggle-answer-btn').forEach(function(btn){
+            btn.addEventListener('click', function() {
+                const answerId = this.getAttribute('data-answer');
+                const answerSection = document.getElementById(answerId);
+                if (answerSection.classList.contains('show')) {
+                    answerSection.classList.remove('show');
+                    this.textContent = '显示答案';
+                } else {
+                    answerSection.classList.add('show');
+                    this.textContent = '隐藏答案';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
