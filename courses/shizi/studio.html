@@ -393,10 +393,12 @@
             background: var(--bg-light);
             border: 2px solid var(--border-light);
             border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
+            padding: 0;
             margin-bottom: var(--spacing-lg);
             transition: all 0.3s;
             position: relative;
+            display: flex;
+            align-items: stretch;
         }
 
         .form-item-card:hover {
@@ -405,11 +407,13 @@
         }
 
         .form-item-card.dragging {
-            opacity: 0.5;
-            transform: scale(0.95);
+            opacity: 0.8;
+            transform: scale(0.98);
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 2px var(--primary-dark);
         }
 
-        .form-item-card.collapsed {
+        .form-item-card.collapsed .form-item-content {
             padding: var(--spacing-md) var(--spacing-lg);
         }
 
@@ -417,7 +421,7 @@
             display: none;
         }
 
-        .form-item-card.expanded {
+        .form-item-card.expanded .form-item-content {
             padding: var(--spacing-lg);
         }
 
@@ -495,15 +499,60 @@
             transition: all 0.3s ease;
         }
 
-        .drag-handle {
-            font-size: var(--text-xl);
-            color: var(--text-muted);
+        /* 左側拖拽條 */
+        .drag-bar {
+            width: 12px;
+            background: var(--bg-light);
+            border-right: 1px solid var(--border-medium);
+            border-top-left-radius: var(--radius-lg);
+            border-bottom-left-radius: var(--radius-lg);
             cursor: grab;
             user-select: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
         }
 
-        .drag-handle:active {
+        .drag-bar::before {
+            content: '⋮';
+            font-size: var(--text-xl);
+            color: var(--text-muted);
+            transition: all 0.2s;
+            line-height: 1;
+            display: block;
+        }
+
+        .drag-bar:hover {
+            background: var(--primary-color);
+        }
+
+        .drag-bar:hover::before {
+            color: white;
+        }
+
+        .drag-bar:active {
             cursor: grabbing;
+            background: var(--primary-dark);
+        }
+
+        .form-item-card.dragging .drag-bar {
+            background: var(--primary-dark);
+        }
+
+        .form-item-card.dragging .drag-bar::before {
+            color: white;
+        }
+
+        /* 卡片內容區域 */
+        .form-item-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .form-item-title {
@@ -1101,6 +1150,8 @@
         let clickTimeout = null;
         let lastClickIndex = -1;
         let lastClickTime = 0;
+        let isDragging = false;
+        let dragHandlersInitialized = false;
 
         // ==================== 工具函數 ====================
         function showMessage(text, type = 'info') {
@@ -1348,22 +1399,23 @@
             const charDisplay = renderCharacterDisplay(item);
             const isPublished = item.is_published !== false;
             return `
-                <div class="form-item-card collapsed" data-index="${index}" draggable="true">
-                    <div class="form-item-header" onclick="handleFormItemClick(${index})">
-                        <span class="form-item-toggle-icon" onclick="event.stopPropagation(); toggleFormItem(${index})">展</span>
-                        <span class="drag-handle" onclick="event.stopPropagation();">≡</span>
-                        <div class="form-item-preview">${charDisplay || '新項目'}</div>
-                        <div class="publish-toggle" onclick="event.stopPropagation();">
-                            <label class="toggle-switch">
-                                <input type="checkbox" ${isPublished ? 'checked' : ''} onchange="togglePublish(${index}, this.checked)">
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <span class="publish-status ${isPublished ? 'published' : 'unpublished'}">
-                                ${isPublished ? '已發布' : '未發布'}
-                            </span>
+                <div class="form-item-card collapsed" data-index="${index}">
+                    <div class="drag-bar"></div>
+                    <div class="form-item-content">
+                        <div class="form-item-header" onclick="handleFormItemClick(${index})">
+                            <span class="form-item-toggle-icon" onclick="event.stopPropagation(); toggleFormItem(${index})">展</span>
+                            <div class="form-item-preview">${charDisplay || '新項目'}</div>
+                            <div class="publish-toggle" onclick="event.stopPropagation();">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${isPublished ? 'checked' : ''} onchange="togglePublish(${index}, this.checked)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="publish-status ${isPublished ? 'published' : 'unpublished'}">
+                                    ${isPublished ? '已發布' : '未發布'}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-item-body">
+                        <div class="form-item-body">
                         <div class="form-field required">
                             <label>字</label>
                             <input type="text" data-field="character" value="${item.character || ''}" placeholder="例如：夬">
@@ -1415,6 +1467,7 @@
                             <input type="number" data-field="order" value="${item.order || index}" min="0">
                         </div>
                         <button class="btn-delete-item" onclick="deleteItem(${index})">🗑️ 刪除此項目</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1859,63 +1912,155 @@
 
 
         // ==================== 拖拽排序 ====================
+        // 拖拽事件處理函數（命名函數，避免重複綁定）
+        function handleDragMouseMove(e) {
+            if (!isDragging || !draggedElement) return;
+            
+            e.preventDefault();
+            
+            const container = document.getElementById('editPanelContent');
+            if (!container) return;
+            
+            const mouseY = e.clientY;
+            
+            // 找到應該插入的位置
+            const afterElement = getDragAfterElement(container, mouseY);
+            const dragging = document.querySelector('.dragging');
+            
+            if (!dragging) return;
+            
+            if (afterElement == null) {
+                // 移動到最後
+                const lastChild = container.lastElementChild;
+                if (dragging !== lastChild) {
+                    container.appendChild(dragging);
+                }
+            } else if (dragging !== afterElement) {
+                // 插入到指定位置
+                container.insertBefore(dragging, afterElement);
+            }
+        }
+        
+        function handleDragMouseUp(e) {
+            if (!isDragging || !draggedElement) {
+                return;
+            }
+            
+            console.log('✅ 拖拽結束');
+            e.preventDefault();
+            
+            const container = document.getElementById('editPanelContent');
+            if (!container) return;
+            
+            // 移除拖拽樣式
+            draggedElement.classList.remove('dragging');
+            
+            // 計算新位置
+            const newIndex = Array.from(container.children).indexOf(draggedElement);
+            const oldIndex = parseInt(draggedElement.dataset.index);
+            
+            console.log('位置變化:', { oldIndex, newIndex });
+            
+            if (oldIndex !== newIndex && newIndex >= 0) {
+                // 更新資料順序
+                const [movedItem] = currentData.splice(oldIndex, 1);
+                currentData.splice(newIndex, 0, movedItem);
+                
+                // 更新 order
+                currentData.forEach((item, i) => {
+                    item.order = i;
+                });
+                
+                debounceSave();
+                renderEditPanel();
+                renderPreviewPanel(currentPreviewIndex >= 0 ? currentPreviewIndex : 0);
+            }
+            
+            // 重置狀態
+            isDragging = false;
+            draggedElement = null;
+            document.body.style.userSelect = '';
+            document.body.style.cursor = '';
+        }
+        
         function initDragAndDrop() {
             const container = document.getElementById('editPanelContent');
+            if (!container) return;
             
-            container.addEventListener('dragstart', (e) => {
-                if (e.target.closest('.form-item-card')) {
-                    draggedElement = e.target.closest('.form-item-card');
-                    draggedElement.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                }
-            });
-
-            container.addEventListener('dragend', (e) => {
-                if (draggedElement) {
-                    draggedElement.classList.remove('dragging');
-                    draggedElement = null;
-                }
-            });
-
-            container.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                const afterElement = getDragAfterElement(container, e.clientY);
-                const dragging = document.querySelector('.dragging');
-                if (dragging && afterElement == null) {
-                    container.appendChild(dragging);
-                } else if (dragging && afterElement) {
-                    container.insertBefore(dragging, afterElement);
-                }
-            });
-
-            container.addEventListener('drop', (e) => {
-                e.preventDefault();
-                if (draggedElement) {
-                    const newIndex = Array.from(container.children).indexOf(draggedElement);
-                    const oldIndex = parseInt(draggedElement.dataset.index);
+            // 只初始化一次全局事件監聽器
+            if (!dragHandlersInitialized) {
+                document.addEventListener('mousemove', handleDragMouseMove);
+                document.addEventListener('mouseup', handleDragMouseUp);
+                dragHandlersInitialized = true;
+            }
+            
+            // 使用事件委派，只在拖拽條上監聽 mousedown
+            // 使用 capture 階段確保優先處理
+            container.addEventListener('mousedown', (e) => {
+                // 先檢查是否直接點擊在拖拽條上
+                const dragBar = e.target.closest('.drag-bar');
+                const card = e.target.closest('.form-item-card');
+                
+                if (!card) return;
+                
+                // 方法1: 如果直接點擊在拖拽條上
+                if (dragBar) {
+                    console.log('✅ 拖拽開始 (直接點擊拖拽條)');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
                     
-                    // 更新資料順序
-                    const [movedItem] = currentData.splice(oldIndex, 1);
-                    currentData.splice(newIndex, 0, movedItem);
+                    isDragging = true;
+                    draggedElement = card;
                     
-                    // 更新 order
-                    currentData.forEach((item, i) => {
-                        item.order = i;
-                    });
+                    // 添加拖拽樣式
+                    card.classList.add('dragging');
                     
-                    debounceSave();
-                    renderEditPanel();
-                    renderPreviewPanel(currentPreviewIndex >= 0 ? currentPreviewIndex : 0);
+                    // 防止文字選擇
+                    document.body.style.userSelect = 'none';
+                    document.body.style.cursor = 'grabbing';
+                    return;
                 }
-            });
+                
+                // 方法2: 檢查點擊位置是否在拖拽條內（左側12px範圍內）
+                const cardRect = card.getBoundingClientRect();
+                const clickX = e.clientX - cardRect.left;
+                
+                console.log('拖拽檢測:', {
+                    clickX: clickX,
+                    cardLeft: cardRect.left,
+                    clientX: e.clientX,
+                    target: e.target.tagName,
+                    targetClass: e.target.className,
+                    hasDragBar: !!dragBar
+                });
+                
+                // 如果點擊在左側12px範圍內，則視為拖拽條點擊
+                if (clickX <= 12) {
+                    console.log('✅ 拖拽開始 (位置檢測)');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    
+                    isDragging = true;
+                    draggedElement = card;
+                    
+                    // 添加拖拽樣式
+                    card.classList.add('dragging');
+                    
+                    // 防止文字選擇
+                    document.body.style.userSelect = 'none';
+                    document.body.style.cursor = 'grabbing';
+                }
+            }, true); // 使用 capture 階段
         }
 
-        function getDragAfterElement(container, y) {
+        function getDragAfterElement(container, mouseY) {
             const draggableElements = [...container.querySelectorAll('.form-item-card:not(.dragging)')];
             
             return draggableElements.reduce((closest, child) => {
                 const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
+                const offset = mouseY - box.top - box.height / 2;
                 
                 if (offset < 0 && offset > closest.offset) {
                     return { offset: offset, element: child };
