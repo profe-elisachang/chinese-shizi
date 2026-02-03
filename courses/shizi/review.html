@@ -117,7 +117,7 @@
 
     /* ==================== Tab System ==================== */
     .tab-system { margin: 24px 0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px var(--shadow); }
-    .tab-buttons { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg-light); }
+    .tab-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--bg-light); }
     .tab-btn {
         padding: 18px;
         border: none;
@@ -646,13 +646,33 @@
     .card-front { background: white; border: 3px solid var(--border); }
     .card-back { background: var(--bg-light); border: 3px solid var(--primary); transform: rotateY(180deg); }
 
-    .character { font-size: 140px; color: var(--primary-dark); font-weight: bold; }
+    .character { 
+        font-size: 140px; 
+        color: var(--primary-dark); 
+        font-weight: bold;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        max-width: 100%;
+        text-align: center;
+        line-height: 1.2;
+    }
+    .character.english-text {
+        /* 英文文本使用较小字体，支持换行 */
+        font-size: clamp(30px, 8vw, 80px);
+        line-height: 1.3;
+    }
     .back-character { font-size: 80px; color: var(--primary-dark); }
     .pinyin { font-size: 30px; color: var(--primary); margin: 10px 0; font-weight: bold; }
     .meaning { font-size: 22px; color: var(--text-primary); line-height: 1.5; }
 
     @media (max-width: 640px) {
-        .character { font-size: 100px; }
+        .character { 
+            font-size: 100px;
+        }
+        .character.english-text {
+            font-size: clamp(24px, 6vw, 60px);
+        }
         .back-character { font-size: 50px; }
         .pinyin { font-size: 20px; margin: 6px 0; }
         .meaning { font-size: 1rem; }
@@ -1010,6 +1030,7 @@
                 <div class="tab-buttons">
                     <button class="tab-btn active" data-tab="components">Radical Components</button>
                     <button class="tab-btn" data-tab="characters">Character Lessons</button>
+                    <button class="tab-btn" data-tab="phrases">词组</button>
                 </div>
             </div>
             
@@ -1039,6 +1060,15 @@
                 </div>
             </div>
             
+            <!-- Review Direction Selector (Shared by both Smart Review and By Difficulty) -->
+            <div class="amount-selector" id="reviewDirectionSelector" style="display: none; margin-top: 20px;">
+                <label>Review Direction:</label>
+                <select id="reviewDirection">
+                    <option value="forward">中文 → 英文 (Chinese → English)</option>
+                    <option value="reverse">英文 → 中文 (English → Chinese)</option>
+                </select>
+            </div>
+            
             <!-- Smart Recommendation -->
             <div class="recommended-section" id="recommendedSection">
 
@@ -1056,7 +1086,7 @@
                     </div>
                     
                     <div class="due-info" id="dueInfo">
-                        Due Today: <span id="totalDue">0</span> characters
+                        Due Today: <span id="totalDue">0</span> <span id="dueItemType">characters</span>
                     </div>
                     
                     <div class="amount-selector">
@@ -1065,7 +1095,7 @@
                             <option value="20">20 (Quick Daily Review)</option>
                             <option value="30">30 (Standard)</option>
                             <option value="50">50 (Intensive Practice)</option>
-                            <option value="all">All Due Characters (When you have time!)</option>
+                            <option value="all">All Due Items (When you have time!)</option>
                         </select>
                     </div>
                     
@@ -1278,11 +1308,13 @@
         let allCharacters = [];
         let componentCharacters = [];
         let targetCharacters = [];
+        let phraseItems = [];
         let userProgress = {};
         let currentTab = 'components';
         let reviewQueue = [];
         let currentReviewIndex = 0;
         let isCardFlipped = false;
+        let reviewDirection = 'forward'; // 'forward' (中文→英文) or 'reverse' (英文→中文)
         
         // ==================== Initialization ====================
         window.addEventListener('DOMContentLoaded', async () => {
@@ -1309,6 +1341,13 @@
                         document.getElementById('loadingContainer').classList.add('hidden');
                         document.getElementById('mainContent').classList.remove('hidden');
 
+                        // 初始化显示逻辑
+                        updateDueInfoText();
+                        const directionSelector = document.getElementById('reviewDirectionSelector');
+                        if (directionSelector) {
+                            directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+                        }
+
                         updateStats();
 
                         // Check if we need to show name input modal
@@ -1326,7 +1365,7 @@
             console.time('Loading');  // ← 加这行
 
             // ========== 緩存檢查（含版本控制）==========
-        const CACHE_VERSION = 2;  // 發布機制版本
+        const CACHE_VERSION = 3;  // 發布機制版本（增加phrases支持）
         const MAX_CACHE_AGE = 1000 * 60 * 30;  // 30 分鐘緩存過期
         const cached = localStorage.getItem('lessons_cache');
         if (cached) {
@@ -1336,6 +1375,7 @@
             if (data.version === CACHE_VERSION && cacheAge < MAX_CACHE_AGE) {
                 componentCharacters = data.components;
                 targetCharacters = data.targets;
+                phraseItems = data.phrases || [];
                 console.log('✅ Loaded from cache!');
                 console.timeEnd('Loading');
                 return;
@@ -1346,6 +1386,7 @@
         }
                 componentCharacters = [];
                 targetCharacters = [];
+                phraseItems = [];
                 
 // Load lessons 1-25
 for (let i = 1; i <= 25; i++) {
@@ -1379,18 +1420,45 @@ for (let i = 1; i <= 25; i++) {
                         });
                     });
             }
+
+            // Phrases - 只載入 subtype === 'phrase' 的詞組（排除對話）
+            if (data.phrases && data.phrases.length > 0) {
+                data.phrases
+                    .filter(phrase => phrase.subtype === 'phrase')
+                    .forEach(phrase => {
+                        // 解析 content: "国家|guójiā|country"
+                        const parts = phrase.content.split('|').map(s => s.trim());
+                        const chinese = parts[0] || '';
+                        const pinyin = parts[1] || '';
+                        const english = parts[2] || '';
+                        
+                        // 生成唯一ID: lesson|词组汉字
+                        const uniqueId = `lesson${i}|${chinese}`;
+                        
+                        phraseItems.push({
+                            ...phrase,
+                            chinese: chinese,
+                            pinyin: pinyin,
+                            english: english,
+                            lesson: `lesson${i}`,
+                            type: 'phrase',
+                            uniqueId: uniqueId
+                        });
+                    });
+            }
         }
     } catch (error) {
         console.log(`Lesson ${i} not found, skipping...`);
     }
 }
                 
-                console.log(`Loaded ${componentCharacters.length} components, ${targetCharacters.length} targets`);
+                console.log(`Loaded ${componentCharacters.length} components, ${targetCharacters.length} targets, ${phraseItems.length} phrases`);
                 // ========== 存緩存（含版本和時間戳）==========
                     localStorage.setItem('lessons_cache', JSON.stringify({
                         components: componentCharacters,
                         targets: targetCharacters,
-                        version: 2,  // 發布機制版本
+                        phrases: phraseItems,
+                        version: 3,  // 更新版本號（增加phrases支持）
                         cacheTime: Date.now()
                     }));
                     console.log('💾 Saved to cache!');
@@ -1416,25 +1484,37 @@ for (let i = 1; i <= 25; i++) {
             
             for (let i = 1; i <= 25; i++) {
                 const lessonId = `lesson${i}`;
-                const chars = currentTab === 'components' 
-                    ? componentCharacters.filter(c => c.lesson === lessonId)
-                    : targetCharacters.filter(c => c.lesson === lessonId);
+                let items = [];
+                if (currentTab === 'components') {
+                    items = componentCharacters.filter(c => c.lesson === lessonId);
+                } else if (currentTab === 'characters') {
+                    items = targetCharacters.filter(c => c.lesson === lessonId);
+                } else if (currentTab === 'phrases') {
+                    items = phraseItems.filter(p => p.lesson === lessonId);
+                }
                 
-                        // ✅ 計算進度：Easy 字數 / 總字數
+                        // ✅ 計算進度：Easy 數量 / 總數量
         let easyCount = 0;
-        if (chars.length > 0) {
-            easyCount = chars.filter(char => {
-                const progress = userProgress[char.character];
+        if (items.length > 0) {
+            easyCount = items.filter(item => {
+                let progress;
+                if (currentTab === 'phrases') {
+                    // 使用uniqueId作为key
+                    progress = userProgress[item.uniqueId];
+                } else {
+                    // 使用character作为key
+                    progress = userProgress[item.character];
+                }
                 return progress && progress.box === 'easy';
             }).length;
         }
-        const progress = chars.length > 0 ? Math.round((easyCount / chars.length) * 100) : 0;
+        const progress = items.length > 0 ? Math.round((easyCount / items.length) * 100) : 0;
                 
-                if (chars.length > 0) {
+                if (items.length > 0) {
                     lessons.push({ 
                         id: lessonId, 
                         num: i, 
-                        count: chars.length,
+                        count: items.length,
                         progress: progress
                     });
                 } else {
@@ -1448,7 +1528,7 @@ for (let i = 1; i <= 25; i++) {
             }
             
             container.innerHTML = lessons.map(lesson => {
-                const lessonType = currentTab === 'components' ? 'Components' : 'Characters';
+                const lessonType = currentTab === 'components' ? 'Components' : (currentTab === 'characters' ? 'Characters' : 'Phrases');
                 
                 if (lesson.comingSoon) {
                     return `
@@ -1535,7 +1615,7 @@ for (let i = 1; i <= 25; i++) {
             return selected;
         }
         
-        // ==================== Layer 1: Tab Switching (Components vs Characters) ====================
+        // ==================== Layer 1: Tab Switching (Components vs Characters vs Phrases) ====================
         document.querySelectorAll('.tab-system:first-of-type .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 // Remove active from all Layer 1 buttons
@@ -1544,12 +1624,35 @@ for (let i = 1; i <= 25; i++) {
                 btn.classList.add('active');
                 currentTab = btn.dataset.tab;
                 
+                // 显示/隐藏复习方向选择器（只在词组tab显示）
+                const directionSelector = document.getElementById('reviewDirectionSelector');
+                if (directionSelector) {
+                    directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+                }
+                
+                // 更新due-info的文字
+                updateDueInfoText();
+                
                 // Render and reset
                 renderLessonCheckboxes();
                 clearAllLessons();
                 updateStats();
             });
         });
+        
+        // ==================== Update Due Info Text ====================
+        function updateDueInfoText() {
+            const dueItemType = document.getElementById('dueItemType');
+            if (dueItemType) {
+                if (currentTab === 'phrases') {
+                    dueItemType.textContent = 'phrases';
+                } else if (currentTab === 'components') {
+                    dueItemType.textContent = 'components';
+                } else {
+                    dueItemType.textContent = 'characters';
+                }
+            }
+        }
         
 
         
@@ -1582,17 +1685,32 @@ for (let i = 1; i <= 25; i++) {
         function getSelectedCharacters() {
             const selectedLessons = getSelectedLessons();
             
-            const sourceChars = currentTab === 'components' ? componentCharacters : targetCharacters;
-            return sourceChars.filter(char => selectedLessons.includes(char.lesson));
+            let sourceItems = [];
+            if (currentTab === 'components') {
+                sourceItems = componentCharacters;
+            } else if (currentTab === 'characters') {
+                sourceItems = targetCharacters;
+            } else if (currentTab === 'phrases') {
+                sourceItems = phraseItems;
+            }
+            
+            return sourceItems.filter(item => selectedLessons.includes(item.lesson));
         }
         
         // ==================== Update Statistics ====================
         function updateStats() {
-            const chars = getSelectedCharacters();
+            const items = getSelectedCharacters();
             const boxes = { forgot: 0, hard: 0, good: 0, easy: 0 };
             
-            chars.forEach(char => {
-                const progress = userProgress[char.character];
+            items.forEach(item => {
+                let progress;
+                if (currentTab === 'phrases') {
+                    // 使用uniqueId作为key
+                    progress = userProgress[item.uniqueId];
+                } else {
+                    // 使用character作为key
+                    progress = userProgress[item.character];
+                }
                 const box = progress ? progress.box : 'forgot';
                 boxes[box]++;
             });
@@ -1603,19 +1721,27 @@ for (let i = 1; i <= 25; i++) {
             document.getElementById('count-easy').textContent = boxes.easy;
             
             // Update due count
-            const dueChars = getDueCharacters(chars);
-            document.getElementById('totalDue').textContent = dueChars.length;
+            const dueItems = getDueCharacters(items);
+            document.getElementById('totalDue').textContent = dueItems.length;
             
             updateRecommendedBreakdown();
         }
         
         // ==================== Get Due Characters ====================
-        function getDueCharacters(characters) {
+        function getDueCharacters(items) {
             const today = new Date().setHours(0, 0, 0, 0);
             
-            return characters.filter(char => {
-                const progress = userProgress[char.character];
-                if (!progress) return true; // New character
+            return items.filter(item => {
+                let progress;
+                if (currentTab === 'phrases') {
+                    // 使用uniqueId作为key
+                    progress = userProgress[item.uniqueId];
+                } else {
+                    // 使用character作为key
+                    progress = userProgress[item.character];
+                }
+                
+                if (!progress) return true; // New item
                 
                 const lastReviewed = progress.lastReviewed ? new Date(progress.lastReviewed).setHours(0, 0, 0, 0) : null;
                 if (!lastReviewed) return true;
@@ -1634,18 +1760,25 @@ for (let i = 1; i <= 25; i++) {
         
         // ==================== Update Recommended Breakdown ====================
         function updateRecommendedBreakdown() {
-            const chars = getSelectedCharacters();
-            const dueChars = getDueCharacters(chars);
+            const items = getSelectedCharacters();
+            const dueItems = getDueCharacters(items);
             const amount = document.getElementById('reviewAmount').value;
             
-            let selectedChars = dueChars;
+            let selectedItems = dueItems;
             if (amount !== 'all') {
-                selectedChars = dueChars.slice(0, parseInt(amount));
+                selectedItems = dueItems.slice(0, parseInt(amount));
             }
             
             const breakdown = { forgot: 0, hard: 0, good: 0, easy: 0 };
-            selectedChars.forEach(char => {
-                const progress = userProgress[char.character];
+            selectedItems.forEach(item => {
+                let progress;
+                if (currentTab === 'phrases') {
+                    // 使用uniqueId作为key
+                    progress = userProgress[item.uniqueId];
+                } else {
+                    // 使用character作为key
+                    progress = userProgress[item.character];
+                }
                 const box = progress ? progress.box : 'forgot';
                 breakdown[box]++;
             });
@@ -1674,29 +1807,38 @@ for (let i = 1; i <= 25; i++) {
         
         // ==================== Start Reviews ====================
         function startRecommendedReview() {
-            const chars = getSelectedCharacters();
-            const dueChars = getDueCharacters(chars);
+            const items = getSelectedCharacters();
+            const dueItems = getDueCharacters(items);
             const amount = document.getElementById('reviewAmount').value;
             
-            if (dueChars.length === 0) {
-                showMessage('No characters are due for review!没有到期的字需要复习！', 'info');
+            if (dueItems.length === 0) {
+                const itemType = currentTab === 'phrases' ? '词组' : '字';
+                showMessage(`No ${itemType} are due for review!没有到期的${itemType}需要复习！`, 'info');
                 return;
             }
             
-            reviewQueue = amount === 'all' ? dueChars : dueChars.slice(0, parseInt(amount));
+            reviewQueue = amount === 'all' ? dueItems : dueItems.slice(0, parseInt(amount));
             shuffleArray(reviewQueue);
             startReview();
         }
         
         function startBoxReview(box) {
-            const chars = getSelectedCharacters();
-            reviewQueue = chars.filter(char => {
-                const progress = userProgress[char.character];
+            const items = getSelectedCharacters();
+            reviewQueue = items.filter(item => {
+                let progress;
+                if (currentTab === 'phrases') {
+                    // 使用uniqueId作为key
+                    progress = userProgress[item.uniqueId];
+                } else {
+                    // 使用character作为key
+                    progress = userProgress[item.character];
+                }
                 return progress ? progress.box === box : box === 'forgot';
             });
             
             if (reviewQueue.length === 0) {
-                showMessage(`没有 ${box} 难度的字！`, 'info');
+                const itemType = currentTab === 'phrases' ? '词组' : '字';
+                showMessage(`没有 ${box} 难度的${itemType}！`, 'info');
                 return;
             }
             
@@ -1704,23 +1846,34 @@ for (let i = 1; i <= 25; i++) {
             startReview();
         }
         
-function startReview() {
-    currentReviewIndex = 0;
-    // Hide all controls during review
-    document.querySelectorAll('.tab-system').forEach(tab => tab.style.display = 'none');
-    document.querySelector('.lesson-selector').style.display = 'none';
-    document.querySelector('.recommended-section').style.display = 'none';
-    document.querySelector('#difficultySection').style.display = 'none';
-    // Show review area
-    document.getElementById('reviewArea').classList.remove('hidden');
-    showCard();
-}
+        function startReview() {
+            currentReviewIndex = 0;
+            // Hide all controls during review
+            document.querySelectorAll('.tab-system').forEach(tab => tab.style.display = 'none');
+            document.querySelector('.lesson-selector').style.display = 'none';
+            document.querySelector('.recommended-section').style.display = 'none';
+            document.querySelector('#difficultySection').style.display = 'none';
+            // 隐藏复习方向选择器（复习时不需要显示）
+            const directionSelector = document.getElementById('reviewDirectionSelector');
+            if (directionSelector) {
+                directionSelector.style.display = 'none';
+            }
+            // Show review area
+            document.getElementById('reviewArea').classList.remove('hidden');
+            showCard();
+        }
         
         function endReview() {
             document.getElementById('reviewArea').classList.add('hidden');
             document.querySelectorAll('.tab-system').forEach(tab => tab.style.display = 'block');
             document.querySelector('.lesson-selector').style.display = 'block';
             document.getElementById('reviewMethodTabs').style.display = 'block';
+            
+            // 显示复习方向选择器（如果在词组tab）
+            const directionSelector = document.getElementById('reviewDirectionSelector');
+            if (directionSelector && currentTab === 'phrases') {
+                directionSelector.style.display = 'block';
+            }
             
             // Reset to Smart Review tab
             document.querySelectorAll('#reviewMethodTabs .tab-btn').forEach(b => b.classList.remove('active'));
@@ -1738,59 +1891,116 @@ function startReview() {
                 return;
             }
             
-            const char = reviewQueue[currentReviewIndex];
+            const item = reviewQueue[currentReviewIndex];
             isCardFlipped = false;
             document.getElementById('card').classList.remove('flipped');
             
-            // Front
-            document.getElementById('character').textContent = char.character;
+            // 获取复习方向
+            const direction = document.getElementById('reviewDirection') ? document.getElementById('reviewDirection').value : 'forward';
+            reviewDirection = direction;
             
-            // Back
-            document.getElementById('backCharacter').textContent = char.character;
-            document.getElementById('pinyin').textContent = char.pinyin;
-            document.getElementById('meaning').textContent = char.meaning;
+            const characterElement = document.getElementById('character');
             
-            // Image
-            const cardImage = document.getElementById('cardImage');
-            if (char.image) {
-                cardImage.src = char.image;
-                cardImage.classList.remove('hidden');
+            // 如果是词组
+            if (currentTab === 'phrases') {
+                if (direction === 'forward') {
+                    // 正向：正面显示汉字，背面显示拼音+英文
+                    characterElement.textContent = item.chinese;
+                    document.getElementById('backCharacter').textContent = item.chinese;
+                    document.getElementById('pinyin').textContent = item.pinyin;
+                    document.getElementById('meaning').textContent = item.english;
+                    // 汉字不需要英文样式
+                    characterElement.classList.remove('english-text');
+                } else {
+                    // 反向：正面显示英文，背面显示汉字+拼音
+                    characterElement.textContent = item.english;
+                    document.getElementById('backCharacter').textContent = item.chinese;
+                    document.getElementById('pinyin').textContent = item.pinyin;
+                    document.getElementById('meaning').textContent = item.chinese;
+                    // 英文需要特殊样式（换行+较小字体）
+                    characterElement.classList.add('english-text');
+                    // 根据英文长度动态调整字体大小
+                    adjustEnglishFontSize(characterElement, item.english);
+                }
+                
+                // 隐藏不需要的元素
+                document.getElementById('cardImage').classList.add('hidden');
+                document.getElementById('cardBookExplanation').classList.add('hidden');
+                document.getElementById('cardStory').classList.add('hidden');
+                document.getElementById('cardPhrases').classList.add('hidden');
             } else {
-                cardImage.classList.add('hidden');
-            }
-            
-            // Book Explanation
-            const cardBookExplanation = document.getElementById('cardBookExplanation');
-            if (char.book_explanation && char.book_explanation.trim()) {
-                const processedExplanation = processMarkdownImages(marked.parse(char.book_explanation));
-                document.getElementById('bookExplanationContent').innerHTML = processedExplanation;
-                cardBookExplanation.classList.remove('hidden');
-            } else {
-                cardBookExplanation.classList.add('hidden');
-            }
-            
-            // Story
-            const cardStory = document.getElementById('cardStory');
-            if (char.story && char.story.trim()) {
-                const processedStory = processMarkdownImages(marked.parse(char.story));
-                document.getElementById('storyContent').innerHTML = processedStory;
-                cardStory.classList.remove('hidden');
-            } else {
-                cardStory.classList.add('hidden');
-            }
-            
-            // Phrases
-            const cardPhrases = document.getElementById('cardPhrases');
-            if (char.phrases && char.phrases.trim()) {
-                const processedPhrases = processMarkdownImages(marked.parse(char.phrases));
-                document.getElementById('phrasesContent').innerHTML = processedPhrases;
-                cardPhrases.classList.remove('hidden');
-            } else {
-                cardPhrases.classList.add('hidden');
+                // 字符（部件或目标字）
+                characterElement.textContent = item.character;
+                document.getElementById('backCharacter').textContent = item.character;
+                document.getElementById('pinyin').textContent = item.pinyin;
+                document.getElementById('meaning').textContent = item.meaning;
+                // 字符不需要英文样式
+                characterElement.classList.remove('english-text');
+                
+                // Image
+                const cardImage = document.getElementById('cardImage');
+                if (item.image) {
+                    cardImage.src = item.image;
+                    cardImage.classList.remove('hidden');
+                } else {
+                    cardImage.classList.add('hidden');
+                }
+                
+                // Book Explanation
+                const cardBookExplanation = document.getElementById('cardBookExplanation');
+                if (item.book_explanation && item.book_explanation.trim()) {
+                    const processedExplanation = processMarkdownImages(marked.parse(item.book_explanation));
+                    document.getElementById('bookExplanationContent').innerHTML = processedExplanation;
+                    cardBookExplanation.classList.remove('hidden');
+                } else {
+                    cardBookExplanation.classList.add('hidden');
+                }
+                
+                // Story
+                const cardStory = document.getElementById('cardStory');
+                if (item.story && item.story.trim()) {
+                    const processedStory = processMarkdownImages(marked.parse(item.story));
+                    document.getElementById('storyContent').innerHTML = processedStory;
+                    cardStory.classList.remove('hidden');
+                } else {
+                    cardStory.classList.add('hidden');
+                }
+                
+                // Phrases (for characters)
+                const cardPhrases = document.getElementById('cardPhrases');
+                if (item.phrases && item.phrases.trim()) {
+                    const processedPhrases = processMarkdownImages(marked.parse(item.phrases));
+                    document.getElementById('phrasesContent').innerHTML = processedPhrases;
+                    cardPhrases.classList.remove('hidden');
+                } else {
+                    cardPhrases.classList.add('hidden');
+                }
             }
             
             // Update progress
             updateProgress();
+        }
+        
+        // ==================== Adjust English Font Size ====================
+        function adjustEnglishFontSize(element, englishText) {
+            if (!element || !englishText) return;
+            
+            const textLength = englishText.length;
+            let fontSize;
+            
+            // 根据英文长度动态调整字体大小
+            if (textLength <= 10) {
+                // 短单词：较大字体
+                fontSize = window.innerWidth <= 640 ? 'clamp(32px, 7vw, 60px)' : 'clamp(50px, 8vw, 80px)';
+            } else if (textLength <= 20) {
+                // 中等长度：中等字体
+                fontSize = window.innerWidth <= 640 ? 'clamp(24px, 5vw, 45px)' : 'clamp(35px, 6vw, 60px)';
+            } else {
+                // 长单词：较小字体
+                fontSize = window.innerWidth <= 640 ? 'clamp(18px, 4vw, 35px)' : 'clamp(28px, 5vw, 50px)';
+            }
+            
+            element.style.fontSize = fontSize;
         }
         
         // ==================== Card Flip ====================
@@ -1801,14 +2011,22 @@ function startReview() {
         
         // ==================== Handle Card Move ====================
         async function handleCardMove(box) {
-            const char = reviewQueue[currentReviewIndex];
+            const item = reviewQueue[currentReviewIndex];
+            
+            // 确定使用的key
+            let progressKey;
+            if (currentTab === 'phrases') {
+                progressKey = item.uniqueId;
+            } else {
+                progressKey = item.character;
+            }
             
             // Update progress
-            userProgress[char.character] = {
-                character: char.character,
-                lesson: char.lesson,
+            userProgress[progressKey] = {
+                character: currentTab === 'phrases' ? item.chinese : item.character,
+                lesson: item.lesson,
                 box: box,
-                reviews: (userProgress[char.character]?.reviews || 0) + 1,
+                reviews: (userProgress[progressKey]?.reviews || 0) + 1,
                 lastReviewed: new Date().toISOString()
             };
             
@@ -1841,7 +2059,7 @@ function startReview() {
                 <div style="text-align: center;">
                     <div style="font-size: 3rem; margin-bottom: 16px;">🎉</div>
                     <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px;">Great job!</div>
-                    <div style="font-size: 1rem; margin-bottom: 24px;">You've reviewed ${reviewQueue.length} characters</div>
+                    <div style="font-size: 1rem; margin-bottom: 24px;">You've reviewed ${reviewQueue.length} ${currentTab === 'phrases' ? 'phrases' : 'characters'}</div>
                     <button class="btn btn-primary" onclick="returnToReviewHome()" style="padding: 14px 32px; font-size: 1rem;">
                         ← Back to Review Home
                     </button>
@@ -1859,8 +2077,17 @@ function startReview() {
         
         function speakPinyin(event) {
             event.stopPropagation();
-            const character = document.getElementById('backCharacter').textContent;
-            const utterance = new SpeechSynthesisUtterance(character);
+            let textToSpeak;
+            
+            if (currentTab === 'phrases') {
+                // 词组：发音汉字部分
+                textToSpeak = document.getElementById('backCharacter').textContent;
+            } else {
+                // 字符：发音字符
+                textToSpeak = document.getElementById('backCharacter').textContent;
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
             
             // 强制使用中文声音
             const voices = speechSynthesis.getVoices();
@@ -2030,6 +2257,12 @@ document.querySelectorAll('#reviewMethodTabs .tab-btn').forEach(btn => {
         // Hide all content first
         document.getElementById('recommendedSection').style.display = 'none';
         document.getElementById('difficultySection').style.display = 'none';
+        
+        // 显示/隐藏复习方向选择器（只在词组tab显示）
+        const directionSelector = document.getElementById('reviewDirectionSelector');
+        if (directionSelector) {
+            directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+        }
         
         // Show selected content
         if (tab === 'smart-review') {
