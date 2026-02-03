@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>識字課程內容編輯器</title>
+    <link rel="stylesheet" href="../../assets/css/nav-global.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <style>
+        /* ==================== CSS Variables (對齊 studio.html) ==================== */
+        :root {
+            /* 主色调 */
+            --primary-color: #0891b2;
+            --primary-light: #06b6d4;
+            --primary-dark: #0e7490;
+            
+            /* 辅助色 */
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --danger-color: #ef4444;
+            
+            /* 中性色 */
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            
+            /* 背景色 */
+            --bg-page: #f9fafb;
+            --bg-card: #ffffff;
+            --bg-hover: #f3f4f6;
+            --bg-light: #e5e7eb;
+            
+            /* 边框色 */
+            --border-light: #e5e7eb;
+            --border-medium: #d1d5db;
+            --border-dark: #9ca3af;
+            
+            /* 字体 */
+            --font-primary: 'Microsoft JhengHei', 'Noto Sans TC', 'PingFang TC', sans-serif;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 2rem;
+            
+            /* 间距 */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            /* 圆角 */
+            --radius-sm: 0.25rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            /* 阴影 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            /* 字重 */
+            --font-normal: 400;
+            --font-medium: 500;
+            --font-semibold: 600;
+            --font-bold: 700;
+
+            /* Editor 專用變數 */
+            --edit-panel-min-width: 5%;
+            --edit-panel-max-width: 60%;
+            --edit-panel-default-width: 40%;
+            --edit-panel-collapsed-width: 60px;
+            --resizer-width: 4px;
+        }
+        
+        /* ==================== Global Styles ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-page);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* ==================== Top Navigation ==================== */
+        .top-nav {
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border-light);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 40px;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: var(--text-base);
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-separator {
+            color: var(--text-muted);
+        }
+
+        .group-separator {
+            margin: 0 var(--spacing-sm);
+            font-weight: var(--font-bold);
+        }
+
+        /* ==================== Editor Header ==================== */
+        .editor-header {
+            position: fixed;
+            top: 40px;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border-light);
+            padding: var(--spacing-md) var(--spacing-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 999;
+            height: 70px;
+        }
+
+        .editor-title {
+            font-size: var(--text-xl);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+        }
+
+        .editor-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .control-group select {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-family: var(--font-primary);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-group select:hover {
+            border-color: var(--primary-color);
+        }
+
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        /* ==================== Type Tabs ==================== */
+        .type-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .type-tab {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-family: var(--font-primary);
+        }
+
+        .type-tab:hover:not(:disabled) {
+            color: var(--primary-color);
+            background: var(--bg-hover);
+        }
+
+        .type-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background: var(--bg-hover);
+        }
+
+        .type-tab:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==================== Buttons ==================== */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-primary);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border-medium);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==================== Editor Container ==================== */
+        .editor-container {
+            display: flex;
+            height: calc(100vh - 110px);
+            margin-top: 110px;
+            position: relative;
+        }
+
+        /* ==================== Edit Panel ==================== */
+        .edit-panel {
+            width: var(--edit-panel-default-width);
+            min-width: var(--edit-panel-min-width);
+            max-width: var(--edit-panel-max-width);
+            background: var(--bg-card);
+            border-right: 2px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: width 0.3s ease;
+        }
+
+        .edit-panel.collapsed {
+            width: var(--edit-panel-collapsed-width);
+        }
+
+        .edit-panel-header {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 2px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-hover);
+        }
+
+        .edit-panel-title {
+            font-size: var(--text-lg);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+        }
+
+        .edit-panel-header-right {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .btn-add {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-weight: var(--font-semibold);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .edit-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+        }
+
+        /* ==================== Form Item Card ==================== */
+        .form-item-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-md);
+            transition: all 0.3s;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .form-item-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-item-card.dragging {
+            opacity: 0.8;
+            transform: scale(0.98);
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 2px var(--primary-dark);
+            transition: none !important;
+        }
+
+        .form-item-card:not(.dragging) {
+            transition: transform 0.2s ease-out;
+        }
+
+        .form-item-card.collapsed .form-item-body {
+            display: none;
+        }
+
+        .form-item-card.expanded .form-item-content {
+            padding: var(--spacing-lg);
+        }
+
+        .form-item-card.highlighted {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.2);
+            background: rgba(8, 145, 178, 0.05);
+        }
+
+        /* Drag Bar */
+        .drag-bar {
+            width: 12px;
+            background: var(--bg-light);
+            border-right: 1px solid var(--border-medium);
+            border-top-left-radius: var(--radius-lg);
+            border-bottom-left-radius: var(--radius-lg);
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .drag-bar::before {
+            content: '⋮';
+            font-size: var(--text-xl);
+            color: var(--text-muted);
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .drag-bar:hover {
+            background: var(--primary-color);
+        }
+
+        .drag-bar:hover::before {
+            color: white;
+        }
+
+        .drag-bar:active {
+            cursor: grabbing;
+            background: var(--primary-dark);
+        }
+
+        .form-item-card.dragging .drag-bar {
+            background: var(--primary-dark);
+        }
+
+        .form-item-card.dragging .drag-bar::before {
+            color: white;
+        }
+
+        /* Card Content */
+        .form-item-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-md);
+        }
+
+        .form-item-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .form-item-index {
+            font-size: var(--text-base);
+            font-weight: var(--font-bold);
+            color: var(--text-muted);
+            min-width: 30px;
+        }
+
+        .form-item-preview {
+            flex: 1;
+            font-size: var(--text-lg);
+            font-weight: var(--font-semibold);
+            color: var(--text-primary);
+        }
+
+        .form-item-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .btn-edit, .btn-delete {
+            padding: var(--spacing-xs) var(--spacing-md);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-delete {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .form-item-body {
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* ==================== Form Fields ==================== */
+        .form-field {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-field label {
+            display: block;
+            font-weight: var(--font-semibold);
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+            font-size: var(--text-sm);
+        }
+
+        .form-field.required label::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-family: var(--font-primary);
+            transition: all 0.3s;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus,
+        .form-field select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .form-field textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* ==================== Resizer ==================== */
+        .resizer {
+            width: var(--resizer-width);
+            background: var(--border-light);
+            cursor: col-resize;
+            transition: background 0.2s;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .resizer:hover {
+            background: var(--primary-color);
+        }
+
+        .resizer:active {
+            background: var(--primary-dark);
+        }
+
+        /* ==================== Preview Panel ==================== */
+        .preview-panel {
+            flex: 1;
+            background: var(--bg-page);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .preview-panel-header {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 2px solid var(--border-light);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-panel-title {
+            font-size: var(--text-lg);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+        }
+
+        .btn-toggle-edit {
+            padding: var(--spacing-xs) var(--spacing-md);
+            background: var(--bg-light);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: var(--text-lg);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-toggle-edit:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .preview-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-xl);
+        }
+
+        /* ==================== Empty State ==================== */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .empty-state-text {
+            font-size: var(--text-lg);
+        }
+
+        /* ==================== Preview Content ==================== */
+        .preview-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .preview-section h3 {
+            font-size: var(--text-xl);
+            font-weight: var(--font-bold);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .preview-item {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        /* ==================== Message ==================== */
+        .message {
+            position: fixed;
+            top: 120px;
+            right: var(--spacing-xl);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            font-weight: var(--font-semibold);
+            z-index: 2000;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .message.success {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .message.error {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .message.info {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 1024px) {
+            .editor-container {
+                flex-direction: column;
+            }
+
+            .edit-panel {
+                width: 100%;
+                max-width: 100%;
+                height: 50%;
+            }
+
+            .resizer {
+                display: none;
+            }
+
+            .preview-panel {
+                height: 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-content">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <span class="nav-separator">|</span>
+            <a href="lesson.html" class="nav-link">Literacy</a>
+            <span class="nav-separator">|</span>
+            <a href="studio.html" class="nav-link">Studio</a>
+            <span class="nav-separator">|</span>
+            <a href="markdown-admin.html" class="nav-link">Markdown Admin</a>
+        </div>
+    </nav>
+
+    <!-- Editor Header -->
+    <div class="editor-header">
+        <div class="editor-title">
+            📝 識字課程內容編輯器
+        </div>
+        <div class="editor-controls">
+            <!-- 课程选择 -->
+            <div class="control-group">
+                <select id="lessonSelect">
+                    <option value="">-- 請選擇課次 --</option>
+                    <option value="1">識字 1</option>
+                    <option value="2">識字 2</option>
+                    <option value="3">識字 3</option>
+                    <option value="4">識字 4</option>
+                    <option value="5">識字 5</option>
+                    <option value="6">識字 6</option>
+                    <option value="7">識字 7</option>
+                    <option value="8">識字 8</option>
+                    <option value="9">識字 9</option>
+                    <option value="10">識字 10</option>
+                    <option value="11">識字 11</option>
+                    <option value="12">識字 12</option>
+                    <option value="13">識字 13</option>
+                    <option value="14">識字 14</option>
+                    <option value="15">識字 15</option>
+                    <option value="16">識字 16</option>
+                    <option value="17">識字 17</option>
+                    <option value="18">識字 18</option>
+                    <option value="19">識字 19</option>
+                    <option value="20">識字 20</option>
+                    <option value="21">識字 21</option>
+                    <option value="22">識字 22</option>
+                    <option value="23">識字 23</option>
+                    <option value="24">識字 24</option>
+                    <option value="25">識字 25</option>
+                </select>
+            </div>
+            <!-- 类型切换 -->
+            <div class="control-group">
+                <div class="type-tabs">
+                    <button class="type-tab active" id="tabVocabulary" data-type="vocabulary" disabled>📝 字表</button>
+                    <button class="type-tab" id="tabPhrases" data-type="phrases" disabled>📚 詞組</button>
+                    <button class="type-tab" id="tabDialogues" data-type="dialogues" disabled>💬 對話</button>
+                    <button class="type-tab" id="tabGrammar" data-type="grammar" disabled>📖 語法</button>
+                    <button class="type-tab" id="tabExercises" data-type="exercises" disabled>✏️ 練習</button>
+                    <button class="type-tab" id="tabLiteracySentence" data-type="literacy_sentence" disabled>📄 識字句</button>
+                </div>
+            </div>
+            <!-- 保存按钮 -->
+            <div class="control-group">
+                <button class="btn btn-primary" id="btnSave" disabled>💾 保存到 Firestore</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Container -->
+    <div class="editor-container">
+        <!-- Edit Panel -->
+        <div class="edit-panel" id="editPanel">
+            <div class="edit-panel-header">
+                <div class="edit-panel-title" id="editPanelTitle">請選擇課次和類型</div>
+                <div class="edit-panel-header-right">
+                    <button class="btn-add" id="btnAdd" style="display: none;">+ 新增</button>
+                </div>
+            </div>
+            <div class="edit-panel-content" id="editPanelContent">
+                <div class="empty-state" id="emptyEditState">
+                    <div class="empty-state-icon">📝</div>
+                    <div class="empty-state-text">請選擇課次和類型開始編輯</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resizer -->
+        <div class="resizer" id="resizer"></div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="preview-panel-header">
+                <div class="preview-panel-title">實時預覽</div>
+                <button class="btn-toggle-edit" id="btnToggleEdit">◀</button>
+            </div>
+            <div class="preview-panel-content" id="previewPanelContent">
+                <div class="empty-state" id="emptyPreviewState">
+                    <div class="empty-state-icon">👁️</div>
+                    <div class="empty-state-text">預覽將在此顯示</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== Firebase 配置 ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMDTDwDP0mEXwgJdwsXVMB2IFi9Q5zfyU",
+            authDomain: "shizi-with-elisa.firebaseapp.com",
+            projectId: "shizi-with-elisa",
+            storageBucket: "shizi-with-elisa.firebasestorage.app",
+            messagingSenderId: "46368268308",
+            appId: "1:46368268308:web:5847aeb7b239b16d624701"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        auth.signInAnonymously();
+
+        // ==================== 全局變數 ====================
+        let currentData = [];
+        let currentType = '';
+        let currentLesson = '';
+        let saveTimeout = null;
+        let draggedElement = null;
+        let isDragging = false;
+        let dragOffsetY = 0;
+        let dragInitialRect = null;
+        let editingIndex = -1;
+
+        // ==================== DOM 元素 ====================
+        const lessonSelect = document.getElementById('lessonSelect');
+        const typeTabs = document.querySelectorAll('.type-tab');
+        const editPanel = document.getElementById('editPanel');
+        const editPanelContent = document.getElementById('editPanelContent');
+        const editPanelTitle = document.getElementById('editPanelTitle');
+        const btnAdd = document.getElementById('btnAdd');
+        const btnSave = document.getElementById('btnSave');
+        const btnToggleEdit = document.getElementById('btnToggleEdit');
+        const previewPanelContent = document.getElementById('previewPanelContent');
+        const emptyEditState = document.getElementById('emptyEditState');
+        const emptyPreviewState = document.getElementById('emptyPreviewState');
+        const resizer = document.getElementById('resizer');
+
+        // ==================== 初始化 ====================
+        lessonSelect.addEventListener('change', handleLessonChange);
+        typeTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                if (!tab.disabled) {
+                    switchTypeTab(tab.dataset.type);
+                }
+            });
+        });
+        btnAdd.addEventListener('click', handleAdd);
+        btnSave.addEventListener('click', handleSave);
+        btnToggleEdit.addEventListener('click', toggleEditPanel);
+
+        // Resizer 功能
+        let isResizing = false;
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.addEventListener('mousemove', handleResize);
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleResize);
+            });
+        });
+
+        function handleResize(e) {
+            if (!isResizing) return;
+            const container = editPanel.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+            const clampedWidth = Math.max(20, Math.min(60, newWidth));
+            editPanel.style.width = clampedWidth + '%';
+        }
+
+        function toggleEditPanel() {
+            editPanel.classList.toggle('collapsed');
+            btnToggleEdit.textContent = editPanel.classList.contains('collapsed') ? '▶' : '◀';
+        }
+
+        // ==================== 課程選擇 ====================
+        async function handleLessonChange() {
+            const lesson = lessonSelect.value;
+            if (!lesson) {
+                currentData = [];
+                currentLesson = '';
+                currentType = '';
+                disableAllTabs();
+                renderEditPanel();
+                renderPreviewPanel();
+                return;
+            }
+
+            currentLesson = lesson;
+            enableAllTabs();
+            
+            // 如果還沒有選擇類型，默認選擇第一個
+            if (!currentType) {
+                switchTypeTab('vocabulary');
+            } else {
+                await loadData();
+            }
+        }
+
+        function enableAllTabs() {
+            typeTabs.forEach(tab => tab.disabled = false);
+        }
+
+        function disableAllTabs() {
+            typeTabs.forEach(tab => tab.disabled = true);
+        }
+
+        // ==================== 類型切換 ====================
+        async function switchTypeTab(type) {
+            if (!currentLesson) {
+                showMessage('請先選擇課次', 'error');
+                return;
+            }
+
+            currentType = type;
+            updateTabState(type);
+            await loadData();
+        }
+
+        function updateTabState(activeType) {
+            typeTabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.type === activeType) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // ==================== 載入數據 ====================
+        async function loadData() {
+            if (!currentLesson || !currentType) {
+                currentData = [];
+                renderEditPanel();
+                renderPreviewPanel();
+                return;
+            }
+
+            try {
+                const lessonId = `lesson${currentLesson}`;
+                const doc = await db.collection('lessons').doc(lessonId).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    currentData = getDataForType(data, currentType) || [];
+                } else {
+                    currentData = [];
+                }
+                
+                renderEditPanel();
+                renderPreviewPanel();
+                btnSave.disabled = false;
+            } catch (error) {
+                console.error('載入數據失敗：', error);
+                showMessage('載入數據失敗：' + error.message, 'error');
+            }
+        }
+
+        function getDataForType(data, type) {
+            switch(type) {
+                case 'vocabulary':
+                    // Firestore 格式: { content: "字|pinyin|english", notes: "..." }
+                    // 轉換為編輯器格式: { character: "...", meaning: "pinyin|english", notes: "..." }
+                    const vocab = data.vocabulary || [];
+                    return vocab.map(item => {
+                        if (item.content) {
+                            const parts = item.content.split('|');
+                            return {
+                                character: parts[0] || '',
+                                meaning: `${parts[1] || ''}|${parts[2] || ''}`,
+                                notes: item.notes || ''
+                            };
+                        }
+                        // 如果已經是編輯器格式，直接返回
+                        return item;
+                    });
+                case 'phrases':
+                    return (data.phrases || []).filter(p => p.subtype !== 'dialogue');
+                case 'dialogues':
+                    return (data.phrases || []).filter(p => p.subtype === 'dialogue');
+                case 'grammar':
+                    // Firestore 格式: { content: "中文|英文", subtype: "rule" }
+                    // 轉換為編輯器格式: { chinese: "...", english: "...", subtype: "rule" }
+                    const grammar = data.grammar || [];
+                    return grammar.map(item => {
+                        if (item.content) {
+                            const parts = item.content.split('|');
+                            return {
+                                chinese: parts[0] || '',
+                                english: parts[1] || '',
+                                subtype: item.subtype || 'rule'
+                            };
+                        }
+                        // 如果已經是編輯器格式，直接返回
+                        return item;
+                    });
+                case 'exercises':
+                    return data.exercises || [];
+                case 'literacy_sentence':
+                    return data.literacy_sentence ? [{ content: data.literacy_sentence }] : [];
+                default:
+                    return [];
+            }
+        }
+
+        // ==================== 渲染編輯面板 ====================
+        function renderEditPanel() {
+            if (!currentLesson || !currentType) {
+                emptyEditState.style.display = 'block';
+                editPanelTitle.textContent = '請選擇課次和類型';
+                btnAdd.style.display = 'none';
+                return;
+            }
+
+            emptyEditState.style.display = 'none';
+            btnAdd.style.display = 'block';
+            
+            const typeNames = {
+                vocabulary: '字表',
+                phrases: '詞組',
+                dialogues: '對話',
+                grammar: '語法',
+                exercises: '練習',
+                literacy_sentence: '識字句'
+            };
+            
+            editPanelTitle.textContent = `${typeNames[currentType]} (${currentData.length} 項)`;
+
+            if (currentData.length === 0) {
+                editPanelContent.innerHTML = '<div class="empty-state"><div class="empty-state-text">暫無數據，點擊「+ 新增」開始添加</div></div>';
+                return;
+            }
+
+            editPanelContent.innerHTML = currentData.map((item, index) => {
+                return createFormItemCard(item, index);
+            }).join('');
+
+            // 綁定事件
+            bindFormItemEvents();
+        }
+
+        function createFormItemCard(item, index) {
+            const preview = getItemPreview(item, currentType);
+            return `
+                <div class="form-item-card expanded" data-index="${index}">
+                    <div class="drag-bar"></div>
+                    <div class="form-item-content">
+                        <div class="form-item-header">
+                            <div class="form-item-index">${index + 1}</div>
+                            <div class="form-item-preview">${preview}</div>
+                            <div class="form-item-actions">
+                                <button class="btn-edit" onclick="handleEdit(${index})">編輯</button>
+                                <button class="btn-delete" onclick="handleDelete(${index})">刪除</button>
+                            </div>
+                        </div>
+                        <div class="form-item-body" id="form-body-${index}" style="display: none;">
+                            ${createFormFields(item, index)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getItemPreview(item, type) {
+            switch(type) {
+                case 'vocabulary':
+                    const [pinyin, english] = (item.meaning || '').split('|');
+                    return `${item.character || ''} | ${pinyin || ''} | ${english || ''}`;
+                case 'phrases':
+                    return `${item.content || ''} | ${item.pinyin || ''} | ${item.meaning || ''}`;
+                case 'dialogues':
+                    const speaker = item.speaker_name ? `${item.speaker}: ${item.speaker_name}` : (item.speaker || '');
+                    return `${speaker ? `[${speaker}] ` : ''}${item.content || ''}`;
+                case 'grammar':
+                    return `${item.chinese || ''} | ${item.english || ''}`;
+                case 'exercises':
+                    return `${item.content || ''} (${item.subtype === 'fill_blank' ? '填空' : '選擇'})`;
+                case 'literacy_sentence':
+                    return item.content || '';
+                default:
+                    return '';
+            }
+        }
+
+        function createFormFields(item, index) {
+            // 根據不同類型生成不同的表單字段
+            switch(currentType) {
+                case 'vocabulary':
+                    const [pinyin, english] = (item.meaning || '').split('|');
+                    return `
+                        <div class="form-field required">
+                            <label>字</label>
+                            <input type="text" id="field-character-${index}" value="${item.character || ''}" onchange="updateItemField(${index}, 'character', this.value)">
+                        </div>
+                        <div class="form-field required">
+                            <label>拼音</label>
+                            <input type="text" id="field-pinyin-${index}" value="${pinyin || ''}" onchange="updateItemField(${index}, 'pinyin', this.value)">
+                        </div>
+                        <div class="form-field required">
+                            <label>英文</label>
+                            <input type="text" id="field-english-${index}" value="${english || ''}" onchange="updateItemField(${index}, 'english', this.value)">
+                        </div>
+                        <div class="form-field">
+                            <label>例句 (notes)</label>
+                            <textarea id="field-notes-${index}" onchange="updateItemField(${index}, 'notes', this.value)">${item.notes || ''}</textarea>
+                        </div>
+                    `;
+                case 'phrases':
+                    return `
+                        <div class="form-field required">
+                            <label>詞組</label>
+                            <input type="text" id="field-content-${index}" value="${item.content || ''}" onchange="updateItemField(${index}, 'content', this.value)">
+                        </div>
+                        <div class="form-field required">
+                            <label>拼音</label>
+                            <input type="text" id="field-pinyin-${index}" value="${item.pinyin || ''}" onchange="updateItemField(${index}, 'pinyin', this.value)">
+                        </div>
+                        <div class="form-field required">
+                            <label>英文</label>
+                            <input type="text" id="field-meaning-${index}" value="${item.meaning || ''}" onchange="updateItemField(${index}, 'meaning', this.value)">
+                        </div>
+                    `;
+                case 'dialogues':
+                    return `
+                        <div class="form-field required">
+                            <label>說話者 (A/B/C...)</label>
+                            <input type="text" id="field-speaker-${index}" value="${item.speaker || ''}" placeholder="A" onchange="updateItemField(${index}, 'speaker', this.value)">
+                        </div>
+                        <div class="form-field">
+                            <label>說話者名稱 (可選)</label>
+                            <input type="text" id="field-speaker-name-${index}" value="${item.speaker_name || ''}" placeholder="張三" onchange="updateItemField(${index}, 'speaker_name', this.value)">
+                        </div>
+                        <div class="form-field required">
+                            <label>對話內容</label>
+                            <textarea id="field-content-${index}" onchange="updateItemField(${index}, 'content', this.value)">${item.content || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>註釋 (用於分組)</label>
+                            <input type="text" id="field-notes-${index}" value="${item.notes || ''}" placeholder="对话一" onchange="updateItemField(${index}, 'notes', this.value)">
+                        </div>
+                    `;
+                case 'grammar':
+                    return `
+                        <div class="form-field required">
+                            <label>中文規則</label>
+                            <input type="text" id="field-chinese-${index}" value="${item.chinese || ''}" onchange="updateItemField(${index}, 'chinese', this.value)">
+                        </div>
+                        <div class="form-field required">
+                            <label>英文說明</label>
+                            <textarea id="field-english-${index}" onchange="updateItemField(${index}, 'english', this.value)">${item.english || ''}</textarea>
+                        </div>
+                    `;
+                case 'exercises':
+                    const exerciseType = item.subtype || 'fill_blank';
+                    return `
+                        <div class="form-field required">
+                            <label>題型</label>
+                            <select id="field-subtype-${index}" onchange="updateItemField(${index}, 'subtype', this.value)">
+                                <option value="fill_blank" ${exerciseType === 'fill_blank' ? 'selected' : ''}>填空題</option>
+                                <option value="multiple_choice" ${exerciseType === 'multiple_choice' ? 'selected' : ''}>選擇題</option>
+                            </select>
+                        </div>
+                        <div class="form-field required">
+                            <label>題目</label>
+                            <textarea id="field-content-${index}" onchange="updateItemField(${index}, 'content', this.value)">${item.content || ''}</textarea>
+                        </div>
+                        <div class="form-field required">
+                            <label>答案</label>
+                            <input type="text" id="field-answer-${index}" value="${item.answer || ''}" placeholder="A 或 A|B (多選用|分隔)" onchange="updateItemField(${index}, 'answer', this.value)">
+                        </div>
+                        <div class="form-field required">
+                            <label>${exerciseType === 'fill_blank' ? '填空詞' : '選項'}</label>
+                            <input type="text" id="field-options-${index}" value="${item.options || ''}" placeholder="${exerciseType === 'fill_blank' ? '被' : 'A.能|B.可以|C.想|D.会'}" onchange="updateItemField(${index}, 'options', this.value)">
+                        </div>
+                    `;
+                case 'literacy_sentence':
+                    return `
+                        <div class="form-field required">
+                            <label>識字句</label>
+                            <textarea id="field-content-${index}" style="min-height: 150px;" onchange="updateItemField(${index}, 'content', this.value)">${item.content || ''}</textarea>
+                        </div>
+                    `;
+                default:
+                    return '<div>未知類型</div>';
+            }
+        }
+
+        function updateItemField(index, field, value) {
+            if (index < 0 || index >= currentData.length) return;
+            
+            const item = currentData[index];
+            
+            // 根據不同類型處理字段更新
+            if (currentType === 'vocabulary') {
+                if (field === 'pinyin' || field === 'english') {
+                    const pinyin = field === 'pinyin' ? value : ((item.meaning || '').split('|')[0] || '');
+                    const english = field === 'english' ? value : ((item.meaning || '').split('|')[1] || '');
+                    item.meaning = `${pinyin}|${english}`;
+                } else {
+                    item[field] = value;
+                }
+            } else if (currentType === 'dialogues') {
+                item[field] = value;
+                // 確保對話類型字段
+                if (!item.subtype) item.subtype = 'dialogue';
+                if (!item.type) item.type = 'phrases';
+            } else if (currentType === 'phrases') {
+                item[field] = value;
+                // 確保詞組類型字段
+                if (!item.subtype) item.subtype = 'phrase';
+            } else if (currentType === 'grammar') {
+                item[field] = value;
+                // 確保語法類型字段
+                if (!item.subtype) item.subtype = 'rule';
+            } else {
+                item[field] = value;
+            }
+            
+            // 更新預覽
+            renderEditPanel();
+            renderPreviewPanel();
+            debounceSave();
+        }
+
+        function bindFormItemEvents() {
+            // 綁定拖拽事件
+            const cards = document.querySelectorAll('.form-item-card');
+            cards.forEach(card => {
+                const dragBar = card.querySelector('.drag-bar');
+                if (dragBar) {
+                    dragBar.addEventListener('mousedown', (e) => startDrag(e, card));
+                }
+                
+                // 綁定展開/收合事件
+                const header = card.querySelector('.form-item-header');
+                if (header) {
+                    header.addEventListener('click', (e) => {
+                        // 如果點擊的是按鈕，不觸發展開/收合
+                        if (e.target.closest('.btn-edit') || e.target.closest('.btn-delete')) {
+                            return;
+                        }
+                        toggleCardExpand(card);
+                    });
+                }
+            });
+        }
+
+        function toggleCardExpand(card) {
+            card.classList.toggle('expanded');
+            card.classList.toggle('collapsed');
+            const body = card.querySelector('.form-item-body');
+            if (body) {
+                body.style.display = card.classList.contains('expanded') ? 'block' : 'none';
+            }
+        }
+
+        // ==================== 拖拽功能 ====================
+        function startDrag(e, card) {
+            e.preventDefault();
+            isDragging = true;
+            draggedElement = card;
+            card.classList.add('dragging');
+            
+            const rect = card.getBoundingClientRect();
+            dragOffsetY = e.clientY - rect.top;
+            dragInitialRect = rect;
+
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function handleDrag(e) {
+            if (!isDragging || !draggedElement) return;
+            
+            const cards = Array.from(document.querySelectorAll('.form-item-card'));
+            const draggedIndex = parseInt(draggedElement.dataset.index);
+            
+            const mouseY = e.clientY;
+            const cardHeight = dragInitialRect.height;
+            const cardTop = mouseY - dragOffsetY;
+            
+            // 找到當前位置應該插入的索引
+            let newIndex = draggedIndex;
+            cards.forEach((card, index) => {
+                if (card === draggedElement) return;
+                const rect = card.getBoundingClientRect();
+                if (cardTop < rect.top + rect.height / 2 && index < draggedIndex) {
+                    newIndex = index;
+                } else if (cardTop > rect.top + rect.height / 2 && index > draggedIndex) {
+                    newIndex = index + 1;
+                }
+            });
+
+            // 移動元素
+            if (newIndex !== draggedIndex) {
+                const item = currentData.splice(draggedIndex, 1)[0];
+                currentData.splice(newIndex, 0, item);
+                renderEditPanel();
+                debounceSave();
+            }
+        }
+
+        function stopDrag() {
+            if (draggedElement) {
+                draggedElement.classList.remove('dragging');
+                draggedElement = null;
+            }
+            isDragging = false;
+            document.removeEventListener('mousemove', handleDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        // ==================== 新增/編輯/刪除 ====================
+        function handleAdd() {
+            editingIndex = -1;
+            showEditModal();
+        }
+
+        function handleEdit(index) {
+            editingIndex = index;
+            showEditModal();
+        }
+
+        function handleDelete(index) {
+            if (!confirm('確定要刪除這個項目嗎？')) return;
+            
+            currentData.splice(index, 1);
+            renderEditPanel();
+            renderPreviewPanel();
+            debounceSave();
+        }
+
+        function showEditModal() {
+            const item = editingIndex >= 0 ? currentData[editingIndex] : getEmptyItem();
+            const isNew = editingIndex < 0;
+            
+            // 創建模態框
+            const modal = document.createElement('div');
+            modal.className = 'edit-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 3000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: var(--radius-lg);
+                padding: var(--spacing-xl);
+                max-width: 600px;
+                width: 90%;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: var(--shadow-xl);
+            `;
+            
+            modalContent.innerHTML = `
+                <h2 style="margin-bottom: var(--spacing-lg);">${isNew ? '新增' : '編輯'} ${getTypeName()}</h2>
+                <div id="modalFormFields"></div>
+                <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                    <button class="btn btn-primary" onclick="saveModalItem()">保存</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                </div>
+            `;
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // 填充表單字段
+            const formFields = modalContent.querySelector('#modalFormFields');
+            formFields.innerHTML = createModalFormFields(item);
+            
+            // 點擊背景關閉
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            
+            // 保存到全局變量以便後續使用
+            window.currentModal = modal;
+            window.currentModalItem = item;
+        }
+
+        function getEmptyItem() {
+            switch(currentType) {
+                case 'vocabulary':
+                    return { character: '', meaning: '|', notes: '' };
+                case 'phrases':
+                    return { content: '', pinyin: '', meaning: '', subtype: 'phrase' };
+                case 'dialogues':
+                    return { content: '', speaker: '', speaker_name: '', notes: '', subtype: 'dialogue', type: 'phrases' };
+                case 'grammar':
+                    return { chinese: '', english: '', subtype: 'rule' };
+                case 'exercises':
+                    return { content: '', answer: '', options: '', subtype: 'fill_blank' };
+                case 'literacy_sentence':
+                    return { content: '' };
+                default:
+                    return {};
+            }
+        }
+
+        function getTypeName() {
+            const names = {
+                vocabulary: '字表',
+                phrases: '詞組',
+                dialogues: '對話',
+                grammar: '語法',
+                exercises: '練習',
+                literacy_sentence: '識字句'
+            };
+            return names[currentType] || '';
+        }
+
+        function createModalFormFields(item) {
+            switch(currentType) {
+                case 'vocabulary':
+                    const [pinyin, english] = (item.meaning || '|').split('|');
+                    return `
+                        <div class="form-field required">
+                            <label>字</label>
+                            <input type="text" id="modal-character" value="${item.character || ''}">
+                        </div>
+                        <div class="form-field required">
+                            <label>拼音</label>
+                            <input type="text" id="modal-pinyin" value="${pinyin || ''}">
+                        </div>
+                        <div class="form-field required">
+                            <label>英文</label>
+                            <input type="text" id="modal-english" value="${english || ''}">
+                        </div>
+                        <div class="form-field">
+                            <label>例句 (notes)</label>
+                            <textarea id="modal-notes">${item.notes || ''}</textarea>
+                        </div>
+                    `;
+                case 'phrases':
+                    return `
+                        <div class="form-field required">
+                            <label>詞組</label>
+                            <input type="text" id="modal-content" value="${item.content || ''}">
+                        </div>
+                        <div class="form-field required">
+                            <label>拼音</label>
+                            <input type="text" id="modal-pinyin" value="${item.pinyin || ''}">
+                        </div>
+                        <div class="form-field required">
+                            <label>英文</label>
+                            <input type="text" id="modal-meaning" value="${item.meaning || ''}">
+                        </div>
+                    `;
+                case 'dialogues':
+                    return `
+                        <div class="form-field required">
+                            <label>說話者 (A/B/C...)</label>
+                            <input type="text" id="modal-speaker" value="${item.speaker || ''}" placeholder="A">
+                        </div>
+                        <div class="form-field">
+                            <label>說話者名稱 (可選)</label>
+                            <input type="text" id="modal-speaker-name" value="${item.speaker_name || ''}" placeholder="張三">
+                        </div>
+                        <div class="form-field required">
+                            <label>對話內容</label>
+                            <textarea id="modal-content" style="min-height: 100px;">${item.content || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>註釋 (用於分組)</label>
+                            <input type="text" id="modal-notes" value="${item.notes || ''}" placeholder="对话一">
+                        </div>
+                    `;
+                case 'grammar':
+                    return `
+                        <div class="form-field required">
+                            <label>中文規則</label>
+                            <input type="text" id="modal-chinese" value="${item.chinese || ''}">
+                        </div>
+                        <div class="form-field required">
+                            <label>英文說明</label>
+                            <textarea id="modal-english" style="min-height: 100px;">${item.english || ''}</textarea>
+                        </div>
+                    `;
+                case 'exercises':
+                    const exerciseType = item.subtype || 'fill_blank';
+                    return `
+                        <div class="form-field required">
+                            <label>題型</label>
+                            <select id="modal-subtype">
+                                <option value="fill_blank" ${exerciseType === 'fill_blank' ? 'selected' : ''}>填空題</option>
+                                <option value="multiple_choice" ${exerciseType === 'multiple_choice' ? 'selected' : ''}>選擇題</option>
+                            </select>
+                        </div>
+                        <div class="form-field required">
+                            <label>題目</label>
+                            <textarea id="modal-content" style="min-height: 100px;">${item.content || ''}</textarea>
+                        </div>
+                        <div class="form-field required">
+                            <label>答案</label>
+                            <input type="text" id="modal-answer" value="${item.answer || ''}" placeholder="A 或 A|B (多選用|分隔)">
+                        </div>
+                        <div class="form-field required">
+                            <label id="modal-options-label">${exerciseType === 'fill_blank' ? '填空詞' : '選項'}</label>
+                            <input type="text" id="modal-options" value="${item.options || ''}" placeholder="${exerciseType === 'fill_blank' ? '被' : 'A.能|B.可以|C.想|D.会'}">
+                        </div>
+                    `;
+                case 'literacy_sentence':
+                    return `
+                        <div class="form-field required">
+                            <label>識字句</label>
+                            <textarea id="modal-content" style="min-height: 150px;">${item.content || ''}</textarea>
+                        </div>
+                    `;
+                default:
+                    return '<div>未知類型</div>';
+            }
+        }
+
+        function saveModalItem() {
+            const modal = window.currentModal;
+            if (!modal) return;
+            
+            let newItem = {};
+            
+            switch(currentType) {
+                case 'vocabulary':
+                    const pinyin = document.getElementById('modal-pinyin').value.trim();
+                    const english = document.getElementById('modal-english').value.trim();
+                    newItem = {
+                        character: document.getElementById('modal-character').value.trim(),
+                        meaning: `${pinyin}|${english}`,
+                        notes: document.getElementById('modal-notes').value.trim()
+                    };
+                    if (!newItem.character || !pinyin || !english) {
+                        alert('請填寫所有必填字段');
+                        return;
+                    }
+                    break;
+                case 'phrases':
+                    newItem = {
+                        content: document.getElementById('modal-content').value.trim(),
+                        pinyin: document.getElementById('modal-pinyin').value.trim(),
+                        meaning: document.getElementById('modal-meaning').value.trim(),
+                        subtype: 'phrase'
+                    };
+                    if (!newItem.content || !newItem.pinyin || !newItem.meaning) {
+                        alert('請填寫所有必填字段');
+                        return;
+                    }
+                    break;
+                case 'dialogues':
+                    newItem = {
+                        content: document.getElementById('modal-content').value.trim(),
+                        speaker: document.getElementById('modal-speaker').value.trim(),
+                        speaker_name: document.getElementById('modal-speaker-name').value.trim(),
+                        notes: document.getElementById('modal-notes').value.trim(),
+                        subtype: 'dialogue',
+                        type: 'phrases'
+                    };
+                    if (!newItem.content || !newItem.speaker) {
+                        alert('請填寫所有必填字段');
+                        return;
+                    }
+                    break;
+                case 'grammar':
+                    newItem = {
+                        chinese: document.getElementById('modal-chinese').value.trim(),
+                        english: document.getElementById('modal-english').value.trim(),
+                        subtype: 'rule'
+                    };
+                    if (!newItem.chinese || !newItem.english) {
+                        alert('請填寫所有必填字段');
+                        return;
+                    }
+                    break;
+                case 'exercises':
+                    newItem = {
+                        content: document.getElementById('modal-content').value.trim(),
+                        answer: document.getElementById('modal-answer').value.trim(),
+                        options: document.getElementById('modal-options').value.trim(),
+                        subtype: document.getElementById('modal-subtype').value
+                    };
+                    if (!newItem.content || !newItem.answer || !newItem.options) {
+                        alert('請填寫所有必填字段');
+                        return;
+                    }
+                    break;
+                case 'literacy_sentence':
+                    newItem = {
+                        content: document.getElementById('modal-content').value.trim()
+                    };
+                    if (!newItem.content) {
+                        alert('請填寫識字句');
+                        return;
+                    }
+                    break;
+            }
+            
+            // 保存或更新
+            if (editingIndex >= 0) {
+                currentData[editingIndex] = newItem;
+            } else {
+                currentData.push(newItem);
+            }
+            
+            closeModal();
+            renderEditPanel();
+            renderPreviewPanel();
+            debounceSave();
+        }
+
+        function closeModal() {
+            if (window.currentModal) {
+                window.currentModal.remove();
+                window.currentModal = null;
+                window.currentModalItem = null;
+            }
+            editingIndex = -1;
+        }
+
+        // ==================== 渲染預覽面板 ====================
+        function renderPreviewPanel() {
+            if (!currentLesson || !currentType || currentData.length === 0) {
+                emptyPreviewState.style.display = 'block';
+                return;
+            }
+
+            emptyPreviewState.style.display = 'none';
+            
+            const typeNames = {
+                vocabulary: '字表',
+                phrases: '詞組',
+                dialogues: '對話',
+                grammar: '語法',
+                exercises: '練習',
+                literacy_sentence: '識字句'
+            };
+
+            let html = `<div class="preview-section">
+                <h3>${typeNames[currentType]} 預覽 (${currentData.length} 項)</h3>`;
+
+            currentData.forEach((item, index) => {
+                html += `<div class="preview-item">
+                    <div style="font-weight: var(--font-semibold); margin-bottom: var(--spacing-xs);">#${index + 1}</div>
+                    <div>${formatPreviewItem(item, currentType)}</div>
+                </div>`;
+            });
+
+            html += '</div>';
+            previewPanelContent.innerHTML = html;
+        }
+
+        function formatPreviewItem(item, type) {
+            switch(type) {
+                case 'vocabulary':
+                    // 編輯器格式: { character, meaning: "pinyin|english", notes }
+                    const [pinyin, english] = (item.meaning || '').split('|');
+                    return `
+                        <div style="font-size: 1.5em; font-weight: bold; margin-bottom: var(--spacing-xs);">${item.character || ''}</div>
+                        <div style="color: var(--pinyin-color); margin-bottom: var(--spacing-xs);">${pinyin || ''}</div>
+                        <div style="color: var(--meaning-color); margin-bottom: var(--spacing-xs);">${english || ''}</div>
+                        ${item.notes ? `<div style="color: var(--text-secondary); font-size: 0.9em; margin-top: var(--spacing-sm);">${item.notes}</div>` : ''}
+                    `;
+                case 'phrases':
+                    return `
+                        <div style="font-size: 1.2em; font-weight: bold; margin-bottom: var(--spacing-xs);">${item.content || ''}</div>
+                        <div style="color: var(--pinyin-color);">${item.pinyin || ''}</div>
+                        <div style="color: var(--meaning-color);">${item.meaning || ''}</div>
+                    `;
+                case 'dialogues':
+                    const speaker = item.speaker_name ? `${item.speaker}: ${item.speaker_name}` : (item.speaker || '');
+                    return `
+                        <div style="display: flex; align-items: start; gap: var(--spacing-md);">
+                            <div style="background: var(--primary-color); color: white; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-md); font-weight: bold; flex-shrink: 0;">
+                                ${speaker || '?'}
+                            </div>
+                            <div style="flex: 1;">${item.content || ''}</div>
+                        </div>
+                        ${item.notes ? `<div style="color: var(--text-secondary); font-size: 0.85em; margin-top: var(--spacing-xs);">註釋：${item.notes}</div>` : ''}
+                    `;
+                case 'grammar':
+                    return `
+                        <div style="font-weight: bold; margin-bottom: var(--spacing-xs);">${item.chinese || ''}</div>
+                        <div style="color: var(--text-secondary);">${item.english || ''}</div>
+                    `;
+                case 'exercises':
+                    return `
+                        <div style="font-weight: bold; margin-bottom: var(--spacing-xs);">${item.content || ''}</div>
+                        <div style="color: var(--primary-color);">答案：${item.answer || ''}</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9em;">${item.subtype === 'fill_blank' ? '填空詞' : '選項'}：${item.options || ''}</div>
+                    `;
+                case 'literacy_sentence':
+                    return `<div style="font-size: 1.1em; line-height: 1.8;">${item.content || ''}</div>`;
+                default:
+                    return '';
+            }
+        }
+
+        // ==================== 保存功能 ====================
+        function debounceSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                // 自動保存（可選，目前需要手動點擊保存按鈕）
+                // 如果需要自動保存，可以取消下面的註釋
+                // if (currentLesson && currentType) {
+                //     handleSave();
+                // }
+            }, 1000);
+        }
+
+        async function handleSave() {
+            if (!currentLesson || !currentType) {
+                showMessage('請先選擇課次和類型', 'error');
+                return;
+            }
+
+            try {
+                showMessage('💾 正在保存...', 'info');
+                const lessonId = `lesson${currentLesson}`;
+                const updateData = await getUpdateDataForType(currentData, currentType);
+                
+                await db.collection('lessons').doc(lessonId).set(updateData, { merge: true });
+                
+                showMessage('✅ 保存成功！', 'success');
+            } catch (error) {
+                console.error('保存失敗：', error);
+                showMessage('保存失敗：' + error.message, 'error');
+            }
+        }
+
+        async function getUpdateDataForType(data, type) {
+            const lessonId = `lesson${currentLesson}`;
+            const doc = await db.collection('lessons').doc(lessonId).get();
+            const existingData = doc.exists ? doc.data() : {};
+            
+            const updateData = {};
+            
+            switch(type) {
+                case 'vocabulary':
+                    // 編輯器格式: { character: "...", meaning: "pinyin|english", notes: "..." }
+                    // 轉換為 Firestore 格式: { content: "字|pinyin|english", notes: "..." }
+                    updateData.vocabulary = data.map(item => {
+                        const [pinyin, english] = (item.meaning || '').split('|');
+                        return {
+                            content: `${item.character || ''}|${pinyin || ''}|${english || ''}`,
+                            notes: item.notes || ''
+                        };
+                    });
+                    break;
+                case 'phrases':
+                    // 合併現有的 dialogues
+                    const existingDialogues = (existingData.phrases || []).filter(p => p.subtype === 'dialogue');
+                    updateData.phrases = [...data, ...existingDialogues];
+                    break;
+                case 'dialogues':
+                    // 合併現有的 phrases（非對話）
+                    const existingPhrases = (existingData.phrases || []).filter(p => p.subtype !== 'dialogue');
+                    updateData.phrases = [...existingPhrases, ...data];
+                    break;
+                case 'grammar':
+                    // 編輯器格式: { chinese: "...", english: "...", subtype: "rule" }
+                    // 轉換為 Firestore 格式: { content: "中文|英文", subtype: "rule" }
+                    updateData.grammar = data.map(item => {
+                        return {
+                            content: `${item.chinese || ''}|${item.english || ''}`,
+                            subtype: item.subtype || 'rule'
+                        };
+                    });
+                    break;
+                case 'exercises':
+                    updateData.exercises = data;
+                    break;
+                case 'literacy_sentence':
+                    updateData.literacy_sentence = data[0]?.content || '';
+                    break;
+            }
+            
+            // 更新 meta
+            updateData.meta = {
+                vocabulary_count: updateData.vocabulary ? updateData.vocabulary.length : (existingData.vocabulary?.length || 0),
+                phrases_count: updateData.phrases ? updateData.phrases.length : (existingData.phrases?.length || 0),
+                grammar_count: updateData.grammar ? updateData.grammar.length : (existingData.grammar?.length || 0),
+                exercises_count: updateData.exercises ? updateData.exercises.length : (existingData.exercises?.length || 0),
+                last_updated: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            return updateData;
+        }
+
+        // ==================== 工具函數 ====================
+        function showMessage(text, type = 'info') {
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                message.style.animation = 'slideIn 0.3s reverse';
+                setTimeout(() => message.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+

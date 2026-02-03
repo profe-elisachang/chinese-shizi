@@ -510,25 +510,113 @@
             font-style: italic;
         }
         
+        /* ==================== Dialogue Container ==================== */
+        .dialogue-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
         /* ==================== Dialogue Box ==================== */
         .dialogue-box {
             background: var(--bg-light);
             padding: var(--spacing-lg);
             border-radius: var(--radius-lg);
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
             border-left: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-sm);
+            max-width: 75%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        /* 說話者 A：左側，藍色氣泡 */
+        .dialogue-box.speaker-A {
+            align-self: flex-start;
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+        }
+        
+        .dialogue-box.speaker-A:hover {
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* 說話者 B：右側，綠色氣泡 */
+        .dialogue-box.speaker-B {
+            align-self: flex-end;
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+        }
+        
+        .dialogue-box.speaker-B:hover {
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* 其他說話者（C, D...）：左側，不同顏色 */
+        .dialogue-box.speaker-C {
+            align-self: flex-start;
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+        
+        .dialogue-box.speaker-D {
+            align-self: flex-start;
+            background: #f3e5f5;
+            border-left-color: #9c27b0;
+        }
+        
+        /* 沒有說話者標記的對話：默認樣式 */
+        .dialogue-box:not([class*="speaker-"]) {
+            align-self: flex-start;
+        }
+        
+        .dialogue-group-title {
+            color: var(--primary-color);
+            font-weight: var(--font-bold);
+            font-size: var(--text-xl);
+            margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .dialogue-group-title:first-child {
+            margin-top: 0;
+        }
+        
+        .dialogue-speaker {
+            color: var(--primary-color);
+            font-weight: var(--font-bold);
+            font-size: var(--text-sm);
+            margin-bottom: var(--spacing-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .dialogue-box.speaker-A .dialogue-speaker {
+            color: #1976d2;
+        }
+        
+        .dialogue-box.speaker-B .dialogue-speaker {
+            color: #388e3c;
         }
         
         .dialogue-title {
             color: var(--primary-color);
             font-weight: var(--font-bold);
             margin-bottom: var(--spacing-md);
+            font-size: var(--text-sm);
         }
         
         .dialogue-line {
             font-size: var(--text-lg);
-            margin: var(--spacing-sm) 0;
-            padding: var(--spacing-sm);
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin: 0;
         }
         
         /* ==================== Grammar Point ==================== */
@@ -1795,15 +1883,39 @@ function createAdminCharacterCard(char, index) {
             // Dialogues
             if (dialogues.length > 0) {
                 html += '<div class="card" style="margin-top:30px;"><h2>对话</h2>';
-                dialogues.forEach(dialogue => {
-                    const parts = dialogue.content.split('|').map(s => s.trim());
+                html += '<div class="dialogue-container">';
+                
+                let previousNotes = '';
+                dialogues.forEach((dialogue, index) => {
+                    // 獲取說話者信息
+                    const speaker = dialogue.speaker || '';
+                    const speakerName = dialogue.speaker_name || '';
+                    const speakerLabel = speakerName 
+                        ? `${speaker}: ${speakerName}` 
+                        : (speaker || '');
+                    
+                    // 根據說話者決定樣式類別
+                    const speakerClass = speaker ? `speaker-${speaker}` : '';
+                    
+                    // 如果 notes 與前一個不同，且不為空，顯示為組標題
+                    const currentNotes = dialogue.notes || '';
+                    if (currentNotes && currentNotes !== previousNotes) {
+                        html += `<div class="dialogue-group-title">${currentNotes}</div>`;
+                        previousNotes = currentNotes;
+                    } else if (!currentNotes) {
+                        // 如果當前沒有 notes，重置 previousNotes（以便下一個有 notes 的對話能顯示標題）
+                        previousNotes = '';
+                    }
+                    
+                    // 對話 content 是完整句子，不需要 split
                     html += `
-                        <div class="dialogue-box">
-                            ${dialogue.notes ? `<div class="dialogue-title">${dialogue.notes}</div>` : ''}
-                            ${parts.map(part => `<div class="dialogue-line">${part}</div>`).join('')}
+                        <div class="dialogue-box ${speakerClass}">
+                            ${speakerLabel ? `<div class="dialogue-speaker">${speakerLabel}</div>` : ''}
+                            <div class="dialogue-line">${dialogue.content || ''}</div>
                         </div>
                     `;
                 });
+                html += '</div>';
                 html += '</div>';
             }
             
