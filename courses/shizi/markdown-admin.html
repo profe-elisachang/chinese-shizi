@@ -972,6 +972,8 @@
                     }
                     currentSubtype = 'multiple_choice';
                     continue;
+                }
+                
                 // 對話不再屬於練習，已移到 phrases 部分處理
                 // 如果檢測到對話標題，跳過（對話應該在 ## 识字X - 对话 部分）
                 if (line.match(/^###\s*对话/i) || line.match(/^\*\*对话\*\*/i)) {
@@ -1092,15 +1094,31 @@
             try {
                 parsedData = parseMarkdown(markdown);
                 
+                // 調試信息：輸出解析結果
+                console.log('解析結果：', parsedData);
+                console.log('詞組數量：', parsedData.phrases ? parsedData.phrases.length : 0);
+                console.log('對話數量：', parsedData.phrases ? parsedData.phrases.filter(p => p.subtype === 'dialogue').length : 0);
+                
                 // 更新状态显示
                 updateStatusPanel(parsedData);
                 
-                // 启用按钮
-                previewBtn.disabled = false;
-                uploadBtn.disabled = false;
-                exportBtn.disabled = false;
+                // 檢查是否有數據被解析
+                const hasData = (parsedData.vocabulary && parsedData.vocabulary.length > 0) ||
+                               (parsedData.phrases && parsedData.phrases.length > 0) ||
+                               (parsedData.grammar && parsedData.grammar.length > 0) ||
+                               (parsedData.exercises && parsedData.exercises.length > 0) ||
+                               (parsedData.literacy_sentence && parsedData.literacy_sentence.trim());
                 
-                showMessage('✅ Markdown 解析成功！', 'success');
+                if (hasData) {
+                    // 启用按钮
+                    previewBtn.disabled = false;
+                    uploadBtn.disabled = false;
+                    exportBtn.disabled = false;
+                    showMessage('✅ Markdown 解析成功！', 'success');
+                } else {
+                    showMessage('⚠️ 未解析到任何數據，請檢查格式是否正確', 'error');
+                    console.log('Markdown 內容：', markdown.substring(0, 500));
+                }
             } catch (error) {
                 showMessage('❌ 解析失敗：' + error.message, 'error');
                 console.error('解析錯誤詳情：', error);
@@ -1553,10 +1571,13 @@
                 html += '</div>';
             }
             
-            html += '<div class="status-item success">';
-            html += `<span class="status-icon">✅</span>`;
-            html += `<span>字表解析成功 (${data.vocabulary.length} 項)</span>`;
-            html += '</div>';
+            // 只在有數據時顯示成功信息
+            if (data.vocabulary && data.vocabulary.length > 0) {
+                html += '<div class="status-item success">';
+                html += `<span class="status-icon">✅</span>`;
+                html += `<span>字表解析成功 (${data.vocabulary.length} 項)</span>`;
+                html += '</div>';
+            }
             
             if (data.literacy_sentence && data.literacy_sentence.trim()) {
                 html += '<div class="status-item success">';
@@ -1583,15 +1604,33 @@
                 html += '</div>';
             }
             
-            html += '<div class="status-item success">';
-            html += `<span class="status-icon">✅</span>`;
-            html += `<span>語法解析成功 (${data.grammar.length} 項)</span>`;
-            html += '</div>';
+            if (data.grammar && data.grammar.length > 0) {
+                html += '<div class="status-item success">';
+                html += `<span class="status-icon">✅</span>`;
+                html += `<span>語法解析成功 (${data.grammar.length} 項)</span>`;
+                html += '</div>';
+            }
             
-            html += '<div class="status-item success">';
-            html += `<span class="status-icon">✅</span>`;
-            html += `<span>練習解析成功 (${data.exercises.length} 項)</span>`;
-            html += '</div>';
+            if (data.exercises && data.exercises.length > 0) {
+                html += '<div class="status-item success">';
+                html += `<span class="status-icon">✅</span>`;
+                html += `<span>練習解析成功 (${data.exercises.length} 項)</span>`;
+                html += '</div>';
+            }
+            
+            // 如果沒有任何數據被解析，顯示提示
+            const hasAnyData = (data.vocabulary && data.vocabulary.length > 0) ||
+                               (data.phrases && data.phrases.length > 0) ||
+                               (data.grammar && data.grammar.length > 0) ||
+                               (data.exercises && data.exercises.length > 0) ||
+                               (data.literacy_sentence && data.literacy_sentence.trim());
+            
+            if (!hasAnyData) {
+                html += '<div class="status-item error">';
+                html += '<span class="status-icon">⚠️</span>';
+                html += '<span>未解析到任何數據，請檢查 Markdown 格式是否正確</span>';
+                html += '</div>';
+            }
             
             statusPanel.innerHTML = html;
         }
