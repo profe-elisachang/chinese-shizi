@@ -24,6 +24,7 @@
             --bg-white: #FFFFFF;
             --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             --shadow-hover: 0 4px 12px rgba(30, 136, 229, 0.15);
+            --header-height: 60px;
         }
 
         body {
@@ -37,7 +38,7 @@
         .header {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
             color: white;
-            padding: 30px 20px;
+            padding: 12px 20px;
             text-align: center;
             box-shadow: var(--shadow);
             position: sticky;
@@ -46,55 +47,70 @@
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             letter-spacing: 0.5px;
         }
 
         .header p {
-            font-size: 16px;
+            font-size: 12px;
             opacity: 0.95;
             font-weight: 300;
+            margin: 0;
         }
 
         /* ===== Tab导航栏 ===== */
         .tab-container {
             display: flex;
+            justify-content: center;
+            align-items: center;
             background: white;
             border-bottom: 3px solid var(--light-blue);
             overflow-x: auto;
             overflow-y: hidden;
             position: sticky;
-            top: 120px;
+            top: var(--header-height);
             z-index: 99;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
             scroll-behavior: smooth;
+            padding: 8px 20px;
+            gap: 8px;
         }
 
         .tab-btn {
             flex: 0 0 auto;
-            padding: 16px 24px;
-            border: none;
-            background: none;
+            padding: 12px 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px 8px 0 0;
+            background: #F8F9FA;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 500;
             color: var(--text-secondary);
             transition: all 0.3s ease;
             white-space: nowrap;
             position: relative;
+            margin: 0 2px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .tab-btn:hover {
             color: var(--primary-blue);
-            background-color: rgba(30, 136, 229, 0.05);
+            background-color: var(--light-blue);
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(30, 136, 229, 0.15);
         }
 
         .tab-btn.active {
-            color: var(--primary-blue);
-            border-bottom: 4px solid var(--primary-blue);
+            color: white;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            border-color: var(--primary-blue);
+            border-bottom: 3px solid var(--primary-blue);
             margin-bottom: -3px;
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+            font-weight: 600;
         }
 
         /* ===== 主内容区域 ===== */
@@ -293,17 +309,27 @@
 
         /* ===== 响应式设计 ===== */
         @media (max-width: 768px) {
+            .header {
+                padding: 10px 15px;
+            }
+
             .header h1 {
-                font-size: 24px;
+                font-size: 18px;
             }
 
             .header p {
-                font-size: 14px;
+                font-size: 11px;
+            }
+
+            .tab-container {
+                padding: 6px 10px;
+                gap: 6px;
             }
 
             .tab-btn {
-                padding: 14px 16px;
-                font-size: 14px;
+                padding: 10px 16px;
+                font-size: 13px;
+                margin: 0 1px;
             }
 
             .content-wrapper {
@@ -341,20 +367,26 @@
 
         @media (max-width: 480px) {
             .header {
-                padding: 20px 12px;
+                padding: 8px 12px;
             }
 
             .header h1 {
-                font-size: 20px;
+                font-size: 16px;
             }
 
             .header p {
-                font-size: 12px;
+                font-size: 10px;
+            }
+
+            .tab-container {
+                padding: 4px 8px;
+                gap: 4px;
             }
 
             .tab-btn {
-                padding: 12px 14px;
+                padding: 8px 12px;
                 font-size: 12px;
+                margin: 0 1px;
             }
 
             .question-card {
@@ -373,18 +405,28 @@
 
         /* ===== 大屏优化 (65寸+) ===== */
         @media (min-width: 1600px) {
+            .header {
+                padding: 16px 20px;
+            }
+
             .header h1 {
-                font-size: 42px;
-                margin-bottom: 12px;
+                font-size: 24px;
+                margin-bottom: 6px;
             }
 
             .header p {
-                font-size: 20px;
+                font-size: 14px;
+            }
+
+            .tab-container {
+                padding: 10px 30px;
+                gap: 12px;
             }
 
             .tab-btn {
-                padding: 18px 32px;
-                font-size: 18px;
+                padding: 14px 28px;
+                font-size: 16px;
+                margin: 0 3px;
             }
 
             .question-card {
@@ -422,9 +464,8 @@
 <body>
     <!-- 顶部标题栏 -->
     <div class="header">
-        <h1>识字10语法点练习题</h1>
-        <p>基于识字1到10的课文 · 无纸化复习教材<br>
-        <span style="font-size:15px;color:#eee;">Paperless review exercises based on the texts of Literacy Lessons 1–10</span></p>
+        <h1>识字10:语法点 练习题</h1>
+        <p><span style="font-size:12px;color:#eee;">Paperless review exercises based on the texts of Literacy Lessons 1–10</span></p>
     </div>
 
     <!-- Tab导航栏 -->
@@ -1373,10 +1414,30 @@
             });
         });
 
+        // ===== 设置Tab导航栏位置 =====
+        function updateTabPosition() {
+            const header = document.querySelector('.header');
+            if (header) {
+                const headerHeight = header.offsetHeight;
+                document.documentElement.style.setProperty('--header-height', headerHeight + 'px');
+            }
+        }
+
         // ===== 初始化 =====
         document.addEventListener('DOMContentLoaded', function() {
+            // 设置Tab导航栏位置（延迟执行确保布局完成）
+            setTimeout(updateTabPosition, 0);
+            // 窗口大小改变时重新计算
+            window.addEventListener('resize', function() {
+                setTimeout(updateTabPosition, 0);
+            });
             // 默认显示第一个tab
             switchTab(0);
+        });
+
+        // 页面完全加载后再次更新（处理字体加载等情况）
+        window.addEventListener('load', function() {
+            updateTabPosition();
         });
     </script>
 
