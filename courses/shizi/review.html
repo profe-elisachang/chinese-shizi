@@ -849,6 +849,8 @@
     .message { padding: 18px; border-radius: 14px; margin: 20px 0; text-align: center; font-weight: bold; }
     .message.success { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
     .message.error { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+    .message.info { background: #dbeafe; color: #1e40af; border: 1px solid #60a5fa; }
+    .message.warning { background: #fef3c7; color: #92400e; border: 1px solid #fbbf24; }
 
     .data-section {
         margin: 32px 0 16px;
@@ -2202,18 +2204,27 @@ for (let i = 1; i <= 25; i++) {
         
         // ==================== Import/Export ====================
         function exportProgress() {
+            // 导出完整格式，包含所有字段
             const data = {
-                characterProgress: userProgress,
-                lastReview: new Date().toISOString(),
-                deviceCode: deviceCode
+                exportDate: new Date().toISOString(),
+                exportType: 'single_student',
+                student: {
+                    deviceCode: deviceCode || '------',
+                    studentName: studentName || '',
+                    lastReview: new Date().toISOString(),
+                    characterProgress: userProgress
+                }
             };
             
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `shizi-progress-${deviceCode}-${new Date().toISOString().split('T')[0]}.json`;
+            const fileName = `shizi-progress-${deviceCode || 'student'}-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = fileName;
             a.click();
+            
+            showMessage('✅ 资料已导出！', 'success');
         }
         
         document.getElementById('importFile').addEventListener('change', async (e) => {
@@ -2221,17 +2232,74 @@ for (let i = 1; i <= 25; i++) {
             if (!file) return;
             
             try {
+                showMessage('正在导入数据...', 'info');
                 const text = await file.text();
                 const data = JSON.parse(text);
                 
-                if (data.characterProgress) {
-                    userProgress = data.characterProgress;
-                    await saveUserProgress();
-                    showMessage('导入成功！', 'success');
-                    updateStats();
+                let progressToImport = null;
+                
+                // 支持两种格式：
+                // 1. 从 admin 导出的完整格式（单个学生或所有学生）
+                if (data.exportType === 'single_student' && data.student) {
+                    progressToImport = data.student.characterProgress || {};
+                } else if (data.exportType === 'all_students' && data.students && data.students.length > 0) {
+                    // 如果是多个学生，让用户选择或使用第一个
+                    if (data.students.length === 1) {
+                        progressToImport = data.students[0].characterProgress || {};
+                    } else {
+                        // 多个学生时，尝试匹配当前设备码
+                        const currentCode = deviceCode || '';
+                        const matched = data.students.find(s => 
+                            s.deviceCode && s.deviceCode.toUpperCase() === currentCode.toUpperCase()
+                        );
+                        if (matched) {
+                            progressToImport = matched.characterProgress || {};
+                        } else {
+                            // 没有匹配的，使用第一个
+                            progressToImport = data.students[0].characterProgress || {};
+                            showMessage(`⚠️ 未找到匹配的设备码，已导入第一个学生的资料（${data.students[0].deviceCode}）`, 'warning');
+                        }
+                    }
+                } 
+                // 2. 从学生端导出的简单格式
+                else if (data.characterProgress) {
+                    progressToImport = data.characterProgress;
                 }
+                // 3. 直接是 characterProgress 对象
+                else if (typeof data === 'object' && !data.exportType) {
+                    // 检查是否直接是进度对象
+                    const hasCharacterFields = Object.values(data).some(v => 
+                        v && typeof v === 'object' && (v.character || v.box || v.reviews !== undefined)
+                    );
+                    if (hasCharacterFields) {
+                        progressToImport = data;
+                    }
+                }
+                
+                if (!progressToImport || Object.keys(progressToImport).length === 0) {
+                    showMessage('❌ 无法识别文件格式！请确认这是从本系统导出的 JSON 文件。', 'error');
+                    return;
+                }
+                
+                // 合并模式：保留两个设备中更好的学习记录
+                const beforeCount = Object.keys(userProgress).length;
+                userProgress = mergeProgress(userProgress, progressToImport);
+                const afterCount = Object.keys(userProgress).length;
+                const addedCount = afterCount - beforeCount;
+                
+                await saveUserProgress();
+                
+                const message = addedCount > 0
+                    ? `✅ 导入成功！合并了 ${addedCount} 个新字的学习记录。`
+                    : '✅ 导入成功！已保留您当前设备中更好的学习记录。';
+                showMessage(message, 'success');
+                updateStats();
+                
+                // 重置文件输入，允许重复导入同一文件
+                e.target.value = '';
             } catch (error) {
-                showMessage('导入失败: ' + error.message, 'error');
+                console.error('导入失败:', error);
+                showMessage('❌ 导入失败: ' + error.message, 'error');
             }
         });
         
@@ -2243,27 +2311,80 @@ for (let i = 1; i <= 25; i++) {
             syncFromDeviceCode(code.toUpperCase());
         }
         
+        // ==================== Merge Progress Helper ====================
+        // 合并两个设备的进度数据（智能合并，保留更多学习记录）
+        function mergeProgress(currentProgress, newProgress) {
+            const merged = { ...currentProgress };
+            const boxPriority = { 'forgot': 0, 'hard': 1, 'good': 2, 'easy': 3 };
+            
+            // 遍历新设备的所有字
+            Object.keys(newProgress).forEach(char => {
+                const newChar = newProgress[char];
+                const currentChar = merged[char];
+                
+                if (!currentChar) {
+                    // 当前设备没有这个字，直接添加
+                    merged[char] = { ...newChar };
+                } else {
+                    // 两个设备都有这个字，选择保留更好的记录
+                    const newReviews = newChar.reviews || 0;
+                    const currentReviews = currentChar.reviews || 0;
+                    
+                    // 优先保留复习次数更多的
+                    if (newReviews > currentReviews) {
+                        merged[char] = { ...newChar };
+                    } else if (newReviews === currentReviews) {
+                        // 如果次数相同，保留记忆盒等级更高的
+                        const newBoxPriority = boxPriority[newChar.box] || 0;
+                        const currentBoxPriority = boxPriority[currentChar.box] || 0;
+                        if (newBoxPriority > currentBoxPriority) {
+                            merged[char] = { ...newChar };
+                        }
+                        // 否则保留当前的（已经是更好的）
+                    }
+                    // 如果当前设备的复习次数更多，保留当前的
+                }
+            });
+            
+            return merged;
+        }
+        
         async function syncFromDeviceCode(code) {
             try {
+                showMessage('正在同步数据...', 'info');
+                
                 // Search for user with this device code
                 const snapshot = await db.collection('user_progress')
-                    .where('deviceCode', '==', code)
+                    .where('deviceCode', '==', code.toUpperCase())
                     .limit(1)
                     .get();
                 
                 if (snapshot.empty) {
-                    showMessage('Device code not found!', 'error');
+                    showMessage('❌ 找不到该设备码！请确认设备码是否正确。', 'error');
                     return;
                 }
                 
                 const data = snapshot.docs[0].data();
-                userProgress = data.characterProgress || {};
+                const remoteProgress = data.characterProgress || {};
+                
+                // 合并模式：保留两个设备中更好的学习记录
+                const beforeCount = Object.keys(userProgress).length;
+                userProgress = mergeProgress(userProgress, remoteProgress);
+                const afterCount = Object.keys(userProgress).length;
+                const addedCount = afterCount - beforeCount;
+                
+                // 保存合并后的数据
                 await saveUserProgress();
                 
-                showMessage('同步成功！', 'success');
+                // 显示合并结果
+                const message = addedCount > 0 
+                    ? `✅ 同步成功！合并了 ${addedCount} 个新字的学习记录。`
+                    : '✅ 同步成功！已保留您当前设备中更好的学习记录。';
+                showMessage(message, 'success');
                 updateStats();
             } catch (error) {
-                showMessage('同步失败: ' + error.message, 'error');
+                console.error('同步失败:', error);
+                showMessage('❌ 同步失败: ' + error.message, 'error');
             }
         }
         

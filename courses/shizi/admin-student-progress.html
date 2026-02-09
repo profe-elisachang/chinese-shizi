@@ -513,7 +513,7 @@
                 <input type="text" id="searchInput" placeholder="搜索设备码或姓名...">
                 <button class="btn btn-primary" onclick="searchStudents()">🔍 搜索</button>
                 <button class="btn btn-secondary" onclick="refreshData()">🔄 刷新</button>
-                <button class="btn btn-secondary" onclick="exportData()">📥 导出数据</button>
+                <button class="btn btn-secondary" onclick="exportAllDataJSON()">📥 导出完整数据 (JSON)</button>
             </div>
             
             <div class="filter-group">
@@ -902,6 +902,12 @@
                         ${student.characters.length > 50 ? `<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">还有 ${student.characters.length - 50} 个...</div>` : ''}
                     </div>
                 </div>
+                
+                <div class="detail-item" style="text-align: center; padding: var(--spacing-lg);">
+                    <button class="btn btn-primary" onclick="exportStudentData('${student.userId}')" style="font-size: 1.1em; padding: var(--spacing-md) var(--spacing-xl);">
+                        📥 导出此学生完整资料
+                    </button>
+                </div>
             `;
             
             document.getElementById('detailModal').classList.add('active');
@@ -956,24 +962,145 @@
             loadStudentsData();
         }
         
-        // ==================== Export Data ====================
-        function exportData() {
-            const csv = [
-                ['设备码', '姓名', '已学字数', '复习次数', '最后复习'].join(','),
-                ...filteredStudents.map(s => [
-                    s.deviceCode,
-                    s.name || '未填写',
-                    s.reviewed,
-                    s.reviews,
-                    s.lastReview ? formatDate(s.lastReview) : '从未复习'
-                ].join(','))
-            ].join('\n');
-            
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'students_progress_' + new Date().toISOString().split('T')[0] + '.csv';
-            link.click();
+        // ==================== Export All Data (JSON) ====================
+        async function exportAllDataJSON() {
+            try {
+                const exportData = {
+                    exportDate: new Date().toISOString(),
+                    exportType: 'all_students',
+                    totalStudents: filteredStudents.length,
+                    students: []
+                };
+                
+                // 获取每个学生的完整数据
+                for (const student of filteredStudents) {
+                    try {
+                        const doc = await db.collection('user_progress').doc(student.userId).get();
+                        if (doc.exists) {
+                            const data = doc.data();
+                            
+                            // 处理 lastReview 时间戳
+                            let lastReviewStr = null;
+                            if (data.lastReview) {
+                                try {
+                                    if (data.lastReview.toDate) {
+                                        lastReviewStr = data.lastReview.toDate().toISOString();
+                                    } else {
+                                        lastReviewStr = new Date(data.lastReview).toISOString();
+                                    }
+                                } catch (e) {
+                                    lastReviewStr = data.lastReview;
+                                }
+                            }
+                            
+                            // 处理 characterProgress，确保所有字段都被包含
+                            const characterProgress = {};
+                            if (data.characterProgress) {
+                                Object.keys(data.characterProgress).forEach(key => {
+                                    const charData = data.characterProgress[key];
+                                    characterProgress[key] = {
+                                        character: charData.character || key,
+                                        box: charData.box || 'forgot',
+                                        reviews: charData.reviews || 0,
+                                        lastReviewed: charData.lastReviewed || null
+                                    };
+                                });
+                            }
+                            
+                            exportData.students.push({
+                                userId: doc.id,
+                                deviceCode: data.deviceCode || '------',
+                                studentName: data.studentName || '',
+                                lastReview: lastReviewStr,
+                                isTestDevice: data.isTestDevice || false,
+                                characterProgress: characterProgress
+                            });
+                        }
+                    } catch (error) {
+                        console.error(`Error exporting student ${student.userId}:`, error);
+                    }
+                }
+                
+                // 导出 JSON
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `students_complete_data_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                alert(`✅ 成功导出 ${exportData.students.length} 位学生的完整资料！`);
+            } catch (error) {
+                console.error('导出失败:', error);
+                alert('❌ 导出失败：' + error.message);
+            }
+        }
+        
+        // ==================== Export Single Student Data ====================
+        async function exportStudentData(userId) {
+            try {
+                const doc = await db.collection('user_progress').doc(userId).get();
+                if (!doc.exists) {
+                    alert('❌ 找不到学生资料！');
+                    return;
+                }
+                
+                const data = doc.data();
+                const student = allStudents.find(s => s.userId === userId);
+                
+                // 处理 lastReview 时间戳
+                let lastReviewStr = null;
+                if (data.lastReview) {
+                    try {
+                        if (data.lastReview.toDate) {
+                            lastReviewStr = data.lastReview.toDate().toISOString();
+                        } else {
+                            lastReviewStr = new Date(data.lastReview).toISOString();
+                        }
+                    } catch (e) {
+                        lastReviewStr = data.lastReview;
+                    }
+                }
+                
+                // 处理 characterProgress
+                const characterProgress = {};
+                if (data.characterProgress) {
+                    Object.keys(data.characterProgress).forEach(key => {
+                        const charData = data.characterProgress[key];
+                        characterProgress[key] = {
+                            character: charData.character || key,
+                            box: charData.box || 'forgot',
+                            reviews: charData.reviews || 0,
+                            lastReviewed: charData.lastReviewed || null
+                        };
+                    });
+                }
+                
+                const exportData = {
+                    exportDate: new Date().toISOString(),
+                    exportType: 'single_student',
+                    student: {
+                        userId: doc.id,
+                        deviceCode: data.deviceCode || '------',
+                        studentName: data.studentName || '',
+                        lastReview: lastReviewStr,
+                        isTestDevice: data.isTestDevice || false,
+                        characterProgress: characterProgress
+                    }
+                };
+                
+                // 导出 JSON
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                const fileName = `student_${data.deviceCode || doc.id}_${new Date().toISOString().split('T')[0]}.json`;
+                link.download = fileName;
+                link.click();
+                
+                alert(`✅ 成功导出学生资料：${data.studentName || data.deviceCode}`);
+            } catch (error) {
+                console.error('导出失败:', error);
+                alert('❌ 导出失败：' + error.message);
+            }
         }
         
         // ==================== Utilities ====================
