@@ -1173,7 +1173,7 @@
                     const [pinyin, english] = (item.meaning || '').split('|');
                     return `${item.character || ''} | ${pinyin || ''} | ${english || ''}`;
                 case 'phrases':
-                    return `${item.content || ''} | ${item.pinyin || ''} | ${item.meaning || ''}`;
+                    return `${item.content || ''}`;
                 case 'dialogues':
                     const speaker = item.speaker_name ? `${item.speaker}: ${item.speaker_name}` : (item.speaker || '');
                     return `${speaker ? `[${speaker}] ` : ''}${item.content || ''}`;
@@ -1217,15 +1217,7 @@
                     return `
                         <div class="form-field required">
                             <label>詞組</label>
-                            <input type="text" id="field-content-${index}" value="${item.content || ''}" onchange="updateItemField(${index}, 'content', this.value)">
-                        </div>
-                        <div class="form-field required">
-                            <label>拼音</label>
-                            <input type="text" id="field-pinyin-${index}" value="${item.pinyin || ''}" onchange="updateItemField(${index}, 'pinyin', this.value)">
-                        </div>
-                        <div class="form-field required">
-                            <label>英文</label>
-                            <input type="text" id="field-meaning-${index}" value="${item.meaning || ''}" onchange="updateItemField(${index}, 'meaning', this.value)">
+                            <input type="text" id="field-content-${index}" value="${item.content || ''}" placeholder="詞組|拼音|英文 (例如：通知|tōngzhī|notify, inform)" onchange="updateItemField(${index}, 'content', this.value)">
                         </div>
                         <div class="form-field">
                             <label>例句（中文）</label>
@@ -1528,7 +1520,7 @@
                 case 'vocabulary':
                     return { character: '', meaning: '|', notes: '' };
                 case 'phrases':
-                    return { content: '', pinyin: '', meaning: '', notes: '', example_en: '', example_es: '', subtype: 'phrase' };
+                    return { content: '', notes: '', example_en: '', example_es: '', subtype: 'phrase' };
                 case 'dialogues':
                     return { content: '', speaker: '', speaker_name: '', notes: '', subtype: 'dialogue', type: 'phrases' };
                 case 'grammar':
@@ -1583,15 +1575,7 @@
                     return `
                         <div class="form-field required">
                             <label>詞組</label>
-                            <input type="text" id="modal-content" value="${item.content || ''}">
-                        </div>
-                        <div class="form-field required">
-                            <label>拼音</label>
-                            <input type="text" id="modal-pinyin" value="${item.pinyin || ''}">
-                        </div>
-                        <div class="form-field required">
-                            <label>英文</label>
-                            <input type="text" id="modal-meaning" value="${item.meaning || ''}">
+                            <input type="text" id="modal-content" value="${item.content || ''}" placeholder="詞組|拼音|英文 (例如：通知|tōngzhī|notify, inform)">
                         </div>
                         <div class="form-field">
                             <label>例句（中文）</label>
@@ -1692,17 +1676,22 @@
                     }
                     break;
                 case 'phrases':
+                    const contentValue = document.getElementById('modal-content').value.trim();
                     newItem = {
-                        content: document.getElementById('modal-content').value.trim(),
-                        pinyin: document.getElementById('modal-pinyin').value.trim(),
-                        meaning: document.getElementById('modal-meaning').value.trim(),
+                        content: contentValue,
                         notes: document.getElementById('modal-notes').value.trim(),
                         example_en: document.getElementById('modal-example_en').value.trim(),
                         example_es: document.getElementById('modal-example_es').value.trim(),
                         subtype: 'phrase'
                     };
-                    if (!newItem.content || !newItem.pinyin || !newItem.meaning) {
-                        alert('請填寫所有必填字段');
+                    if (!newItem.content) {
+                        alert('請填寫詞組欄位（格式：詞組|拼音|英文）');
+                        return;
+                    }
+                    // 驗證格式
+                    const parts = contentValue.split('|');
+                    if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
+                        alert('詞組格式錯誤，請使用：詞組|拼音|英文（例如：通知|tōngzhī|notify, inform）');
                         return;
                     }
                     break;
@@ -1821,7 +1810,7 @@
 
         function formatPreviewItem(item, type) {
             switch(type) {
-                case 'vocabulary':
+                case 'vocabulary': {
                     // 編輯器格式: { character, meaning: "pinyin|english", notes }
                     const [pinyin, english] = (item.meaning || '').split('|');
                     return `
@@ -1830,13 +1819,19 @@
                         <div style="color: var(--meaning-color); margin-bottom: var(--spacing-xs);">${english || ''}</div>
                         ${item.notes ? `<div style="color: var(--text-secondary); font-size: 0.9em; margin-top: var(--spacing-sm);">${item.notes}</div>` : ''}
                     `;
-                case 'phrases':
+                }
+                case 'phrases': {
+                    const parts = (item.content || '').split('|').map(s => s.trim());
+                    const chinese = parts[0] || '';
+                    const pinyin = parts[1] || '';
+                    const english = parts[2] || '';
                     return `
-                        <div style="font-size: 1.2em; font-weight: bold; margin-bottom: var(--spacing-xs);">${item.content || ''}</div>
-                        <div style="color: var(--pinyin-color);">${item.pinyin || ''}</div>
-                        <div style="color: var(--meaning-color);">${item.meaning || ''}</div>
+                        <div style="font-size: 1.2em; font-weight: bold; margin-bottom: var(--spacing-xs);">${chinese}</div>
+                        <div style="color: var(--pinyin-color);">${pinyin}</div>
+                        <div style="color: var(--meaning-color);">${english}</div>
                     `;
-                case 'dialogues':
+                }
+                case 'dialogues': {
                     const speaker = item.speaker_name ? `${item.speaker}: ${item.speaker_name}` : (item.speaker || '');
                     return `
                         <div style="display: flex; align-items: start; gap: var(--spacing-md);">
@@ -1847,24 +1842,30 @@
                         </div>
                         ${item.notes ? `<div style="color: var(--text-secondary); font-size: 0.85em; margin-top: var(--spacing-xs);">註釋：${item.notes}</div>` : ''}
                     `;
-                case 'grammar':
+                }
+                case 'grammar': {
                     return `
                         <div style="font-weight: bold; margin-bottom: var(--spacing-xs);">${item.chinese || ''}</div>
                         <div style="color: var(--text-secondary);">${item.english || ''}</div>
                     `;
-                case 'exercises':
+                }
+                case 'exercises': {
                     return `
                         <div style="font-weight: bold; margin-bottom: var(--spacing-xs);">${item.content || ''}</div>
                         <div style="color: var(--primary-color);">答案：${item.answer || ''}</div>
                         <div style="color: var(--text-secondary); font-size: 0.9em;">${item.subtype === 'fill_blank' ? '填空詞' : '選項'}：${item.options || ''}</div>
                     `;
-                case 'literacy_sentence':
+                }
+                case 'literacy_sentence': {
                     return `<div style="font-size: 1.1em; line-height: 1.8;">${item.content || ''}</div>`;
-                case 'reading_text':
+                }
+                case 'reading_text': {
                     // 直接返回 HTML，因為內容可能包含 HTML 標籤
                     return `<div class="reading-text-preview">${item.content || ''}</div>`;
-                default:
+                }
+                default: {
                     return '';
+                }
             }
         }
 

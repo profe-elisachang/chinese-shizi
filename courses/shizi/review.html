@@ -778,6 +778,26 @@
             font-size: var(--text-base);
             line-height: 1.6;
         }
+
+        /* 詞組例句 Markdown 列表樣式 */
+        .phrase-example-text ul {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            list-style: decimal;
+        }
+
+        .phrase-example-text li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .phrase-example-text strong {
+            font-weight: 700;
+        }
+
+        .phrase-example-text em {
+            font-style: italic;
+        }
         
         .speak-btn {
             background: var(--primary-dark);
@@ -1363,16 +1383,16 @@
             <div style="text-align: center; margin-bottom: 24px;">
                 <h2 style="color: var(--primary-dark); font-size: 2rem; margin-bottom: 8px;">Welcome! 👋</h2>
                 <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">
-                    请输入您的姓名（可选，用于显示）
+                    Enter your name (optional, for display)
                 </p>
             </div>
 
-            <input type="text" id="studentNameInput" placeholder="您的姓名（可选）"
+            <input type="text" id="studentNameInput" placeholder="Your name (optional)"
                    style="width: 100%; padding: 14px; font-size: 1.1rem; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 20px;">
 
             <div style="display: flex; gap: 12px;">
-                <button class="btn btn-secondary" onclick="skipNameInput()" style="flex: 1;">跳过</button>
-                <button class="btn btn-primary" onclick="saveStudentName()" style="flex: 1;">确认</button>
+                <button class="btn btn-secondary" onclick="skipNameInput()" style="flex: 1;">Skip</button>
+                <button class="btn btn-primary" onclick="saveStudentName()" style="flex: 1;">Save</button>
             </div>
         </div>
     </div>
@@ -1486,6 +1506,24 @@
                 }
             }
         });
+        
+        // ==================== Markdown 解析工具 ====================
+        function parseSimpleMarkdown(text) {
+            if (!text) return '';
+            return text
+                // 換行符
+                .replace(/\n/g, '<br>')
+                // 粗體 **text**
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                // 斜體 *text*
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                // 有序列表 1. text
+                .replace(/^(\d+)\.\s(.+)$/gm, '<li>$2</li>')
+                // 無序列表 - text
+                .replace(/^[-]\s(.+)$/gm, '<li>$1</li>')
+                // 包裝連續的列表項
+                .replace(/(<li>.*?<\/li>\s*)+/gs, '<ul>$&</ul>');
+        }
         
         // ==================== Load Lessons from Firebase ====================
         async function loadLessonsFromFirebase() {
@@ -2063,7 +2101,7 @@ for (let i = 1; i <= 25; i++) {
                         exampleHTML += `
                             <div class="phrase-example-item">
                                 <div class="phrase-example-label" style="color: var(--character-color);">中文：</div>
-                                <div class="phrase-example-text">${item.notes}</div>
+                                <div class="phrase-example-text">${parseSimpleMarkdown(item.notes)}</div>
                             </div>
                         `;
                     }
@@ -2073,7 +2111,7 @@ for (let i = 1; i <= 25; i++) {
                         exampleHTML += `
                             <div class="phrase-example-item">
                                 <div class="phrase-example-label" style="color: var(--english-color);">English:</div>
-                                <div class="phrase-example-text" style="color: var(--english-color);">${item.example_en}</div>
+                                <div class="phrase-example-text" style="color: var(--english-color);">${parseSimpleMarkdown(item.example_en)}</div>
                             </div>
                         `;
                     }
@@ -2083,7 +2121,7 @@ for (let i = 1; i <= 25; i++) {
                         exampleHTML += `
                             <div class="phrase-example-item">
                                 <div class="phrase-example-label" style="color: var(--spanish-color);">Español:</div>
-                                <div class="phrase-example-text" style="color: var(--spanish-color);">${item.example_es}</div>
+                                <div class="phrase-example-text" style="color: var(--spanish-color);">${parseSimpleMarkdown(item.example_es)}</div>
                             </div>
                         `;
                     }
@@ -2947,7 +2985,7 @@ async function saveStudentName() {
         studentName = name;
         await saveUserProgress();
         updateStudentNameDisplay();
-        showMessage('Name saved successfully! 姓名保存成功！', 'success');
+        showMessage('Name saved successfully!', 'success');
     }
 
     closeNameModal();

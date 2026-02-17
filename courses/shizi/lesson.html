@@ -424,6 +424,26 @@
             gap: var(--spacing-sm);
         }
 
+        /* 例句 Markdown 列表樣式 */
+        #modalPhraseExampleBody ul {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            list-style: decimal;
+        }
+
+        #modalPhraseExampleBody li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        #modalPhraseExampleBody strong {
+            font-weight: 700;
+        }
+
+        #modalPhraseExampleBody em {
+            font-style: italic;
+        }
+
         /* ==================== Image Styles (Alt-based) ==================== */
         /* 字形補丁系統 (Character Patch) - 通用樣式 */
         .img-comp {
@@ -1916,6 +1936,24 @@ function createAdminCharacterCard(char, index) {
             container.innerHTML = html;
         }
         
+        // ==================== Markdown 解析工具 ====================
+        function parseSimpleMarkdown(text) {
+            if (!text) return '';
+            return text
+                // 換行符
+                .replace(/\n/g, '<br>')
+                // 粗體 **text**
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                // 斜體 *text*
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                // 有序列表 1. text
+                .replace(/^(\d+)\.\s(.+)$/gm, '<li>$2</li>')
+                // 無序列表 - text
+                .replace(/^[-]\s(.+)$/gm, '<li>$1</li>')
+                // 包裝連續的列表項
+                .replace(/(<li>.*?<\/li>\s*)+/gs, '<ul>$&</ul>');
+        }
+        
         // ==================== Render Phrases ====================
         function renderPhrases(phrases) {
             const container = document.getElementById('phrasesContainer');
@@ -2475,7 +2513,7 @@ modalCharacter.innerHTML = displayContent;
                 bodyHTML += `
                     <div style="margin-bottom: var(--spacing-md); padding: var(--spacing-md); background: var(--bg-light); border-radius: var(--radius-md);">
                         <div style="font-weight: var(--font-semibold); color: var(--character-color); margin-bottom: var(--spacing-xs);">中文：</div>
-                        <div style="font-size: var(--text-lg); line-height: 1.6;">${phraseData.notes}</div>
+                        <div style="font-size: var(--text-lg); line-height: 1.6;">${parseSimpleMarkdown(phraseData.notes)}</div>
                     </div>
                 `;
             }
@@ -2485,7 +2523,7 @@ modalCharacter.innerHTML = displayContent;
                 bodyHTML += `
                     <div style="margin-bottom: var(--spacing-md); padding: var(--spacing-md); background: var(--bg-light); border-radius: var(--radius-md);">
                         <div style="font-weight: var(--font-semibold); color: var(--english-color); margin-bottom: var(--spacing-xs);">English:</div>
-                        <div style="font-size: var(--text-lg); line-height: 1.6; color: var(--english-color);">${phraseData.example_en}</div>
+                        <div style="font-size: var(--text-lg); line-height: 1.6; color: var(--english-color);">${parseSimpleMarkdown(phraseData.example_en)}</div>
                     </div>
                 `;
             }
@@ -2495,7 +2533,7 @@ modalCharacter.innerHTML = displayContent;
                 bodyHTML += `
                     <div style="margin-bottom: var(--spacing-md); padding: var(--spacing-md); background: var(--bg-light); border-radius: var(--radius-md);">
                         <div style="font-weight: var(--font-semibold); color: var(--spanish-color); margin-bottom: var(--spacing-xs);">Español:</div>
-                        <div style="font-size: var(--text-lg); line-height: 1.6; color: var(--spanish-color);">${phraseData.example_es}</div>
+                        <div style="font-size: var(--text-lg); line-height: 1.6; color: var(--spanish-color);">${parseSimpleMarkdown(phraseData.example_es)}</div>
                     </div>
                 `;
             }
