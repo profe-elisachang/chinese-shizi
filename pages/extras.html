@@ -150,6 +150,76 @@
             box-shadow: 0 5px 15px rgba(8, 145, 178, 0.3);
         }
 
+        /* ==================== Dynamic List Styles ==================== */
+        #dynamic-list-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .list-item-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 25px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .list-item-button:hover {
+            border-color: var(--primary);
+            background: var(--bg-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .list-item-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .list-item-title {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .list-item-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .list-item-arrow {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-left: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .list-item-button:hover .list-item-arrow {
+            transform: translateX(5px);
+        }
+
+        .empty-message,
+        .error-message {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .error-message {
+            color: #dc2626;
+        }
+
         /* ==================== Responsive ==================== */
         @media (max-width: 768px) {
             .container {
@@ -273,28 +343,13 @@
             补充教材与练习材料
         </p>
 
-        <!-- Resource Cards -->
-        <div class="resource-grid">
-            <!-- 识字第十课对话练习 -->
-            <div class="resource-card">
-                <div class="resource-header">
-                    <div class="resource-icon">💬</div>
-                    <div>
-                        <h2 class="resource-title">识字第十课 - 对话练习</h2>
-                        <p class="resource-subtitle">Literacy Lesson 10 - Conversation Practice</p>
-                    </div>
-                </div>
-                <p class="resource-description">
-                    <strong>中文：</strong>补充识字第十课的对话练习，包含完整的中文对话、拼音、翻译及语言文化注解。主题涵盖理发与家庭计划等日常生活话题。<br><br>
-                    <strong>English:</strong> Supplementary conversation practice for Literacy Lesson 10, including complete Chinese dialogues, pinyin, translations, and language & cultural notes. Topics cover daily life conversations such as haircuts and family plans.
-                </p>
-                <a href="extras/content/识字10.html" class="resource-link">
-                    📖 开始学习 / Start Learning →
-                </a>
-            </div>
+        <!-- Dynamic List Container -->
+        <div id="dynamic-list-container">
+            <!-- Dynamic list will be loaded here by list-loader.js -->
         </div>
     </div>
 
     <script src="../assets/js/nav-global.js"></script>
+    <script src="../assets/js/list-loader.js"></script>
 </body>
 </html>
