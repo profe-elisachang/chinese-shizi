@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>识字11 · 课件 · 词汇与句型</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background: #f4f7fb;
+            color: #1e2b3c;
+            line-height: 1.5;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+        /* 主容器：适合65寸大屏，最大宽度1400px，保持阅读舒适 */
+        .lesson-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px -10px rgba(0,20,40,0.2);
+            overflow: hidden;
+            padding: 2rem 2rem 2.5rem 2rem;
+        }
+        /* 头部：标题 + 语言切换 */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e6edf4;
+            padding-bottom: 1.2rem;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 600;
+            background: linear-gradient(145deg, #1e3c5a, #2b4c6e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+        .lang-bar {
+            display: flex;
+            gap: 0.5rem;
+            background: #edf2f7;
+            padding: 0.4rem;
+            border-radius: 48px;
+        }
+        .lang-btn {
+            border: none;
+            background: transparent;
+            padding: 0.6rem 1.6rem;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #2d3f55;
+        }
+        .lang-btn.active {
+            background: white;
+            color: #0066b3;
+            box-shadow: 0 4px 10px rgba(0,80,150,0.15);
+            font-weight: 600;
+        }
+        
+        /* 选项卡样式 */
+        .tab-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #e1eaf3;
+        }
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 1rem 2.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #4a6380;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+        }
+        .tab-btn.active {
+            color: #0066b3;
+            border-bottom: 3px solid #0066b3;
+            background: #f0f8ff;
+        }
+        .tab-btn:hover {
+            background: #f5f9fc;
+        }
+        
+        /* 内容区布局 */
+        .content-area {
+            margin: 2rem 0 1.5rem 0;
+        }
+        
+        /* 词汇卡片网格布局 */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* 选项卡内容区 */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 卡片通用设计 */
+        .card {
+            background: #ffffff;
+            border: 1px solid #dde7f0;
+            border-radius: 28px;
+            box-shadow: 0 8px 18px -6px rgba(0,40,70,0.08);
+            overflow: hidden;
+            margin-bottom: 1.8rem;
+            transition: 0.2s;
+        }
+        .card-header {
+            background: #f0f6fe;
+            padding: 1.2rem 1.8rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #134b73;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #d0dfee;
+        }
+        .card-header span:first-child {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .toggle-icon {
+            font-size: 2rem;
+            user-select: none;
+            color: #2a6792;
+            transition: transform 0.2s;
+        }
+        .card-content {
+            padding: 1.2rem 1.8rem 1.8rem 1.8rem;
+            background: white;
+        }
+        .card-content.collapsed {
+            display: none;
+        }
+        
+        /* 口语练习区特殊样式 */
+        .speaking-practice-area {
+            background: #fff8f0;
+            border: 1px solid #ffe4c4;
+        }
+        .speaking-practice-area .card-header {
+            background: #fff5e6;
+            color: #8b4513;
+        }
+        
+        /* 表格样式：干净、对齐 */
+        .vocab-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1rem;
+        }
+        .vocab-table th {
+            text-align: left;
+            padding: 0.8rem 0.4rem 0.4rem 0.4rem;
+            font-weight: 600;
+            color: #1e4b6e;
+            border-bottom: 2px solid #cbdae9;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .vocab-table td {
+            padding: 0.75rem 0.4rem;
+            border-bottom: 1px dashed #cdddec;
+            vertical-align: top;
+        }
+        .vocab-table tr:last-child td {
+            border-bottom: none;
+        }
+        .chinese-word {
+            font-weight: 600;
+            color: #0a2c42;
+            font-size: 1.25rem;
+        }
+        .pinyin {
+            color: #54738f;
+            font-size: 0.95rem;
+            font-family: 'Arial', sans-serif;
+        }
+        .en, .es {
+            color: #2d3f55;
+        }
+        
+        /* 高亮词汇 */
+        .highlight-word {
+            background: #fff4cc;
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #d97706;
+            border: 1px solid #fbbf24;
+        }
+        
+        /* 例句区块 */
+        .example-sentence {
+            background: #f3f9ff;
+            border-left: 6px solid #3980b0;
+            padding: 0.9rem 1.5rem;
+            border-radius: 20px;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.15rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .example-sentence i {
+            color: #2f5f89;
+            margin-right: 0.5rem;
+        }
+        .example-group {
+            margin: 1.5rem 0 0.5rem 0;
+        }
+        .example-group h4 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1c4768;
+            margin-bottom: 0.6rem;
+        }
+        
+        /* 互动练习区样式 */
+        .practice-area {
+            background: #f8fafd;
+            border-radius: 28px;
+            padding: 1.8rem;
+            border: 1px solid #d2e2f0;
+            margin-bottom: 2rem;
+        }
+        .practice-area h2 {
+            margin-bottom: 1.2rem;
+            color: #134b73;
+        }
+        .practice-item {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(34, 68, 102, 0.05);
+        }
+        .practice-question {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #003057;
+        }
+        
+        /* 口语练习题目样式 */
+        .speaking-item {
+            background: white;
+            border-radius: 20px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #f59e0b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .speaking-item-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.6rem;
+        }
+        .speaking-item-content {
+            font-size: 1.15rem;
+            color: #1f2937;
+            line-height: 1.8;
+            margin: 0.5rem 0;
+        }
+        .speaking-item-answer {
+            background: #d1fae5;
+            border-radius: 16px;
+            padding: 0.8rem 1.2rem;
+            margin-top: 0.8rem;
+            font-size: 1.1rem;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        /* 表格样式（信息差用） */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+        }
+        .info-table th, .info-table td {
+            border: 2px solid #cbd5e1;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        .info-table th {
+            background: #e0e7ff;
+            font-weight: 600;
+            color: #1e40af;
+        }
+        .info-table td {
+            background: white;
+        }
+        
+        /* 按钮样式 */
+        .btn-answer {
+            background: #dbeafe;
+            border: none;
+            padding: 0.5rem 1.8rem;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #004b7a;
+            cursor: pointer;
+            margin-right: 1.2rem;
+            margin-top: 0.5rem;
+            border: 1px solid #aac2db;
+            transition: 0.1s;
+        }
+        .btn-answer:hover {
+            background: #c0d6f0;
+        }
+        .answer-hidden {
+            display: inline;
+            color: #707070;
+            font-style: italic;
+        }
+        .answer-visible {
+            display: inline;
+            font-weight: 500;
+            color: #1d6f2c;
+            background: #e3f5e3;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+        .hidden {
+            display: none;
+        }
+        
+        /* 拖拽功能样式 */
+        .drag-container {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+        .drag-options {
+            flex: 1;
+            background: #f0f8ff;
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 2px dashed #93c5fd;
+        }
+        .drag-options h4 {
+            font-size: 1.1rem;
+            color: #1e40af;
+            margin-bottom: 1rem;
+        }
+        .draggable-word {
+            display: inline-block;
+            background: linear-gradient(135deg, #60a5fa 0%, #1e40af 100%);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            margin: 0.4rem;
+            border-radius: 40px;
+            cursor: move;
+            font-size: 1.15rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .draggable-word:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+        .draggable-word.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        .drag-sentences {
+            flex: 2;
+        }
+        .drag-sentence {
+            background: white;
+            padding: 1.2rem;
+            margin: 0.8rem 0;
+            border-radius: 16px;
+            border: 2px solid #e5e7eb;
+            font-size: 1.15rem;
+            line-height: 2;
+        }
+        .drop-zone {
+            display: inline-block;
+            min-width: 100px;
+            padding: 0.4rem 1rem;
+            margin: 0 0.3rem;
+            border: 2px dashed #94a3b8;
+            border-radius: 12px;
+            background: #f8fafc;
+            text-align: center;
+            transition: all 0.2s;
+            vertical-align: middle;
+        }
+        .drop-zone.drag-over {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            border-style: solid;
+            transform: scale(1.05);
+        }
+        .drop-zone.filled {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            border-color: #3b82f6;
+            border-style: solid;
+            font-weight: 600;
+        }
+        .drop-zone.correct {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            border-color: #10b981;
+            animation: correctPulse 0.5s;
+        }
+        .drop-zone.incorrect {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            border-color: #ef4444;
+            animation: shake 0.5s;
+        }
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .drag-controls {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .btn-check {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transition: all 0.2s;
+        }
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+        .btn-reset {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: white;
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+            transition: all 0.2s;
+        }
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(100, 116, 139, 0.4);
+        }
+        .result-message {
+            margin-top: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .result-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        .result-message.partial {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+        
+        /* 识字句精讲 */
+        .sentence-master {
+            background: #ecf3fa;
+            border-radius: 30px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .sentence-master h2 {
+            color: #002d4c;
+            margin-bottom: 1rem;
+        }
+        .sentence-chunk {
+            background: white;
+            border-radius: 18px;
+            padding: 0.8rem 1.2rem;
+            margin: 0.5rem 0;
+            font-size: 1.2rem;
+            border-left: 8px solid #4d7ca1;
+        }
+        .sentence-chunk small {
+            color: #4d6a85;
+            margin-left: 1rem;
+            font-size: 0.95rem;
+        }
+        .info-pair {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0.6rem 0;
+        }
+        .info-q {
+            width: 140px;
+            font-weight: 600;
+            color: #1d5278;
+        }
+        .info-a {
+            color: #1b3c55;
+        }
+        
+        /* 星星评价 */
+        .stars-box {
+            background: #f9f3e7;
+            border-radius: 40px;
+            padding: 2rem 2.5rem;
+            margin-top: 2rem;
+        }
+        .stars-box h3 {
+            font-size: 1.6rem;
+            color: #1c4768;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .stars-box .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .eval-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .eval-table th {
+            background: #1c4768;
+            color: white;
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            border-right: 2px solid rgba(255,255,255,0.2);
+        }
+        .eval-table th:last-child {
+            border-right: none;
+        }
+        .eval-table td {
+            padding: 1.2rem 1rem;
+            text-align: center;
+            font-size: 1.15rem;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+        }
+        .eval-table td:last-child {
+            border-right: none;
+        }
+        .eval-table tr:last-child td {
+            border-bottom: none;
+        }
+        .eval-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: #1e293b;
+            padding-left: 1.5rem;
+        }
+        .eval-checkbox {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            transform: scale(1.3);
+        }
+        .eval-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        /* 舊的星星樣式（保留作為備用） */
+        .star-row {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 0.8rem 0;
+        }
+        .star-label {
+            width: 200px;
+            font-size: 1.2rem;
+        }
+        .stars {
+            display: flex;
+            gap: 0.6rem;
+        }
+        .star {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #bdbdbd;
+            transition: 0.1s;
+        }
+        .star.selected {
+            color: #f5b342;
+            text-shadow: 0 0 5px #ffb82e;
+        }
+        
+        /* 口语练习网格布局 */
+        .speaking-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .vocab-grid,
+            .speaking-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 { font-size: 2rem; }
+            .lang-btn { padding: 0.4rem 1rem; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 0.5rem; }
+            .lesson-wrapper { padding: 1rem; }
+        }
+        
+        /* 语言切换类 */
+        .lang-es, .lang-en {
+            display: none;
+        }
+        body[data-lang="zh"] .lang-zh {
+            display: table-cell;
+        }
+        body[data-lang="zh"] .lang-es,
+        body[data-lang="zh"] .lang-en {
+            display: none;
+        }
+        body[data-lang="en"] .lang-en {
+            display: table-cell;
+        }
+        body[data-lang="en"] .lang-zh,
+        body[data-lang="en"] .lang-es {
+            display: none;
+        }
+        body[data-lang="es"] .lang-es {
+            display: table-cell;
+        }
+        body[data-lang="es"] .lang-zh,
+        body[data-lang="es"] .lang-en {
+            display: none;
+        }
+        
+        /* 表头语言切换辅助 */
+        .lang-indicator {
+            font-size: 0.8rem;
+            color: #778d9c;
+            margin-left: 0.3rem;
+        }
+    </style>
+</head>
+<body data-lang="en">
+<div class="lesson-wrapper">
+    <!-- 头部 -->
+    <div class="header">
+        <h1>📘 识字11 · 词汇与句型</h1>
+        <div class="lang-bar">
+            <button class="lang-btn active" data-lang="en">English</button>
+            <button class="lang-btn" data-lang="es">Español</button>
+        </div>
+    </div>
+
+    <!-- 选项卡 -->
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab('vocab')">📝 词汇练习</button>
+        <button class="tab-btn" onclick="switchTab('speaking')">🗣️ 口语练习</button>
+    </div>
+
+    <!-- 内容区 -->
+    <div class="content-area">
+        
+        <!-- 词汇练习选项卡内容 -->
+        <div id="vocab-tab" class="tab-content active">
+            
+            <!-- 词汇卡片网格布局 -->
+            <div class="vocab-grid">
+                <!-- 过字家族卡片 -->
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>🔹 过字家族 <span class="lang-indicator">(The "过" Family / La familia de "过")</span></span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <div class="card-content collapsed">
+                        <table class="vocab-table">
+                            <tr><th>词</th><th>拼音</th><th class="lang-zh">英文</th><th class="lang-en">English</th><th class="lang-es">Español</th></tr>
+                            <tr><td class="chinese-word">过去</td><td class="pinyin">guòqù</td><td class="lang-zh">in the past</td><td class="lang-en">in the past</td><td class="lang-es">en el pasado</td></tr>
+                            <tr><td class="chinese-word">经过</td><td class="pinyin">jīngguò</td><td class="lang-zh">pass by; through</td><td class="lang-en">pass by; through</td><td class="lang-es">pasar por; mediante</td></tr>
+                            <tr><td class="chinese-word">去过</td><td class="pinyin">qùguo</td><td class="lang-zh">have been to</td><td class="lang-en">have been to</td><td class="lang-es">haber ido</td></tr>
+                            <tr><td class="chinese-word">吃过</td><td class="pinyin">chīguo</td><td class="lang-zh">have eaten</td><td class="lang-en">have eaten</td><td class="lang-es">haber comido</td></tr>
+                            <tr><td class="chinese-word">不过</td><td class="pinyin">bùguò</td><td class="lang-zh">but; however</td><td class="lang-en">but; however</td><td class="lang-es">pero</td></tr>
+                        </table>
+                        <div class="example-group">
+                            <h4>📎 例句</h4>
+                            <div class="example-sentence"><i>过去</i> 我不喜欢喝咖啡，现在喜欢了。</div>
+                            <div class="example-sentence">我每天上班都 <i>经过</i> 那个公园。</div>
+                            <div class="example-sentence">你 <i>去过</i> 北京吗？</div>
+                            <div class="example-sentence">我 <i>吃过</i> 西班牙菜，很好吃。</div>
+                            <div class="example-sentence">他很聪明，<i>不过</i> 有点懒。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 人物后缀卡片 -->
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>👥 人物后缀 · ……的人 <span class="lang-indicator">(Person Suffixes / Sufijos de personas)</span></span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <div class="card-content collapsed">
+                        <table class="vocab-table">
+                            <tr><th>词</th><th>拼音</th><th class="lang-zh">英文</th><th class="lang-en">English</th><th class="lang-es">Español</th></tr>
+                            <tr><td class="chinese-word">作者</td><td>zuòzhě</td><td class="lang-zh">author</td><td class="lang-en">author</td><td class="lang-es">autor/a</td></tr>
+                            <tr><td class="chinese-word">读者</td><td>dúzhě</td><td class="lang-zh">reader</td><td class="lang-en">reader</td><td class="lang-es">lector/a</td></tr>
+                            <tr><td class="chinese-word">学者</td><td>xuézhě</td><td class="lang-zh">scholar</td><td class="lang-en">scholar</td><td class="lang-es">erudito/a</td></tr>
+                            <tr><td class="chinese-word">诗人</td><td>shīrén</td><td class="lang-zh">poet</td><td class="lang-en">poet</td><td class="lang-es">poeta</td></tr>
+                        </table>
+                        <div class="example-group">
+                            <h4>📎 例句</h4>
+                            <div class="example-sentence">这本书的 <i>作者</i> 是一位年轻作家。</div>
+                            <div class="example-sentence">我是《人民日报》的忠实 <i>读者</i>。</div>
+                            <div class="example-sentence">王教授是一位著名的 <i>学者</i>。</div>
+                            <div class="example-sentence">李白是中国唐代的伟大 <i>诗人</i>。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 易混词辨析卡片 -->
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>⚖️ 易混词辨析 <span class="lang-indicator">(Easily Confused Words / Palabras que se confunden fácilmente)</span></span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <div class="card-content collapsed">
+                        <table class="vocab-table">
+                            <tr><th>词</th><th>拼音</th><th class="lang-zh">英文</th><th class="lang-en">English</th><th class="lang-es">Español</th></tr>
+                            <tr><td class="chinese-word">知识</td><td>zhīshi</td><td class="lang-zh">knowledge</td><td class="lang-en">knowledge</td><td class="lang-es">conocimiento</td></tr>
+                            <tr><td class="chinese-word">见识</td><td>jiànshi</td><td class="lang-zh">experience</td><td class="lang-en">experience</td><td class="lang-es">experiencia</td></tr>
+                            <tr><td class="chinese-word">古代</td><td>gǔdài</td><td class="lang-zh">ancient times</td><td class="lang-en">ancient times</td><td class="lang-es">tiempos antiguos</td></tr>
+                            <tr><td class="chinese-word">古老</td><td>gǔlǎo</td><td class="lang-zh">ancient (adj.)</td><td class="lang-en">ancient (adj.)</td><td class="lang-es">antiguo (adj.)</td></tr>
+                            <tr><td class="chinese-word">英国</td><td>Yīngguó</td><td class="lang-zh">Britain</td><td class="lang-en">Britain</td><td class="lang-es">Reino Unido</td></tr>
+                            <tr><td class="chinese-word">英文</td><td>Yīngwén</td><td class="lang-zh">English</td><td class="lang-en">English</td><td class="lang-es">inglés</td></tr>
+                            <tr><td class="chinese-word">有利</td><td>yǒulì</td><td class="lang-zh">advantageous</td><td class="lang-en">advantageous</td><td class="lang-es">ventajoso</td></tr>
+                            <tr><td class="chinese-word">利用</td><td>lìyòng</td><td class="lang-zh">use</td><td class="lang-en">use</td><td class="lang-es">utilizar</td></tr>
+                        </table>
+                        <div class="example-group">
+                            <h4>📎 例句</h4>
+                            <div class="example-sentence">学 <i>知识</i> 很重要，但也要长 <i>见识</i>。</div>
+                            <div class="example-sentence"><i>古代</i> 人没有手机。这座庙很 <i>古老</i>。</div>
+                            <div class="example-sentence">我去过 <i>英国</i>，但是 <i>英文</i> 不太好。</div>
+                            <div class="example-sentence">多运动 <i>有利</i> 健康。我想 <i>利用</i> 假期学中文。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 补语词汇卡片 -->
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>⚡ 补语词汇 <span class="lang-indicator">(Complement Vocabulary / Vocabulario de complementos)</span></span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <div class="card-content collapsed">
+                        <table class="vocab-table">
+                            <tr><th>词</th><th>拼音</th><th class="lang-zh">英文</th><th class="lang-en">English</th><th class="lang-es">Español</th></tr>
+                            <tr><td class="chinese-word">听得懂</td><td>tīngdedǒng</td><td class="lang-zh">can understand</td><td class="lang-en">can understand</td><td class="lang-es">poder entender</td></tr>
+                            <tr><td class="chinese-word">听不懂</td><td>tīngbudǒng</td><td class="lang-zh">can't understand</td><td class="lang-en">can't understand</td><td class="lang-es">no poder entender</td></tr>
+                            <tr><td class="chinese-word">听得见</td><td>tīngdejiàn</td><td class="lang-zh">can hear</td><td class="lang-en">can hear</td><td class="lang-es">poder oír</td></tr>
+                            <tr><td class="chinese-word">说不上</td><td>shuōbushàng</td><td class="lang-zh">cannot say</td><td class="lang-en">cannot say</td><td class="lang-es">no se puede decir</td></tr>
+                            <tr><td class="chinese-word">长得漂亮</td><td>zhǎngdepiàoliang</td><td class="lang-zh">look beautiful</td><td class="lang-en">look beautiful</td><td class="lang-es">ser guapo/a</td></tr>
+                        </table>
+                        <div class="example-group">
+                            <h4>📎 例句</h4>
+                            <div class="example-sentence">他说话很慢，我都 <i>听得懂</i>。</div>
+                            <div class="example-sentence">广东话我 <i>听不懂</i>。</div>
+                            <div class="example-sentence">你说什么？我 <i>听不见</i>！</div>
+                            <div class="example-sentence">她 <i>说不上</i> 很漂亮，但是很有气质。</div>
+                            <div class="example-sentence">你妹妹 <i>长得漂亮</i> 吗？</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 互动练习区 -->
+            <div class="practice-area">
+                <h2>✍️ 互动练习区 <span class="lang-indicator">(Interactive Practice / Práctica interactiva)</span></h2>
+                
+                <!-- 练习1 拖拽配对 -->
+                <div class="practice-item">
+                    <div class="practice-question">① 拖拽配对 <span class="lang-indicator">(Drag & Match / Arrastrar y emparejar)</span></div>
+                    
+                    <div class="drag-container">
+                        <!-- 左側：可拖拽的詞語選項 -->
+                        <div class="drag-options">
+                            <h4>📦 Drag these words into the sentences:</h4>
+                            <div class="draggable-word" draggable="true" data-word="过去">过去</div>
+                            <div class="draggable-word" draggable="true" data-word="不过">不过</div>
+                            <div class="draggable-word" draggable="true" data-word="知识">知识</div>
+                            <div class="draggable-word" draggable="true" data-word="见识">见识</div>
+                            <div class="draggable-word" draggable="true" data-word="听得懂">听得懂</div>
+                        </div>
+                        
+                        <!-- 右側：句子和放置區 -->
+                        <div class="drag-sentences">
+                            <div class="drag-sentence">
+                                A：你去过中国吗？ B：
+                                <span class="drop-zone" data-answer="过去"></span>
+                                去过两次。
+                            </div>
+                            
+                            <div class="drag-sentence">
+                                他很想学中文，
+                                <span class="drop-zone" data-answer="不过"></span>
+                                没有时间。
+                            </div>
+                            
+                            <div class="drag-sentence">
+                                看书可以增加
+                                <span class="drop-zone" data-answer="知识"></span>
+                                ，旅行可以增长
+                                <span class="drop-zone" data-answer="见识"></span>
+                                。
+                            </div>
+                            
+                            <div class="drag-sentence">
+                                她英语说得很慢，但是我
+                                <span class="drop-zone" data-answer="听得懂"></span>
+                                。
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="drag-controls">
+                        <button class="btn-check" onclick="checkDragAnswers()">✓ 检查答案</button>
+                        <button class="btn-reset" onclick="resetDragExercise()">↻ 重置</button>
+                    </div>
+                    <div id="drag-result" class="result-message hidden"></div>
+                </div>
+                
+                <!-- 练习2 填空挑战 -->
+                <div class="practice-item">
+                    <div class="practice-question">② 词义辨析 <span class="lang-indicator">(Distinguish Word Meanings / Distinguir significados)</span></div>
+                    <p>作者 - <i></i>scholar</i> 还是 <i>author?</i></p>
+                    <button class="btn-answer" onclick="toggleAnswerOld(this)">显示答案</button>
+                    <span class="answer-hidden hidden">✅ author (写书的人)</span>
+                    <p>读者 -</p>
+                    <button class="btn-answer" onclick="toggleAnswerOld(this)">显示答案</button>
+                    <span class="answer-hidden hidden">✅ reader</span>
+                    <p>学者 - </p>
+                    <button class="btn-answer" onclick="toggleAnswerOld(this)">显示答案</button>
+                    <span class="answer-hidden hidden">✅ scholar</span>
+                    <p>诗人 - </p>
+                    <button class="btn-answer" onclick="toggleAnswerOld(this)">显示答案</button>
+                    <span class="answer-hidden hidden">✅ poet</span>
+                </div>
+                
+                <!-- 练习3 完成句子 -->
+                <div class="practice-item">
+                    <div class="practice-question">③ 完成句子 <span class="lang-indicator">(Completa las oraciones / Complete the sentences)</span></div>
+                    
+                    <!-- 選項區 -->
+                    <div style="background: #f0f9ff; padding: 1rem 1.5rem; border-radius: 16px; border: 2px dashed #93c5fd; margin-bottom: 1.5rem;">
+                        <strong style="color: #1e40af;">📦 選項：</strong>
+                        <span style="display: inline-block; background: #dbeafe; padding: 0.4rem 1rem; margin: 0.3rem; border-radius: 20px; color: #1e40af; font-weight: 500;">
+                            一个很漂亮的山东姑娘
+                        </span>
+                        <span style="display: inline-block; background: #dbeafe; padding: 0.4rem 1rem; margin: 0.3rem; border-radius: 20px; color: #1e40af; font-weight: 500;">
+                            风趣 fēngqù <small>(humorous/humorístico)</small>
+                        </span>
+                        <span style="display: inline-block; background: #dbeafe; padding: 0.4rem 1rem; margin: 0.3rem; border-radius: 20px; color: #1e40af; font-weight: 500;">
+                            日本料理 liàolǐ <small>(cuisine/cocina)</small>
+                        </span>
+                        <span style="display: inline-block; background: #dbeafe; padding: 0.4rem 1rem; margin: 0.3rem; border-radius: 20px; color: #1e40af; font-weight: 500;">
+                            说得很流利
+                        </span>
+                        <span style="display: inline-block; background: #dbeafe; padding: 0.4rem 1rem; margin: 0.3rem; border-radius: 20px; color: #1e40af; font-weight: 500;">
+                            说得不太好
+                        </span>
+                        <span style="display: inline-block; background: #dbeafe; padding: 0.4rem 1rem; margin: 0.3rem; border-radius: 20px; color: #1e40af; font-weight: 500;">
+                            读不懂
+                        </span>
+                    </div>
+                    
+                    <!-- 題目1 -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="font-size: 1.15rem; line-height: 2;">
+                            <strong>1)</strong> 通过朋友介绍，我认识了<span style="color: #999;">________________________</span>。<br>
+                            <small style="color: #64748b;">(Through a friend's introduction, I met...)</small>
+                        </p>
+                        <button class="btn-answer" onclick="toggleAnswerOld(this)">显示答案</button>
+                        <span class="answer-hidden hidden">✅ 一个很漂亮的山东姑娘</span>
+                    </div>
+                    
+                    <!-- 題目2 -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="font-size: 1.15rem; line-height: 2;">
+                            <strong>2)</strong> 我没吃过<span style="color: #999;">________________________</span>，但是想吃。<br>
+                            <small style="color: #64748b;">(I haven't eaten... but I want to try.)</small>
+                        </p>
+                        <button class="btn-answer" onclick="toggleAnswerOld(this)">显示答案</button>
+                        <span class="answer-hidden hidden">✅ 日本料理 (Japanese cuisine)</span>
+                    </div>
+                    
+                    <!-- 題目3 -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="font-size: 1.15rem; line-height: 2;">
+                            <strong>3)</strong> 她中文<span style="color: #999;">________________________</span>，英文<span style="color: #999;">________________________</span>。<br>
+                            <small style="color: #64748b;">(She speaks Chinese... and English...)</small>
+                        </p>
+                        <button class="btn-answer" onclick="toggleAnswerOld(this)">显示答案</button>
+                        <span class="answer-hidden hidden">✅ 说得很流利 / 说得不太好（或相反）</span>
+                    </div>
+                    
+                    <!-- 題目4 -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="font-size: 1.15rem; line-height: 2;">
+                            <strong>4)</strong> 古诗很难，我<span style="color: #999;">________________________</span>。<br>
+                            <small style="color: #64748b;">(Ancient poetry is difficult, I can't understand.)</small>
+                        </p>
+                        <button class="btn-answer" onclick="toggleAnswerOld(this)">显示答案</button>
+                        <span class="answer-hidden hidden">✅ 读不懂</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 识字句精讲模块 -->
+            <div class="sentence-master">
+                <h2>📚 识字句精讲 <span class="lang-indicator" style="color:#4d6a85; font-size:0.9rem;">(Sentence Analysis / Análisis de oraciones)</span></h2>
+                
+                <!-- 完整句子 -->
+                <div style="background: #4d6a85; border-radius: 20px; padding: 1.5rem 2rem; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);">
+                    <div style="color: white; font-size: 1.4rem; font-weight: 600; line-height: 2; text-align: center;">
+                        通过新闻记者介绍，我认识了那位漂亮文静的山东姑娘，她是旅行社翻译，能读懂几句古诗，英语说得很流利。
+                    </div>
+                </div>
+                
+                <!-- 句子分解 -->
+                <h3 style="color: #1e40af; font-size: 1.2rem; margin-bottom: 1rem;">📖 句子分解：</h3>
+                <div class="sentence-chunk">🔹 通过新闻记者介绍，<small>Through a journalist's introduction</small></div>
+                <div class="sentence-chunk">🔹 我认识了那位漂亮文静的山东姑娘，<small>I met that beautiful and gentle girl from Shandong</small></div>
+                <div class="sentence-chunk">🔹 她是旅行社翻译，<small>She is a travel agency translator</small></div>
+                <div class="sentence-chunk">🔹 能读懂几句古诗，<small>can understand a few lines of ancient poetry</small></div>
+                <div class="sentence-chunk">🔹 英语说得很流利。<small>speaks English fluently</small></div>
+                <div style="background: #dae5f2; border-radius: 28px; padding: 1.5rem; margin-top: 2rem;">
+                    <div class="info-pair"><span class="info-q">怎么认识的？</span><span class="info-a">通过记者介绍</span></div>
+                    <div class="info-pair"><span class="info-q">姑娘是哪里人？</span><span class="info-a">山东</span></div>
+                    <div class="info-pair"><span class="info-q">她的工作？</span><span class="info-a">旅行社翻译</span></div>
+                    <div class="info-pair"><span class="info-q">她会什么？</span><span class="info-a">读懂古诗，说流利英语</span></div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- 口语练习选项卡内容 -->
+        <div id="speaking-tab" class="tab-content">
+            
+            <!-- 口语练习网格布局 -->
+            <div class="speaking-grid">
+                
+                <!-- 类型1：情景反应 -->
+                <div class="card speaking-practice-area">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>🎯 类型1：情景反应 (目标词：没去过/长得漂亮/听得懂)</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">1️⃣ 情境：朋友问你"你去过日本吗？"你没去过。</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">没去过</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-1')">显示答案</button>
+                            <div id="sp1-1" class="speaking-item-answer hidden">✅ 我没去过日本。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">2️⃣ 情境：朋友介绍一个人给你，你想问这个人长得怎么样。</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">长得漂亮/帅</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-2')">显示答案</button>
+                            <div id="sp1-2" class="speaking-item-answer hidden">✅ 她长得漂亮吗？/ 他长得帅吗？</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">3️⃣ 情境：老师在讲中文故事，你大部分都懂，但是有几个词不懂。</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">听得懂/听不懂</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-3')">显示答案</button>
+                            <div id="sp1-3" class="speaking-item-answer hidden">✅ 我大部分听得懂，但是有几个词听不懂。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">4️⃣ 情境：你想说一个女孩不算很漂亮，但也不丑。</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">说不上</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-4')">显示答案</button>
+                            <div id="sp1-4" class="speaking-item-answer hidden">✅ 她说不上漂亮，但是很可爱。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">5️⃣ 情境：你去过北京，想告诉别人你的经历。</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">去过</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-5')">显示答案</button>
+                            <div id="sp1-5" class="speaking-item-answer hidden">✅ 我去过北京，很有意思。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">6️⃣ 情境：你想知道朋友有没有吃过西班牙菜。</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">吃过</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-6')">显示答案</button>
+                            <div id="sp1-6" class="speaking-item-answer hidden">✅ 你吃过西班牙菜吗？</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">7️⃣ 情境：朋友说话声音太小，你听不到。</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">听不见</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-7')">显示答案</button>
+                            <div id="sp1-7" class="speaking-item-answer hidden">✅ 对不起，我听不见，请大声一点。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">8️⃣ 情境：有人问你中国古代的诗怎么样，你完全不懂。</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">古诗</span> <span class="highlight-word">读不懂</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-8')">显示答案</button>
+                            <div id="sp1-8" class="speaking-item-answer hidden">✅ 我读不懂古诗，太难了。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 类型2：看图说话 -->
+                <div class="card speaking-practice-area">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>📷 类型2：看图说话 (目标词：流利/古诗/文静)</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">1️⃣ 场景：一个女生在台上流利地讲英语，台下观众在鼓掌。<br><span style="color:#64748b; font-size: 1rem;">(A girl is speaking English fluently on stage, and the audience is clapping.)</span></div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">流利</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-1')">显示答案</button>
+                            <div id="sp2-1" class="speaking-item-answer hidden">✅ 她英语说得很流利。/ 她的英语很流利。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">2️⃣ 场景：一个人拿着一本古诗集，皱着眉头，挠着头。<br><span style="color:#64748b; font-size: 1rem;">(A person is holding a book of ancient poems,皱着眉头，挠着头。)</span></div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">古诗</span> <span class="highlight-word">读不懂</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-2')">显示答案</button>
+                            <div id="sp2-2" class="speaking-item-answer hidden">✅ 他读不懂古诗。/ 古诗太难了，他读不懂。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">3️⃣ 场景：埃菲尔铁塔的照片，旁边有一个行李箱。<br><span style="color:#64748b; font-size: 1rem;">(A photo of the Eiffel Tower, with a suitcase next to it.)</span><       /div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">去过</span> <span class="highlight-word">法国</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-3')">显示答案</button>
+                            <div id="sp2-3" class="speaking-item-answer hidden">✅ 我去过法国。/ 我没去过法国，但是想去。</div>
+                        </div>
+
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">4️⃣ 场景：图书馆里，一个女生安静地看书，表情温柔。<br><span style="color:#64748b; font-size: 1rem;">(A girl is quietly reading in the library, with a gentle expression.)</span></div> 
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">文静</span> <span class="highlight-word">姑娘</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-4')">显示答案</button>
+                            <div id="sp2-4" class="speaking-item-answer hidden">✅ 她是一个文静的姑娘。/ 她很文静。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">5️⃣ 场景：一个翻译在两个人之间做翻译，两个人都笑了。<br><span style="color:#64748b; font-size: 1rem;">(A translator is translating between two people, and both people are smiling.)</span></div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">翻译</span> <span class="highlight-word">听懂</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-5')">显示答案</button>
+                            <div id="sp2-5" class="speaking-item-answer hidden">✅ 翻译让他们听懂了彼此。/ 翻译很有用。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">6️⃣ 场景：一个老人给小孩讲古代的故事。<br><span style="color:#64748b; font-size: 1rem;">(A老人给小孩讲古代的故事。)</span></div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">古代</span> <span class="highlight-word">古老</span></div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-6')">显示答案</button>
+                            <div id="sp2-6" class="speaking-item-answer hidden">✅ 这是一个古老的故事。/ 古代的人是这样生活的。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 类型3：句子接龙 -->
+                <div class="card speaking-practice-area">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>🔗 类型3：句子接龙 (目标词：姑娘/翻译/流利)</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第1组</div>
+                            <div class="speaking-item-content">
+                                <strong>起始句：</strong>我通过朋友认识了一个姑娘。<br>
+                                <strong>必须用词：</strong><span class="highlight-word">姑娘</span> <span class="highlight-word">翻译</span> <span class="highlight-word">流利</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp3-1')">显示答案</button>
+                            <div id="sp3-1" class="speaking-item-answer hidden">
+                                ✅ 示例接龙：<br>
+                                学生A：我通过朋友认识了一个<strong>姑娘</strong>。<br>
+                                学生B：她是<strong>翻译</strong>。<br>
+                                学生C：她英语说得很<strong>流利</strong>。
+                            </div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第2组</div>
+                            <div class="speaking-item-content">
+                                <strong>起始句：</strong>我去年去过中国。<br>
+                                <strong>必须用词：</strong><span class="highlight-word">去过</span> <span class="highlight-word">不过</span> <span class="highlight-word">见识</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp3-2')">显示答案</button>
+                            <div id="sp3-2" class="speaking-item-answer hidden">
+                                ✅ 示例接龙：<br>
+                                学生A：我去年<strong>去过</strong>中国。<br>
+                                学生B：<strong>不过</strong>，我只去了两个星期。<br>
+                                学生C：但是这次旅行让我长了<strong>见识</strong>。
+                            </div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第3组</div>
+                            <div class="speaking-item-content">
+                                <strong>起始句：</strong>你读过中国的古诗吗？<br>
+                                <strong>必须用词：</strong><span class="highlight-word">古诗</span> <span class="highlight-word">诗人</span> <span class="highlight-word">读得懂</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp3-3')">显示答案</button>
+                            <div id="sp3-3" class="speaking-item-answer hidden">
+                                ✅ 示例接龙：<br>
+                                学生A：你读过中国的<strong>古诗</strong>吗？<br>
+                                学生B：读过一点，不过很多<strong>读不懂</strong>。<br>
+                                学生C：古代的<strong>诗人</strong>真厉害。
+                            </div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第4组</div>
+                            <div class="speaking-item-content">
+                                <strong>起始句：</strong>你觉得小王姐姐长得怎么样？<br>
+                                <strong>必须用词：</strong><span class="highlight-word">长得漂亮</span> <span class="highlight-word">说不上</span> <span class="highlight-word">文静</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp3-4')">显示答案</button>
+                            <div id="sp3-4" class="speaking-item-answer hidden">
+                                ✅ 示例接龙：<br>
+                                学生A：你觉得小王姐姐<strong>长得怎么样</strong>？<br>
+                                学生B：<strong>说不上</strong>很漂亮，但是很<strong>文静</strong>。<br>
+                                学生C：我也觉得她很有气质。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 类型4：二选一辩论 -->
+                <div class="card speaking-practice-area">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>⚔️ 类型4：二选一辩论 (目标词：见识/知识/不过)</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第1题：旅行 vs 读书</div>
+                            <div class="speaking-item-content">
+                                <strong>A方：</strong>旅行能长<span class="highlight-word">见识</span>，比读书重要。<br>
+                                <strong>B方：</strong>读书能学<span class="highlight-word">知识</span>，比旅行重要。<br>
+                                <strong>必用词：</strong><span class="highlight-word">见识</span> <span class="highlight-word">知识</span> <span class="highlight-word">不过</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp4-1')">显示答案</button>
+                            <div id="sp4-1" class="speaking-item-answer hidden">
+                                ✅ 参考句式：<br>
+                                A：我觉得旅行更重要，因为能长<strong>见识</strong>。<br>
+                                B：<strong>不过</strong>，没有<strong>知识</strong>，旅行也看不懂。<br>
+                                A：但是……
+                            </div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第2题：古代 vs 现代</div>
+                            <div class="speaking-item-content">
+                                <strong>A方：</strong><span class="highlight-word">古代</span>的东西更有意思，比如<span class="highlight-word">古诗</span>。<br>
+                                <strong>B方：</strong>现代的东西更好，比如<span class="highlight-word">英文</span>电影。<br>
+                                <strong>必用词：</strong><span class="highlight-word">古代</span> <span class="highlight-word">古诗</span> <span class="highlight-word">英文</span> <span class="highlight-word">读懂/听懂</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp4-2')">显示答案</button>
+                            <div id="sp4-2" class="speaking-item-answer hidden">
+                                ✅ 参考句式：<br>
+                                A：我喜欢<strong>古代</strong>的<strong>古诗</strong>，虽然不太<strong>读得懂</strong>。<br>
+                                B：我更爱看<strong>英文</strong>电影，我能<strong>听得懂</strong>。
+                            </div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第3题：外貌 vs 性格</div>
+                            <div class="speaking-item-content">
+                                <strong>A方：</strong><span class="highlight-word">长得漂亮</span>很重要。<br>
+                                <strong>B方：</strong><span class="highlight-word">文静</span>的性格更重要。<br>
+                                <strong>必用词：</strong><span class="highlight-word">长得漂亮</span> <span class="highlight-word">文静</span> <span class="highlight-word">说不上</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp4-3')">显示答案</button>
+                            <div id="sp4-3" class="speaking-item-answer hidden">
+                                ✅ 参考句式：<br>
+                                A：一个人首先得<strong>长得漂亮</strong>。<br>
+                                B：<strong>说不上</strong>漂亮也没关系，<strong>文静</strong>就好。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 类型5：信息差填空 -->
+                <div class="card speaking-practice-area">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>🔍 类型5：信息差填空 (目标词：去过/翻译/流利)</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第1组：人物信息卡</div>
+                            <div class="speaking-item-content">
+                                <strong>学生A卡：</strong>
+                                <table class="info-table">
+                                    <tr><th>人物</th><th>去过哪里？</th><th>会说哪种语言？</th><th>长得怎么样？</th></tr>
+                                    <tr><td>玛丽</td><td>?</td><td>英语</td><td>漂亮</td></tr>
+                                    <tr><td>约翰</td><td>中国</td><td>?</td><td>?</td></tr>
+                                </table>
+                                <br>
+                                <strong>学生B卡：</strong>
+                                <table class="info-table">
+                                    <tr><th>人物</th><th>去过哪里？</th><th>会说哪种语言？</th><th>长得怎么样？</th></tr>
+                                    <tr><td>玛丽</td><td>英国</td><td>英语</td><td>?</td></tr>
+                                    <tr><td>约翰</td><td>?</td><td>中文</td><td>很帅</td></tr>
+                                </table>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp5-1')">显示答案</button>
+                            <div id="sp5-1" class="speaking-item-answer hidden">
+                                ✅ 必须用的问句：<br>
+                                - 玛丽<strong>去过</strong>哪里？<br>
+                                - 约翰<strong>长得</strong>怎么样？<br>
+                                - 玛丽/约翰会说哪种语言？
+                            </div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">第2组：工作信息卡</div>
+                            <div class="speaking-item-content">
+                                <strong>学生A卡：</strong>
+                                <table class="info-table">
+                                    <tr><th>人物</th><th>职业</th><th>会什么？</th><th>英语水平？</th></tr>
+                                    <tr><td>王丽</td><td>翻译</td><td><span class="highlight-word">读懂</span>古诗</td><td>?</td></tr>
+                                    <tr><td>张明</td><td>?</td><td>会说英文</td><td>不流利</td></tr>
+                                </table>
+                                <br>
+                                <strong>学生B卡：</strong>
+                                <table class="info-table">
+                                    <tr><th>人物</th><th>职业</th><th>会什么？</th><th>英语水平？</th></tr>
+                                    <tr><td>王丽</td><td>翻译</td><td>?</td><td><span class="highlight-word">流利</span></td></tr>
+                                    <tr><td>张明</td><td>记者</td><td>会说英文</td><td>?</td></tr>
+                                </table>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp5-2')">显示答案</button>
+                            <div id="sp5-2" class="speaking-item-answer hidden">
+                                ✅ 必须用的词：<span class="highlight-word">翻译</span> <span class="highlight-word">记者</span> <span class="highlight-word">读懂</span> <span class="highlight-word">流利</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 类型6：角色扮演 -->
+                <div class="card speaking-practice-area">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>🎭 类型6：角色扮演 (目标词：介绍/认识/山东/翻译)</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">场景1：介绍新朋友</div>
+                            <div class="speaking-item-content">
+                                <strong>角色A：</strong>介绍人<br>
+                                <strong>角色B：</strong>被介绍的人（来自山东的翻译）<br>
+                                <strong>角色C：</strong>询问者<br>
+                                <strong>背景：</strong>A要把自己的朋友B介绍给C认识。<br>
+                                <strong>必用词：</strong><span class="highlight-word">通过……介绍</span> <span class="highlight-word">认识</span> <span class="highlight-word">山东</span> <span class="highlight-word">翻译</span> <span class="highlight-word">漂亮/文静</span> <span class="highlight-word">流利</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp6-1')">显示答案</button>
+                            <div id="sp6-1" class="speaking-item-answer hidden">
+                                ✅ 参考对话：<br>
+                                A：C，我给你介绍一下，这是我朋友B。<br>
+                                B：你好，很高兴认识你。<br>
+                                C：你好，你是哪里人？<br>
+                                B：我是<strong>山东</strong>人。<br>
+                                C：哇，听说山东姑娘都很<strong>漂亮</strong>。你是做什么工作的？<br>
+                                B：我是<strong>翻译</strong>，英语说得还<strong>流利</strong>。<br>
+                                C：太厉害了！你<strong>读过</strong>中国的古诗吗？<br>
+                                B：<strong>读过</strong>一点。
+                            </div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">场景2：聊旅行经历</div>
+                            <div class="speaking-item-content">
+                                <strong>角色A：</strong>去过很多国家的人<br>
+                                <strong>角色B：</strong>没出过国的人<br>
+                                <strong>角色C：</strong>朋友，负责提问<br>
+                                <strong>必用词：</strong><span class="highlight-word">去过</span> <span class="highlight-word">没去过</span> <span class="highlight-word">不过</span> <span class="highlight-word">见识</span> <span class="highlight-word">知识</span>
+                            </div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp6-2')">显示答案</button>
+                            <div id="sp6-2" class="speaking-item-answer hidden">
+                                ✅ 参考对话：<br>
+                                C：A，你都<strong>去过</strong>哪些国家？<br>
+                                A：我<strong>去过</strong>法国、英国和日本。<br>
+                                B：真好！我一个国家都<strong>没去过</strong>。<br>
+                                A：<strong>不过</strong>，我也只去过一次。<strong>见识</strong>了不少东西。<br>
+                                B：我觉得看书也能长<strong>知识</strong>。<br>
+                                C：你们两个说得都对！
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 类型7：改错挑战 -->
+                <div class="card speaking-practice-area">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>🔧 类型7：改错挑战 (目标词：去过/说得流利/听懂)</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">1️⃣ 错误句子：我不去过美国。</div>
+                            <div class="speaking-item-content">错误类型："过"的否定形式错误</div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp7-1')">显示答案</button>
+                            <div id="sp7-1" class="speaking-item-answer hidden">✅ 正确句子：我<strong>没</strong>去过美国。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">2️⃣ 错误句子：她说英语很流利。</div>
+                            <div class="speaking-item-content">错误类型：程度补语缺"得"</div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp7-2')">显示答案</button>
+                            <div id="sp7-2" class="speaking-item-answer hidden">✅ 正确句子：她英语说<strong>得</strong>很流利。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">3️⃣ 错误句子：你听不见中文吗？</div>
+                            <div class="speaking-item-content">错误类型：混淆"听见"和"听懂"</div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp7-3')">显示答案</button>
+                            <div id="sp7-3" class="speaking-item-answer hidden">✅ 正确句子：你<strong>听不懂</strong>中文吗？（如果指理解）<br>或者：你<strong>听不见</strong>我说话吗？（如果指音量）</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">4️⃣ 错误句子：他长(cháng)得很高。</div>
+                            <div class="speaking-item-content">错误类型：多音字错误</div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp7-4')">显示答案</button>
+                            <div id="sp7-4" class="speaking-item-answer hidden">✅ 正确句子：他长(<strong>zhǎng</strong>)得很高。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">5️⃣ 错误句子：我经过北京两次。</div>
+                            <div class="speaking-item-content">错误类型："经过"误用为"去过"</div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp7-5')">显示答案</button>
+                            <div id="sp7-5" class="speaking-item-answer hidden">✅ 正确句子：我<strong>去过</strong>北京两次。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">6️⃣ 错误句子：她是一个知道分子。</div>
+                            <div class="speaking-item-content">错误类型：混淆"知识"和"知道"</div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp7-6')">显示答案</button>
+                            <div id="sp7-6" class="speaking-item-answer hidden">✅ 正确句子：她是一个<strong>知识</strong>分子。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">7️⃣ 错误句子：这本书的作者是很多读者。</div>
+                            <div class="speaking-item-content">错误类型：混淆"作者"和"读者"</div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp7-7')">显示答案</button>
+                            <div id="sp7-7" class="speaking-item-answer hidden">✅ 正确句子：这本书的<strong>作者</strong>是莫言，很多<strong>读者</strong>喜欢他。</div>
+                        </div>
+                        
+                        <div class="speaking-item">
+                            <div class="speaking-item-title">8️⃣ 错误句子：古代的建筑很古代。</div>
+                            <div class="speaking-item-content">错误类型：混淆"古代"和"古老"</div>
+                            <button class="btn-answer" onclick="toggleAnswer(this, 'sp7-8')">显示答案</button>
+                            <div id="sp7-8" class="speaking-item-answer hidden">✅ 正确句子：古代的建筑很<strong>古老</strong>。</div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        
+        </div>
+        
+    </div>
+
+    <!-- 星星自评 -->
+    <div class="stars-box">
+        <h3>📝 自我评价</h3>
+        <div class="subtitle">Autoevaluación · Self-evaluation</div>
+        
+        <table class="eval-table">
+            <thead>
+                <tr>
+                    <th style="text-align: left; padding-left: 1.5rem;">我会…… (Puedo...)</th>
+                    <th>👍 很会<br><small>Very good</small></th>
+                    <th>😐 还行<br><small>OK</small></th>
+                    <th>👎 不会<br><small>Not yet</small></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>用"过"说过去的经历<br><small>Use "过" to talk about past experiences</small></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="guo" data-level="3"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="guo" data-level="2"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="guo" data-level="1"></td>
+                </tr>
+                <tr>
+                    <td>区分"知识"和"见识"<br><small>Distinguish between "zhīshì" (knowledge) and "jiànshì" (experience/broad knowledge)</small></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="zhishi" data-level="3"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="zhishi" data-level="2"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="zhishi" data-level="1"></td>
+                </tr>
+                <tr>
+                    <td>用"听得懂/听不懂"<br><small>Use "听得懂/听不懂" (can/can't understand by listening)</small></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="budong" data-level="3"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="budong" data-level="2"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="budong" data-level="1"></td>
+                </tr>
+                <tr>
+                    <td>介绍一个人的工作和能力<br><small>Introduce someone's job and abilities</small></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="introduce" data-level="3"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="introduce" data-level="2"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="introduce" data-level="1"></td>
+                </tr>
+                <tr>
+                    <td>读懂本课的识字句<br><small>Understand and read the literacy sentences in this lesson</small></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="sentence" data-level="3"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="sentence" data-level="2"></td>
+                    <td><input type="checkbox" class="eval-checkbox" data-skill="sentence" data-level="1"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // 选项卡切换
+    function switchTab(tabName) {
+        // 隐藏所有选项卡内容
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        // 移除所有按钮的active状态
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // 显示选中的选项卡
+        if (tabName === 'vocab') {
+            document.getElementById('vocab-tab').classList.add('active');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        } else if (tabName === 'speaking') {
+            document.getElementById('speaking-tab').classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        }
+    }
+    
+    // 折叠卡片
+    function toggleCard(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.toggle-icon');
+        if (content.classList.contains('collapsed')) {
+            content.classList.remove('collapsed');
+            icon.textContent = '▼';
+        } else {
+            content.classList.add('collapsed');
+            icon.textContent = '▶';
+        }
+    }
+
+    // 切换语言
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const lang = this.getAttribute('data-lang');
+            document.body.setAttribute('data-lang', lang);
+        });
+    });
+
+    // 显示/隐藏答案 (口语练习用)
+    function toggleAnswer(button, answerId) {
+        const answerDiv = document.getElementById(answerId);
+        if (answerDiv.classList.contains('hidden')) {
+            answerDiv.classList.remove('hidden');
+            button.textContent = '隐藏答案';
+        } else {
+            answerDiv.classList.add('hidden');
+            button.textContent = '显示答案';
+        }
+    }
+    
+    // 显示/隐藏答案 (旧的互动练习用)
+    function toggleAnswerOld(btn) {
+        const answerSpan = btn.nextElementSibling;
+        if (answerSpan && answerSpan.classList.contains('answer-hidden')) {
+            if (answerSpan.classList.contains('hidden')) {
+                answerSpan.classList.remove('hidden');
+                btn.textContent = '隐藏答案';
+            } else {
+                answerSpan.classList.add('hidden');
+                btn.textContent = '显示答案';
+            }
+        }
+    }
+
+    // ====================
+    // 拖拽配對功能
+    // ====================
+    let draggedElement = null;
+
+    // 初始化拖拽功能
+    document.addEventListener('DOMContentLoaded', function() {
+        initDragAndDrop();
+    });
+
+    function initDragAndDrop() {
+        const draggableWords = document.querySelectorAll('.draggable-word');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        // 為每個可拖拽的詞添加事件監聽
+        draggableWords.forEach(word => {
+            word.addEventListener('dragstart', handleDragStart);
+            word.addEventListener('dragend', handleDragEnd);
+        });
+
+        // 為每個放置區添加事件監聽
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('dragleave', handleDragLeave);
+            zone.addEventListener('drop', handleDrop);
+            // 點擊清空功能
+            zone.addEventListener('click', function() {
+                if (this.textContent.trim() !== '') {
+                    const word = this.textContent.trim();
+                    this.textContent = '';
+                    this.classList.remove('filled', 'correct', 'incorrect');
+                    // 恢復原來的詞到選項區
+                    restoreWord(word);
+                }
+            });
+        });
+    }
+
+    function handleDragStart(e) {
+        draggedElement = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', this.dataset.word);
+    }
+
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        this.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        
+        const word = e.dataTransfer.getData('text/plain');
+        
+        // 如果放置區已經有詞，先恢復它
+        if (this.textContent.trim() !== '') {
+            const oldWord = this.textContent.trim();
+            restoreWord(oldWord);
+        }
+        
+        // 放置新詞
+        this.textContent = word;
+        this.classList.add('filled');
+        this.classList.remove('correct', 'incorrect');
+        
+        // 從選項區移除已使用的詞
+        if (draggedElement) {
+            draggedElement.style.display = 'none';
+        }
+        
+        // 隱藏結果消息
+        document.getElementById('drag-result').classList.add('hidden');
+    }
+
+    function restoreWord(word) {
+        const allWords = document.querySelectorAll('.draggable-word');
+        allWords.forEach(w => {
+            if (w.dataset.word === word) {
+                w.style.display = 'inline-block';
+            }
+        });
+    }
+
+    // 檢查答案
+    function checkDragAnswers() {
+        const dropZones = document.querySelectorAll('.drop-zone');
+        let correct = 0;
+        let total = dropZones.length;
+        
+        dropZones.forEach(zone => {
+            const userAnswer = zone.textContent.trim();
+            const correctAnswer = zone.dataset.answer;
+            
+            zone.classList.remove('correct', 'incorrect');
+            
+            if (userAnswer === correctAnswer) {
+                zone.classList.add('correct');
+                correct++;
+            } else if (userAnswer !== '') {
+                zone.classList.add('incorrect');
+            }
+        });
+        
+        // 顯示結果
+        const resultDiv = document.getElementById('drag-result');
+        resultDiv.classList.remove('hidden', 'success', 'partial');
+        
+        if (correct === total) {
+            resultDiv.textContent = `🎉 太棒了！全部正確！(${correct}/${total})`;
+            resultDiv.classList.add('success');
+        } else {
+            resultDiv.textContent = `💪 再試試！答對了 ${correct}/${total} 題`;
+            resultDiv.classList.add('partial');
+        }
+    }
+
+    // 重置練習
+    function resetDragExercise() {
+        // 清空所有放置區
+        const dropZones = document.querySelectorAll('.drop-zone');
+        dropZones.forEach(zone => {
+            zone.textContent = '';
+            zone.classList.remove('filled', 'correct', 'incorrect', 'drag-over');
+        });
+        
+        // 恢復所有可拖拽的詞
+        const draggableWords = document.querySelectorAll('.draggable-word');
+        draggableWords.forEach(word => {
+            word.style.display = 'inline-block';
+        });
+        
+        // 隱藏結果消息
+        document.getElementById('drag-result').classList.add('hidden');
+    }
+
+    // ====================
+    // 自我評價功能（複選框）
+    // ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.eval-checkbox');
+        
+        // 載入已保存的評價
+        checkboxes.forEach(checkbox => {
+            const skill = checkbox.dataset.skill;
+            const level = checkbox.dataset.level;
+            const saved = localStorage.getItem(`eval_${skill}`);
+            
+            if (saved === level) {
+                checkbox.checked = true;
+            }
+        });
+        
+        // 監聽複選框變化
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const skill = this.dataset.skill;
+                const level = this.dataset.level;
+                
+                // 取消同一行的其他選項
+                const row = this.closest('tr');
+                const rowCheckboxes = row.querySelectorAll('.eval-checkbox');
+                rowCheckboxes.forEach(cb => {
+                    if (cb !== this) {
+                        cb.checked = false;
+                    }
+                });
+                
+                // 保存選擇
+                if (this.checked) {
+                    localStorage.setItem(`eval_${skill}`, level);
+                } else {
+                    localStorage.removeItem(`eval_${skill}`);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
