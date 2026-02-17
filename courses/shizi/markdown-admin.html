@@ -906,38 +906,88 @@
             let match;
             
             while ((match = ruleRegex.exec(text)) !== null) {
-                grammar.push({
-                    lesson_id: lessonId,
-                    subtype: 'rule',
-                    chinese: match[2].trim(),
-                    english: match[3].trim()
-                });
+                const chinese = match[2].trim();
+                let english = match[3].trim();
+                
+                // 檢查是否包含 "Examples:"，如果包含則提取例句
+                if (english.includes('Examples:')) {
+                    const examplesIndex = english.indexOf('Examples:');
+                    const beforeExamples = english.substring(0, examplesIndex).trim();
+                    const examplesText = english.substring(examplesIndex + 'Examples:'.length).trim();
+                    
+                    // 先添加規則（不包含例句）
+                    grammar.push({
+                        lesson_id: lessonId,
+                        subtype: 'rule',
+                        chinese: chinese,
+                        english: beforeExamples // 只保留 "Examples:" 之前的內容
+                    });
+                    
+                    // 提取例句：先按 | 分割，然後檢查每個部分
+                    const parts = examplesText.split('|').map(s => s.trim()).filter(s => s);
+                    let remainingParts = [];
+                    
+                    for (const part of parts) {
+                        // 檢查是否以中文標點符號結尾（句號、問號、感嘆號）
+                        if (/[。！？]$/.test(part)) {
+                            // 這是中文例句
+                            grammar.push({
+                                lesson_id: lessonId,
+                                subtype: 'example',
+                                chinese: part,
+                                english: ''
+                            });
+                        } else {
+                            // 這可能是結構說明或其他內容，保留在規則的英文說明中
+                            remainingParts.push(part);
+                        }
+                    }
+                    
+                    // 如果有剩餘內容，添加到規則的英文說明中
+                    if (remainingParts.length > 0) {
+                        const lastRuleIndex = grammar.length - 1;
+                        if (lastRuleIndex >= 0 && grammar[lastRuleIndex].subtype === 'rule') {
+                            grammar[lastRuleIndex].english += ' Examples: ' + remainingParts.join(' ');
+                        }
+                    }
+                } else {
+                    // 沒有例句，直接添加規則
+                    grammar.push({
+                        lesson_id: lessonId,
+                        subtype: 'rule',
+                        chinese: chinese,
+                        english: english
+                    });
+                }
             }
             
             // 也支持 **规则X** (中文)\n| 英文 格式（換行分隔）
-            const lines = text.split('\n');
-            let currentRule = null;
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                const ruleMatch = line.match(/\*\*规则(\d+)\*\*\s*\(([^)]+)\)/);
-                if (ruleMatch) {
-                    if (currentRule) {
+            // 只在第一個正則沒有匹配到任何內容時才執行，避免重複解析
+            if (grammar.length === 0) {
+                const lines = text.split('\n');
+                let currentRule = null;
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    const ruleMatch = line.match(/\*\*规则(\d+)\*\*\s*\(([^)]+)\)/);
+                    if (ruleMatch) {
+                        if (currentRule) {
+                            grammar.push(currentRule);
+                        }
+                        currentRule = {
+                            lesson_id: lessonId,
+                            subtype: 'rule',
+                            chinese: ruleMatch[2].trim(),
+                            english: ''
+                        };
+                    } else if (currentRule && line.startsWith('|')) {
+                        currentRule.english = line.replace(/^\|\s*/, '').trim();
                         grammar.push(currentRule);
+                        currentRule = null;
                     }
-                    currentRule = {
-                        lesson_id: lessonId,
-                        subtype: 'rule',
-                        chinese: ruleMatch[2].trim(),
-                        english: ''
-                    };
-                } else if (currentRule && line.startsWith('|')) {
-                    currentRule.english = line.replace(/^\|\s*/, '').trim();
-                    grammar.push(currentRule);
-                    currentRule = null;
                 }
-            }
-            if (currentRule) {
-                grammar.push(currentRule);
+                if (currentRule) {
+                    grammar.push(currentRule);
+                }
             }
             
             return grammar;
@@ -1352,30 +1402,59 @@
                 }
                 
                 if (hasPhrases) {
-                    // 轉換 phrases 格式
-                    dataToUpload.phrases = parsedData.phrases.map(item => {
-                        // 如果是對話（subtype: "dialogue"），直接使用完整句子，不需要轉換格式
-                        if (item.subtype === 'dialogue') {
-                            return {
-                                content: item.content || '',
-                                subtype: 'dialogue',
-                                type: 'phrases',
-                                speaker: item.speaker || '',  // 說話者字母標記（A, B, C...）
-                                speaker_name: item.speaker_name || '',  // 說話者名稱（可選）
-                                answer: item.answer || '',
-                                options: item.options || '',
-                                notes: item.notes || ''
-                            };
-                        } else {
-                            // 普通詞組：從 {content: "詞組", pinyin: "pinyin", meaning: "english"}
-                            // 轉換為 {content: "詞組|pinyin|english", subtype: "phrase"}
-                            const content = `${item.content || ''}|${item.pinyin || ''}|${item.meaning || ''}`;
-                            return {
-                                content: content,
-                                subtype: 'phrase'  // 添加 subtype 字段，讓 renderPhrases 能正確過濾
-                            };
-                        }
+                    // 獲取現有的 phrases（包含現有詞組和對話）
+                    const existingPhrases = existingData.phrases || [];
+                    
+                    // 區分現有的詞組和對話
+                    const existingRegularPhrases = existingPhrases.filter(p => 
+                        p.subtype === 'phrase' || (!p.subtype && p.subtype !== 'dialogue')
+                    );
+                    const existingDialogues = existingPhrases.filter(p => p.subtype === 'dialogue');
+                    
+                    // 區分新上傳的詞組和對話
+                    const newRegularPhrases = parsedData.phrases.filter(p => p.subtype !== 'dialogue');
+                    const newDialogues = parsedData.phrases.filter(p => p.subtype === 'dialogue');
+                    
+                    // 轉換新詞組格式
+                    const convertedNewPhrases = newRegularPhrases.map(item => {
+                        const content = `${item.content || ''}|${item.pinyin || ''}|${item.meaning || ''}`;
+                        return {
+                            content: content,
+                            subtype: 'phrase'
+                        };
                     });
+                    
+                    // 轉換新對話格式
+                    const convertedNewDialogues = newDialogues.map(item => {
+                        return {
+                            content: item.content || '',
+                            subtype: 'dialogue',
+                            type: 'phrases',
+                            speaker: item.speaker || '',
+                            speaker_name: item.speaker_name || '',
+                            answer: item.answer || '',
+                            options: item.options || '',
+                            notes: item.notes || ''
+                        };
+                    });
+                    
+                    // 智能合併邏輯：
+                    // 1. 如果有新詞組，使用新詞組，否則保留現有詞組
+                    // 2. 如果有新對話，使用新對話，否則保留現有對話
+                    // 3. 如果都有，就都更新
+                    const finalRegularPhrases = newRegularPhrases.length > 0 
+                        ? convertedNewPhrases 
+                        : existingRegularPhrases;
+                    
+                    const finalDialogues = newDialogues.length > 0 
+                        ? convertedNewDialogues 
+                        : existingDialogues;
+                    
+                    // 合併最終結果
+                    dataToUpload.phrases = [
+                        ...finalRegularPhrases,
+                        ...finalDialogues
+                    ];
                 }
                 
                 if (hasGrammar) {

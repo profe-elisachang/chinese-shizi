@@ -744,6 +744,41 @@
             margin: 12px auto;
         }
         
+        .phrase-example-section {
+            width: 100%;
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius-md);
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .phrase-example-title {
+            font-size: var(--text-lg);
+            font-weight: var(--font-bold);
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-sm);
+            text-align: center;
+        }
+        
+        .phrase-example-item {
+            margin-bottom: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-sm);
+        }
+        
+        .phrase-example-label {
+            font-weight: var(--font-semibold);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .phrase-example-text {
+            font-size: var(--text-base);
+            line-height: 1.6;
+        }
+        
         .speak-btn {
             background: var(--primary-dark);
             color: white;
@@ -1158,6 +1193,13 @@
                             <div class="pinyin" id="pinyin">yī</div>
                             <button class="speak-btn" onclick="speakPinyin(event)">🔊 Read</button>
                             <div class="meaning" id="meaning">one</div>
+                            
+                            <!-- Phrase Example Section -->
+                            <div id="phraseExampleSection" class="phrase-example-section hidden">
+                                <div class="phrase-example-title">📖 例句</div>
+                                <div id="phraseExampleContent"></div>
+                            </div>
+                            
                             <img id="cardImage" class="card-image hidden">
                             <div id="cardBookExplanation" class="card-content hidden">
                                 <div class="content-label">📖 解释:</div>
@@ -1268,22 +1310,69 @@
         </div> <!-- end of #mainContent -->
     </div> <!-- end of .container -->
 
-    <!-- Student Name Modal -->
+    <!-- Username Modal -->
+    <div id="usernameModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <h2 style="color: var(--primary-dark); font-size: 2rem; margin-bottom: 8px;">请输入用户名 👤</h2>
+                <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">
+                    请输入您的用户名以访问学习系统<br>
+                    <small style="color: var(--text-muted);">（用户名由老师提供）</small>
+                </p>
+            </div>
+
+            <input type="text" id="usernameInput" placeholder="输入用户名（如：zhangwei）"
+                   style="width: 100%; padding: 14px; font-size: 1.1rem; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 12px; text-transform: lowercase;"
+                   autocomplete="off">
+            
+            <div id="usernameError" style="color: var(--danger-color); font-size: 0.9em; margin-bottom: 12px; min-height: 20px; display: none;"></div>
+
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-primary" onclick="verifyAndSaveUsername()" style="flex: 1;">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Migration Modal (import data from old device) -->
+    <div id="migrationModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <h2 style="color: var(--primary-dark); font-size: 2rem; margin-bottom: 8px;">导入旧设备数据？ 📥</h2>
+                <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">
+                    您是否要从旧设备导入学习记录？<br>
+                    <small style="color: var(--text-muted);">请输入旧设备的设备码</small>
+                </p>
+            </div>
+
+            <input type="text" id="migrationDeviceCode" placeholder="输入旧设备码（6位，如：ABC123）"
+                   style="width: 100%; padding: 14px; font-size: 1.1rem; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 12px; text-transform: uppercase;"
+                   autocomplete="off" maxlength="6">
+            
+            <div id="migrationError" style="color: var(--danger-color); font-size: 0.9em; margin-bottom: 12px; min-height: 20px; display: none;"></div>
+
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="skipMigration()" style="flex: 1;">跳过，创建新记录</button>
+                <button class="btn btn-primary" onclick="migrateFromDeviceCode()" style="flex: 1;">导入数据</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Student Name Modal (for display name, optional) -->
     <div id="nameModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 9999; align-items: center; justify-content: center;">
         <div style="background: white; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
             <div style="text-align: center; margin-bottom: 24px;">
                 <h2 style="color: var(--primary-dark); font-size: 2rem; margin-bottom: 8px;">Welcome! 👋</h2>
                 <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">
-                    Please enter your name so we can save and restore your learning progress.
+                    请输入您的姓名（可选，用于显示）
                 </p>
             </div>
 
-            <input type="text" id="studentNameInput" placeholder="Your name"
+            <input type="text" id="studentNameInput" placeholder="您的姓名（可选）"
                    style="width: 100%; padding: 14px; font-size: 1.1rem; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 20px;">
 
             <div style="display: flex; gap: 12px;">
-                <button class="btn btn-secondary" onclick="skipNameInput()" style="flex: 1;">Skip for now</button>
-                <button class="btn btn-primary" onclick="saveStudentName()" style="flex: 1;">Confirm</button>
+                <button class="btn btn-secondary" onclick="skipNameInput()" style="flex: 1;">跳过</button>
+                <button class="btn btn-primary" onclick="saveStudentName()" style="flex: 1;">确认</button>
             </div>
         </div>
     </div>
@@ -1307,6 +1396,7 @@
         let currentUser = null;
         let deviceCode = null;
         let studentName = '';
+        let username = ''; // 用户名（白名单验证用）
         let allCharacters = [];
         let componentCharacters = [];
         let targetCharacters = [];
@@ -1329,33 +1419,40 @@
                     if (user) {
                         currentUser = user;
                         deviceCode = user.uid.substring(0, 6).toUpperCase();
-                        document.getElementById('deviceCode').textContent = deviceCode;
+                        // 显示 deviceCode，如果用户名已设置，也会在验证后更新显示
+                        updateDeviceCodeDisplay();
                         
-                        // Load data in correct order
-                        await loadLessonsFromFirebase();
-                        await loadUserProgress();
+                        // Check and verify username first
+                        await checkAndVerifyUsername();
+                        
+                        // Only proceed if username is verified
+                        if (username) {
+                            // Load data in correct order
+                            await loadLessonsFromFirebase();
+                            await loadUserProgress();
 
-                        // Update student name display
-                        updateStudentNameDisplay();
+                            // Update student name display
+                            updateStudentNameDisplay();
 
-                        // Render with progress data
-                        renderLessonCheckboxes();
+                            // Render with progress data
+                            renderLessonCheckboxes();
 
-                        // Show main content
-                        document.getElementById('loadingContainer').classList.add('hidden');
-                        document.getElementById('mainContent').classList.remove('hidden');
+                            // Show main content
+                            document.getElementById('loadingContainer').classList.add('hidden');
+                            document.getElementById('mainContent').classList.remove('hidden');
 
-                        // 初始化显示逻辑
-                        updateDueInfoText();
-                        const directionSelector = document.getElementById('reviewDirectionSelector');
-                        if (directionSelector) {
-                            directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+                            // 初始化显示逻辑
+                            updateDueInfoText();
+                            const directionSelector = document.getElementById('reviewDirectionSelector');
+                            if (directionSelector) {
+                                directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+                            }
+
+                            updateStats();
+
+                            // Check if we need to show name input modal (for display name)
+                            checkAndShowNameModal();
                         }
-
-                        updateStats();
-
-                        // Check if we need to show name input modal
-                        checkAndShowNameModal();
                     }
                 });
             } catch (error) {
@@ -1374,12 +1471,16 @@
                 }
                 // 使用 sendBeacon 或直接保存（不等待）
                 try {
-                    await db.collection('user_progress').doc(currentUser.uid).set({
-                        characterProgress: userProgress,
-                        lastReview: new Date().toISOString(),
-                        deviceCode: deviceCode,
-                        studentName: studentName
-                    }, { merge: true });
+                    if (username) {
+                        await db.collection('user_progress').doc(username).set({
+                            characterProgress: userProgress,
+                            lastReview: new Date().toISOString(),
+                            deviceCode: deviceCode,
+                            studentName: studentName,
+                            username: username,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                    }
                 } catch (error) {
                     console.error('Error saving on unload:', error);
                 }
@@ -1950,6 +2051,49 @@ for (let i = 1; i <= 25; i++) {
                     adjustEnglishFontSize(characterElement, item.english);
                 }
                 
+                // 显示例句（如果有）
+                const phraseExampleSection = document.getElementById('phraseExampleSection');
+                const hasExample = item.notes || item.example_en || item.example_es;
+                
+                if (hasExample) {
+                    let exampleHTML = '';
+                    
+                    // 中文例句
+                    if (item.notes && item.notes.trim()) {
+                        exampleHTML += `
+                            <div class="phrase-example-item">
+                                <div class="phrase-example-label" style="color: var(--character-color);">中文：</div>
+                                <div class="phrase-example-text">${item.notes}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    // 英文翻译
+                    if (item.example_en && item.example_en.trim()) {
+                        exampleHTML += `
+                            <div class="phrase-example-item">
+                                <div class="phrase-example-label" style="color: var(--english-color);">English:</div>
+                                <div class="phrase-example-text" style="color: var(--english-color);">${item.example_en}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    // 西班牙语翻译
+                    if (item.example_es && item.example_es.trim()) {
+                        exampleHTML += `
+                            <div class="phrase-example-item">
+                                <div class="phrase-example-label" style="color: var(--spanish-color);">Español:</div>
+                                <div class="phrase-example-text" style="color: var(--spanish-color);">${item.example_es}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('phraseExampleContent').innerHTML = exampleHTML;
+                    phraseExampleSection.classList.remove('hidden');
+                } else {
+                    phraseExampleSection.classList.add('hidden');
+                }
+                
                 // 隐藏不需要的元素
                 document.getElementById('cardImage').classList.add('hidden');
                 document.getElementById('cardBookExplanation').classList.add('hidden');
@@ -1963,6 +2107,9 @@ for (let i = 1; i <= 25; i++) {
                 document.getElementById('meaning').textContent = item.meaning;
                 // 字符不需要英文样式
                 characterElement.classList.remove('english-text');
+                
+                // 隐藏词组例句区域
+                document.getElementById('phraseExampleSection').classList.add('hidden');
                 
                 // Image
                 const cardImage = document.getElementById('cardImage');
@@ -2171,12 +2318,22 @@ for (let i = 1; i <= 25; i++) {
         
         // ==================== User Progress (Firebase) ====================
         async function loadUserProgress() {
+            if (!username) {
+                console.warn('Cannot load progress: username not set');
+                return;
+            }
+            
             try {
-                const doc = await db.collection('user_progress').doc(currentUser.uid).get();
+                // 使用用户名作为文档ID
+                const doc = await db.collection('user_progress').doc(username).get();
                 if (doc.exists) {
                     const data = doc.data();
                     userProgress = data.characterProgress || {};
                     studentName = data.studentName || '';
+                } else {
+                    // 新用户，初始化为空
+                    userProgress = {};
+                    studentName = '';
                 }
             } catch (error) {
                 console.error('Error loading progress:', error);
@@ -2184,17 +2341,20 @@ for (let i = 1; i <= 25; i++) {
         }
         
         async function saveUserProgress() {
-            if (!currentUser) {
-                console.warn('Cannot save progress: user not authenticated');
+            if (!username) {
+                console.warn('Cannot save progress: username not verified');
                 return;
             }
             
             try {
-                await db.collection('user_progress').doc(currentUser.uid).set({
+                // 使用用户名作为文档ID
+                await db.collection('user_progress').doc(username).set({
                     characterProgress: userProgress,
                     lastReview: new Date().toISOString(),
                     deviceCode: deviceCode,
-                    studentName: studentName
+                    studentName: studentName,
+                    username: username,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true }); // 使用 merge 可以減少寫入成本
                 console.log('✅ Progress saved to Firebase');
             } catch (error) {
@@ -2453,6 +2613,299 @@ window.addEventListener('load', () => {
     document.getElementById('difficultySection').style.display = 'none';
 });
 
+// ==================== Username Verification ====================
+async function checkAndVerifyUsername() {
+    // 从 localStorage 读取保存的用户名
+    const savedUsername = localStorage.getItem('shizi_username');
+    
+    if (savedUsername) {
+        // 自动验证保存的用户名
+        const isValid = await verifyUsername(savedUsername);
+        if (isValid) {
+            username = savedUsername;
+            return; // 验证通过，继续
+        } else {
+            // 验证失败，清除保存的用户名
+            localStorage.removeItem('shizi_username');
+            showUsernameModal('该用户名已失效，请重新输入');
+        }
+    } else {
+        // 没有保存的用户名，显示输入框
+        showUsernameModal();
+    }
+}
+
+function showUsernameModal(errorMsg = '') {
+    const modal = document.getElementById('usernameModal');
+    const input = document.getElementById('usernameInput');
+    const errorDiv = document.getElementById('usernameError');
+    
+    // 如果有保存的用户名，自动填充
+    const savedUsername = localStorage.getItem('shizi_username');
+    if (savedUsername) {
+        input.value = savedUsername;
+    }
+    
+    // 显示错误信息
+    if (errorMsg) {
+        errorDiv.textContent = '❌ ' + errorMsg;
+        errorDiv.style.display = 'block';
+    } else {
+        errorDiv.style.display = 'none';
+    }
+    
+    modal.style.display = 'flex';
+    input.focus();
+    
+    // 允许 Enter 键提交
+    input.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            verifyAndSaveUsername();
+        }
+    };
+}
+
+async function verifyAndSaveUsername() {
+    const input = document.getElementById('usernameInput');
+    const errorDiv = document.getElementById('usernameError');
+    const usernameValue = input.value.trim().toLowerCase();
+    
+    // 清除错误信息
+    errorDiv.style.display = 'none';
+    
+    if (!usernameValue) {
+        errorDiv.textContent = '❌ 请输入用户名！';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    // 检查格式（只允许字母、数字、下划线）
+    if (!/^[a-z0-9_]+$/.test(usernameValue)) {
+        errorDiv.textContent = '❌ 用户名只能包含小写字母、数字和下划线！';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    // 显示验证中
+    errorDiv.textContent = '⏳ 正在验证...';
+    errorDiv.style.color = 'var(--primary-color)';
+    errorDiv.style.display = 'block';
+    
+    try {
+        // 验证用户名是否在白名单中
+        const isValid = await verifyUsername(usernameValue);
+        
+        if (isValid) {
+            // 验证通过
+            username = usernameValue;
+            localStorage.setItem('shizi_username', usernameValue);
+            
+            // 关闭用户名 Modal
+            document.getElementById('usernameModal').style.display = 'none';
+            input.value = '';
+            
+            // 检查是否已有该用户名的记录
+            const existingDoc = await db.collection('user_progress').doc(username).get();
+            
+            if (!existingDoc.exists) {
+                // 新用户，询问是否要导入旧数据
+                showMigrationModal();
+            } else {
+                // 已有记录，直接加载
+                await loadLessonsFromFirebase();
+                await loadUserProgress();
+                updateStudentNameDisplay();
+                renderLessonCheckboxes();
+                document.getElementById('loadingContainer').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                updateDueInfoText();
+                const directionSelector = document.getElementById('reviewDirectionSelector');
+                if (directionSelector) {
+                    directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+                }
+                updateStats();
+                updateDeviceCodeDisplay();
+                checkAndShowNameModal();
+                
+                showMessage('✅ 用户名验证成功！', 'success');
+            }
+        } else {
+            // 验证失败
+            errorDiv.textContent = '❌ 该用户名不在允许列表中，请联系老师！';
+            errorDiv.style.color = 'var(--danger-color)';
+            errorDiv.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('验证用户名失败:', error);
+        errorDiv.textContent = '❌ 验证失败：' + error.message;
+        errorDiv.style.color = 'var(--danger-color)';
+        errorDiv.style.display = 'block';
+    }
+}
+
+async function verifyUsername(usernameToCheck) {
+    try {
+        const doc = await db.collection('allowed_users').doc(usernameToCheck).get();
+        
+        if (!doc.exists) {
+            return false; // 用户名不存在
+        }
+        
+        const data = doc.data();
+        if (data.isActive === false) {
+            return false; // 用户名已停用
+        }
+        
+        return true; // 验证通过
+    } catch (error) {
+        console.error('验证用户名时出错:', error);
+        return false;
+    }
+}
+
+// ==================== Data Migration ====================
+function showMigrationModal() {
+    const modal = document.getElementById('migrationModal');
+    const input = document.getElementById('migrationDeviceCode');
+    const errorDiv = document.getElementById('migrationError');
+    
+    errorDiv.style.display = 'none';
+    modal.style.display = 'flex';
+    input.value = '';
+    input.focus();
+    
+    // 允许 Enter 键提交
+    input.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            migrateFromDeviceCode();
+        }
+    };
+}
+
+function skipMigration() {
+    // 跳过迁移，创建新记录
+    document.getElementById('migrationModal').style.display = 'none';
+    initializeAfterMigration();
+}
+
+async function migrateFromDeviceCode() {
+    const input = document.getElementById('migrationDeviceCode');
+    const errorDiv = document.getElementById('migrationError');
+    const deviceCodeValue = input.value.trim().toUpperCase();
+    
+    // 清除错误信息
+    errorDiv.style.display = 'none';
+    
+    if (!deviceCodeValue) {
+        errorDiv.textContent = '❌ 请输入设备码！';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    if (deviceCodeValue.length !== 6) {
+        errorDiv.textContent = '❌ 设备码应为6位！';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    // 显示查找中
+    errorDiv.textContent = '⏳ 正在查找设备记录...';
+    errorDiv.style.color = 'var(--primary-color)';
+    errorDiv.style.display = 'block';
+    
+    try {
+        // 查找该 deviceCode 的所有记录
+        const snapshot = await db.collection('user_progress')
+            .where('deviceCode', '==', deviceCodeValue)
+            .get();
+        
+        if (snapshot.empty) {
+            errorDiv.textContent = '❌ 找不到该设备码的记录！请确认设备码是否正确，或选择"跳过"创建新记录。';
+            errorDiv.style.color = 'var(--danger-color)';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        // 找到记录，选择第一个（如果有多个，使用第一个）
+        const oldDoc = snapshot.docs[0];
+        const oldData = oldDoc.data();
+        const oldUserId = oldDoc.id;
+        
+        // 合并进度数据（使用之前的合并逻辑）
+        const oldProgress = oldData.characterProgress || {};
+        userProgress = mergeProgress(userProgress, oldProgress);
+        
+        // 如果有学生姓名，也保留
+        if (oldData.studentName && !studentName) {
+            studentName = oldData.studentName;
+        }
+        
+        // 保存到新位置（使用用户名作为文档ID）
+        await db.collection('user_progress').doc(username).set({
+            characterProgress: userProgress,
+            lastReview: oldData.lastReview || new Date().toISOString(),
+            deviceCode: deviceCode,
+            studentName: studentName,
+            username: username,
+            migratedFrom: oldUserId, // 记录迁移来源
+            migratedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // 标记旧记录为已迁移
+        await db.collection('user_progress').doc(oldUserId).update({
+            migratedTo: username,
+            migratedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // 关闭 Modal
+        document.getElementById('migrationModal').style.display = 'none';
+        input.value = '';
+        
+        // 初始化页面
+        initializeAfterMigration();
+        
+        showMessage('✅ 数据迁移成功！已从旧设备导入学习记录。', 'success');
+    } catch (error) {
+        console.error('迁移失败:', error);
+        errorDiv.textContent = '❌ 迁移失败：' + error.message;
+        errorDiv.style.color = 'var(--danger-color)';
+        errorDiv.style.display = 'block';
+    }
+}
+
+async function initializeAfterMigration() {
+    // 加载课程数据
+    await loadLessonsFromFirebase();
+    await loadUserProgress();
+    updateStudentNameDisplay();
+    renderLessonCheckboxes();
+    document.getElementById('loadingContainer').classList.add('hidden');
+    document.getElementById('mainContent').classList.remove('hidden');
+    updateDueInfoText();
+    const directionSelector = document.getElementById('reviewDirectionSelector');
+    if (directionSelector) {
+        directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+    }
+    updateStats();
+    updateDeviceCodeDisplay();
+    checkAndShowNameModal();
+    
+    showMessage('✅ 用户名验证成功！', 'success');
+}
+
+// ==================== Display Updates ====================
+function updateDeviceCodeDisplay() {
+    const deviceCodeElement = document.getElementById('deviceCode');
+    if (deviceCodeElement) {
+        if (username) {
+            deviceCodeElement.textContent = `${deviceCode} (${username})`;
+        } else {
+            deviceCodeElement.textContent = deviceCode;
+        }
+    }
+}
+
 // ==================== Student Name Management ====================
 function updateStudentNameDisplay() {
     const displayElement = document.getElementById('studentNameDisplay');
@@ -2460,11 +2913,14 @@ function updateStudentNameDisplay() {
 
     if (studentName && studentName.trim() !== '') {
         displayElement.textContent = studentName;
-        btnTextElement.textContent = 'Edit Name';
+        if (btnTextElement) btnTextElement.textContent = 'Edit Name';
     } else {
         displayElement.textContent = 'Not set';
-        btnTextElement.textContent = 'Set Name';
+        if (btnTextElement) btnTextElement.textContent = 'Set Name';
     }
+    
+    // 同时更新 deviceCode 显示（包含用户名）
+    updateDeviceCodeDisplay();
 }
 
 function checkAndShowNameModal() {

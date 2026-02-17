@@ -510,7 +510,7 @@
         <!-- Search & Filter Controls -->
         <div class="controls">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="搜索设备码或姓名...">
+                <input type="text" id="searchInput" placeholder="搜索用户名、设备码或姓名...">
                 <button class="btn btn-primary" onclick="searchStudents()">🔍 搜索</button>
                 <button class="btn btn-secondary" onclick="refreshData()">🔄 刷新</button>
                 <button class="btn btn-secondary" onclick="exportAllDataJSON()">📥 导出完整数据 (JSON)</button>
@@ -537,6 +537,44 @@
             </div>
         </div>
         
+        <!-- Username Management -->
+        <div class="card" style="margin-bottom: var(--spacing-xl);">
+            <h2>👤 用户名管理</h2>
+            
+            <div style="margin-bottom: var(--spacing-lg);">
+                <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; margin-bottom: var(--spacing-md);">
+                    <input type="text" id="newUsername" placeholder="输入用户名（如：zhangwei）" 
+                           style="flex: 1; min-width: 200px; padding: var(--spacing-md); border: 2px solid var(--border-light); border-radius: var(--radius-md); font-size: 1em;">
+                    <input type="text" id="newDisplayName" placeholder="显示名称（可选）" 
+                           style="flex: 1; min-width: 200px; padding: var(--spacing-md); border: 2px solid var(--border-light); border-radius: var(--radius-md); font-size: 1em;">
+                    <button class="btn btn-primary" onclick="addUsername()">➕ 添加用户名</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('importUsernamesFile').click()">📤 批量导入</button>
+                </div>
+                <input type="file" id="importUsernamesFile" accept=".csv" style="display: none;">
+            </div>
+            
+            <div class="table-container">
+                <table class="students-table" id="usernamesTable">
+                    <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>显示名称</th>
+                            <th>创建时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usernamesTableBody">
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <h3>加载中...</h3>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
         <!-- Students Table -->
         <div class="card">
             <h2>📊 学生列表</h2>
@@ -548,6 +586,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>用户名</th>
                             <th>设备码</th>
                             <th>姓名</th>
                             <th>进度</th>
@@ -558,7 +597,7 @@
                     </thead>
                     <tbody id="tableBody">
                         <tr>
-                            <td colspan="7" class="empty-state">
+                            <td colspan="8" class="empty-state">
                                 <h3>加载中...</h3>
                             </td>
                         </tr>
@@ -599,6 +638,7 @@
         // ==================== Global Variables ====================
         let allStudents = [];
         let filteredStudents = [];
+        let allUsernames = [];
         
         // ==================== Load Students Data ====================
         async function loadStudentsData() {
@@ -642,8 +682,13 @@
 
                     const isActiveToday = lastReviewDate && lastReviewDate >= today;
 
+                    // 检查是否是已迁移的旧记录
+                    const isMigrated = data.migratedTo || false;
+                    const username = data.username || doc.id; // 如果 doc.id 是用户名，使用它
+                    
                     allStudents.push({
                         userId: doc.id,
+                        username: username,
                         deviceCode: data.deviceCode || '------',
                         name: data.studentName || '',
                         reviewed: reviewed,
@@ -651,7 +696,9 @@
                         lastReview: lastReviewDate,
                         characters: characters,
                         progress: data,
-                        isTestDevice: isTestDevice
+                        isTestDevice: isTestDevice,
+                        isMigrated: isMigrated,
+                        migratedTo: data.migratedTo || null
                     });
 
                     // Only count non-test devices in stats
@@ -694,7 +741,7 @@
             if (filteredStudents.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="empty-state">
+                        <td colspan="8" class="empty-state">
                             <h3>😕 没有找到学生</h3>
                             <p>尝试修改筛选条件</p>
                         </td>
@@ -710,7 +757,8 @@
                     : '从未复习';
 
                 const isTestDevice = student.isTestDevice || false;
-                const rowStyle = isTestDevice ? 'background: #f5f5f5;' : '';
+                const isMigrated = student.isMigrated || false;
+                const rowStyle = isTestDevice ? 'background: #f5f5f5;' : (isMigrated ? 'background: #fff9e6;' : '');
                 const deviceCodeDisplay = isTestDevice
                     ? `🧪 ${student.deviceCode} <span style="color:#999; font-size: 0.85em;">(测试)</span>`
                     : student.deviceCode;
@@ -719,10 +767,17 @@
                     : (student.name || '<i style="color:#999;">未填写</i>');
                 const testBtnText = isTestDevice ? '❌ 取消标记' : '🧪 标记测试';
                 const testBtnClass = isTestDevice ? 'btn-secondary' : 'btn-primary';
+                
+                // 用户名显示
+                let usernameDisplay = student.username || student.userId;
+                if (isMigrated) {
+                    usernameDisplay = `${usernameDisplay} <span style="color:#999; font-size: 0.85em;">(已迁移到: ${student.migratedTo})</span>`;
+                }
 
                 return `
                     <tr style="${rowStyle}">
                         <td>${index + 1}</td>
+                        <td class="device-code">${usernameDisplay}</td>
                         <td class="device-code">${deviceCodeDisplay}</td>
                         <td class="student-name">${nameDisplay}</td>
                         <td class="progress-bar-cell">
@@ -816,8 +871,10 @@
                 filteredStudents = [...allStudents];
             } else {
                 filteredStudents = allStudents.filter(s => 
+                    (s.username && s.username.toLowerCase().includes(query)) ||
                     s.deviceCode.toLowerCase().includes(query) ||
-                    s.name.toLowerCase().includes(query)
+                    (s.name && s.name.toLowerCase().includes(query)) ||
+                    (s.userId && s.userId.toLowerCase().includes(query))
                 );
             }
             
@@ -845,9 +902,21 @@
             const detailContent = document.getElementById('detailContent');
             detailContent.innerHTML = `
                 <div class="detail-item">
+                    <div class="detail-label">用户名</div>
+                    <div class="detail-value device-code">${student.username || student.userId}</div>
+                </div>
+                
+                <div class="detail-item">
                     <div class="detail-label">设备码</div>
                     <div class="detail-value device-code">${student.deviceCode}</div>
                 </div>
+                
+                ${student.isMigrated ? `
+                <div class="detail-item" style="background: #fff9e6;">
+                    <div class="detail-label">迁移状态</div>
+                    <div class="detail-value">⚠️ 此记录已迁移到：<strong>${student.migratedTo}</strong></div>
+                </div>
+                ` : ''}
                 
                 <div class="detail-item">
                     <div class="detail-label">姓名</div>
@@ -1130,16 +1199,230 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="empty-state">
+                    <td colspan="8" class="empty-state">
                         <h3 style="color: var(--danger-color);">❌ ${message}</h3>
                     </td>
                 </tr>
             `;
         }
         
+        // ==================== Username Management ====================
+        async function loadUsernames() {
+            try {
+                const snapshot = await db.collection('allowed_users').orderBy('createdAt', 'desc').get();
+                allUsernames = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    allUsernames.push({
+                        id: doc.id,
+                        username: data.username || doc.id,
+                        displayName: data.displayName || '',
+                        createdAt: data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt)) : null,
+                        isActive: data.isActive !== false // 默认为 true
+                    });
+                });
+                
+                renderUsernamesTable();
+            } catch (error) {
+                console.error('加载用户名列表失败:', error);
+                showError('加载用户名列表失败：' + error.message);
+            }
+        }
+        
+        function renderUsernamesTable() {
+            const tbody = document.getElementById('usernamesTableBody');
+            
+            if (allUsernames.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <h3>😕 还没有添加用户名</h3>
+                            <p>请在上方添加用户名到白名单</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = allUsernames.map(username => {
+                const createdDate = username.createdAt 
+                    ? username.createdAt.toLocaleDateString('zh-CN')
+                    : '未知';
+                const statusText = username.isActive ? '✅ 启用' : '❌ 停用';
+                const statusClass = username.isActive ? 'btn-primary' : 'btn-secondary';
+                
+                return `
+                    <tr>
+                        <td class="device-code">${username.username}</td>
+                        <td>${username.displayName || '<i style="color:#999;">未设置</i>'}</td>
+                        <td class="last-review">${createdDate}</td>
+                        <td>${statusText}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-small ${statusClass}" onclick="toggleUsernameStatus('${username.id}', ${!username.isActive})">
+                                    ${username.isActive ? '⏸️ 停用' : '▶️ 启用'}
+                                </button>
+                                <button class="btn btn-small btn-secondary" onclick="deleteUsername('${username.id}', '${username.username}')">
+                                    🗑️ 删除
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        async function addUsername() {
+            const usernameInput = document.getElementById('newUsername');
+            const displayNameInput = document.getElementById('newDisplayName');
+            const username = usernameInput.value.trim().toLowerCase();
+            const displayName = displayNameInput.value.trim();
+            
+            if (!username) {
+                alert('❌ 请输入用户名！');
+                return;
+            }
+            
+            // 检查用户名格式（只允许字母、数字、下划线）
+            if (!/^[a-z0-9_]+$/.test(username)) {
+                alert('❌ 用户名只能包含小写字母、数字和下划线！');
+                return;
+            }
+            
+            try {
+                // 检查用户名是否已存在
+                const existingDoc = await db.collection('allowed_users').doc(username).get();
+                if (existingDoc.exists) {
+                    alert('❌ 该用户名已存在！');
+                    return;
+                }
+                
+                // 添加到 Firestore
+                await db.collection('allowed_users').doc(username).set({
+                    username: username,
+                    displayName: displayName || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isActive: true
+                });
+                
+                alert('✅ 用户名添加成功！');
+                usernameInput.value = '';
+                displayNameInput.value = '';
+                loadUsernames();
+            } catch (error) {
+                console.error('添加用户名失败:', error);
+                alert('❌ 添加失败：' + error.message);
+            }
+        }
+        
+        async function toggleUsernameStatus(usernameId, newStatus) {
+            try {
+                await db.collection('allowed_users').doc(usernameId).update({
+                    isActive: newStatus
+                });
+                
+                alert(newStatus ? '✅ 用户名已启用' : '⏸️ 用户名已停用');
+                loadUsernames();
+            } catch (error) {
+                console.error('更新用户名状态失败:', error);
+                alert('❌ 操作失败：' + error.message);
+            }
+        }
+        
+        async function deleteUsername(usernameId, username) {
+            if (!confirm(`确定要删除用户名 "${username}" 吗？\n\n删除后，该用户名将无法登录系统。\n此操作无法撤销！`)) {
+                return;
+            }
+            
+            try {
+                await db.collection('allowed_users').doc(usernameId).delete();
+                alert('✅ 用户名已删除');
+                loadUsernames();
+            } catch (error) {
+                console.error('删除用户名失败:', error);
+                alert('❌ 删除失败：' + error.message);
+            }
+        }
+        
+        // 批量导入用户名
+        document.getElementById('importUsernamesFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            try {
+                const text = await file.text();
+                const lines = text.split('\n').filter(line => line.trim());
+                
+                let successCount = 0;
+                let failCount = 0;
+                const errors = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    // 支持 CSV 格式：username,displayName 或只有 username
+                    const parts = line.split(',').map(p => p.trim());
+                    const username = parts[0].toLowerCase();
+                    const displayName = parts[1] || '';
+                    
+                    if (!username) continue;
+                    
+                    // 检查格式
+                    if (!/^[a-z0-9_]+$/.test(username)) {
+                        failCount++;
+                        errors.push(`第 ${i + 1} 行：用户名格式错误 "${username}"`);
+                        continue;
+                    }
+                    
+                    try {
+                        // 检查是否已存在
+                        const existingDoc = await db.collection('allowed_users').doc(username).get();
+                        if (existingDoc.exists) {
+                            failCount++;
+                            errors.push(`第 ${i + 1} 行：用户名已存在 "${username}"`);
+                            continue;
+                        }
+                        
+                        // 添加
+                        await db.collection('allowed_users').doc(username).set({
+                            username: username,
+                            displayName: displayName,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            isActive: true
+                        });
+                        
+                        successCount++;
+                    } catch (error) {
+                        failCount++;
+                        errors.push(`第 ${i + 1} 行：${error.message}`);
+                    }
+                }
+                
+                let message = `✅ 导入完成！\n成功：${successCount} 个\n失败：${failCount} 个`;
+                if (errors.length > 0 && errors.length <= 10) {
+                    message += '\n\n错误详情：\n' + errors.join('\n');
+                } else if (errors.length > 10) {
+                    message += '\n\n（前10个错误已显示在控制台）';
+                    console.error('导入错误详情：', errors);
+                }
+                
+                alert(message);
+                loadUsernames();
+                
+                // 重置文件输入
+                e.target.value = '';
+            } catch (error) {
+                console.error('导入失败:', error);
+                alert('❌ 导入失败：' + error.message);
+            }
+        });
+        
         // ==================== Initialize ====================
         window.addEventListener('DOMContentLoaded', () => {
             loadStudentsData();
+            loadUsernames();
         });
         
         // Close modal on outside click

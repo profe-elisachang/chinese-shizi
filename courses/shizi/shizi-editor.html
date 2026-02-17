@@ -1227,6 +1227,18 @@
                             <label>英文</label>
                             <input type="text" id="field-meaning-${index}" value="${item.meaning || ''}" onchange="updateItemField(${index}, 'meaning', this.value)">
                         </div>
+                        <div class="form-field">
+                            <label>例句（中文）</label>
+                            <textarea id="field-notes-${index}" onchange="updateItemField(${index}, 'notes', this.value)">${item.notes || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>例句英文翻译</label>
+                            <textarea id="field-example_en-${index}" onchange="updateItemField(${index}, 'example_en', this.value)">${item.example_en || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>例句西班牙语翻译</label>
+                            <textarea id="field-example_es-${index}" onchange="updateItemField(${index}, 'example_es', this.value)">${item.example_es || ''}</textarea>
+                        </div>
                     `;
                 case 'dialogues':
                     return `
@@ -1516,7 +1528,7 @@
                 case 'vocabulary':
                     return { character: '', meaning: '|', notes: '' };
                 case 'phrases':
-                    return { content: '', pinyin: '', meaning: '', subtype: 'phrase' };
+                    return { content: '', pinyin: '', meaning: '', notes: '', example_en: '', example_es: '', subtype: 'phrase' };
                 case 'dialogues':
                     return { content: '', speaker: '', speaker_name: '', notes: '', subtype: 'dialogue', type: 'phrases' };
                 case 'grammar':
@@ -1580,6 +1592,18 @@
                         <div class="form-field required">
                             <label>英文</label>
                             <input type="text" id="modal-meaning" value="${item.meaning || ''}">
+                        </div>
+                        <div class="form-field">
+                            <label>例句（中文）</label>
+                            <textarea id="modal-notes">${item.notes || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>例句英文翻译</label>
+                            <textarea id="modal-example_en">${item.example_en || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>例句西班牙语翻译</label>
+                            <textarea id="modal-example_es">${item.example_es || ''}</textarea>
                         </div>
                     `;
                 case 'dialogues':
@@ -1672,6 +1696,9 @@
                         content: document.getElementById('modal-content').value.trim(),
                         pinyin: document.getElementById('modal-pinyin').value.trim(),
                         meaning: document.getElementById('modal-meaning').value.trim(),
+                        notes: document.getElementById('modal-notes').value.trim(),
+                        example_en: document.getElementById('modal-example_en').value.trim(),
+                        example_es: document.getElementById('modal-example_es').value.trim(),
                         subtype: 'phrase'
                     };
                     if (!newItem.content || !newItem.pinyin || !newItem.meaning) {
