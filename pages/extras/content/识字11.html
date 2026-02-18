@@ -646,8 +646,10 @@
         /* 口语练习网格布局 */
         .speaking-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         /* 响应式 */
@@ -705,7 +707,6 @@
         <h1>📘 识字11 · 词汇与句型</h1>
         <div class="lang-bar">
             <button class="lang-btn active" data-lang="en">English</button>
-            <button class="lang-btn" data-lang="es">Español</button>
         </div>
     </div>
 
@@ -794,7 +795,7 @@
                         <div class="example-group">
                             <h4>📎 例句</h4>
                             <div class="example-sentence">学 <i>知识</i> 很重要，但也要长 <i>见识</i>。</div>
-                            <div class="example-sentence"><i>古代</i> 人没有手机。这座庙很 <i>古老</i>。</div>
+                            <div class="example-sentence"><i>古代</i> 人没有手机。这座寺庙sìmiào很 <i>古老</i>。</div>
                             <div class="example-sentence">我去过 <i>英国</i>，但是 <i>英文</i> 不太好。</div>
                             <div class="example-sentence">多运动 <i>有利</i> 健康。我想 <i>利用</i> 假期学中文。</div>
                         </div>
@@ -818,11 +819,11 @@
                         </table>
                         <div class="example-group">
                             <h4>📎 例句</h4>
-                            <div class="example-sentence">他说话很慢，我都 <i>听得懂</i>。</div>
-                            <div class="example-sentence">广东话我 <i>听不懂</i>。</div>
-                            <div class="example-sentence">你说什么？我 <i>听不见</i>！</div>
-                            <div class="example-sentence">她 <i>说不上</i> 很漂亮，但是很有气质。</div>
-                            <div class="example-sentence">你妹妹 <i>长得漂亮</i> 吗？</div>
+                            <div class="example-sentence">他说话很慢，我都 <i>听得懂</i>。<span class="translation-en">He speaks very slowly, so I can understand everything.</span></div>
+                            <div class="example-sentence">广东话( Cantonese)我 <i>听不懂</i>。<span class="translation-en">I can't understand Cantonese.</span></div>
+                            <div class="example-sentence">你说什么？我 <i>听不见</i>！<span class="translation-en">What did you say? I can't hear you!</span></div>
+                            <div class="example-sentence">她 <i>说不上</i> 很漂亮，但是很有气质。<span class="translation-en">She can't really be called very beautiful, but she has a lot of charm.</span></div>
+                            <div class="example-sentence">你妹妹 <i>长得漂亮</i> 吗？<span class="translation-en">Is your younger sister pretty?</span></div>
                         </div>
                     </div>
                 </div>
@@ -1007,40 +1008,40 @@
                 <!-- 类型1：情景反应 -->
                 <div class="card speaking-practice-area">
                     <div class="card-header" onclick="toggleCard(this)">
-                        <span>🎯 类型1：情景反应 (目标词：没去过/长得漂亮/听得懂)</span>
+                        <span>🎯 第1题：情景反应 <small style="color:#64748b;">(Situational Response)</small></span>
                         <span class="toggle-icon">▼</span>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content collapsed">
                         <div class="speaking-item">
-                            <div class="speaking-item-title">1️⃣ 情境：朋友问你"你去过日本吗？"你没去过。</div>
-                            <div class="speaking-item-content">目标词：<span class="highlight-word">没去过</span></div>
+                            <div class="speaking-item-title">1️⃣ 情境：朋友问你"你去过日本吗？ 你说："I haven't been there.</div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">V过</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-1')">显示答案</button>
                             <div id="sp1-1" class="speaking-item-answer hidden">✅ 我没去过日本。</div>
                         </div>
                         
                         <div class="speaking-item">
                             <div class="speaking-item-title">2️⃣ 情境：朋友介绍一个人给你，你想问这个人长得怎么样。</div>
-                            <div class="speaking-item-content">目标词：<span class="highlight-word">长得漂亮/帅</span></div>
+                            <div class="speaking-item-content">目标词：<span class="highlight-word">长得漂亮/帅shuài</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-2')">显示答案</button>
-                            <div id="sp1-2" class="speaking-item-answer hidden">✅ 她长得漂亮吗？/ 他长得帅吗？</div>
+                            <div id="sp1-2" class="speaking-item-answer hidden">✅ 她长得漂亮吗？/ 他长得帅帅shuài吗？</div>
                         </div>
                         
                         <div class="speaking-item">
-                            <div class="speaking-item-title">3️⃣ 情境：老师在讲中文故事，你大部分都懂，但是有几个词不懂。</div>
+                            <div class="speaking-item-title">3️⃣ 情境：老师在sho说中文故事<span style="color:#64748b; font-size: 1rem;">gùshì -sotory</span>，你大部分都懂，但是有几个词不懂。</div>
                             <div class="speaking-item-content">目标词：<span class="highlight-word">听得懂/听不懂</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-3')">显示答案</button>
                             <div id="sp1-3" class="speaking-item-answer hidden">✅ 我大部分听得懂，但是有几个词听不懂。</div>
                         </div>
                         
                         <div class="speaking-item">
-                            <div class="speaking-item-title">4️⃣ 情境：你想说一个女孩不算很漂亮，但也不丑。</div>
+                            <div class="speaking-item-title">4️⃣ 情境：你想说一个女孩<b>不算</b><span style="color:#64748b; font-size: 1rem;">bùsuàn-not considered-</span>很漂亮，但也不丑 chǒu (ugly)。<br><span style="color:#64748b; font-size: 1rem;">(You want to say a girl isn't really pretty, but she's not ugly either.)</span></div>
                             <div class="speaking-item-content">目标词：<span class="highlight-word">说不上</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-4')">显示答案</button>
-                            <div id="sp1-4" class="speaking-item-answer hidden">✅ 她说不上漂亮，但是很可爱。</div>
+                            <div id="sp1-4" class="speaking-item-answer hidden">✅ 她说不上漂亮，但是很可爱。<small>not really pretty, but cute</small></div>
                         </div>
                         
                         <div class="speaking-item">
-                            <div class="speaking-item-title">5️⃣ 情境：你去过北京，想告诉别人你的经历。</div>
+                            <div class="speaking-item-title">5️⃣ 情境：你去过北京，想告诉<span style="color:#64748b; font-size: 1rem;">（gàosu）</span>别人你的经历。</div>
                             <div class="speaking-item-content">目标词：<span class="highlight-word">去过</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-5')">显示答案</button>
                             <div id="sp1-5" class="speaking-item-answer hidden">✅ 我去过北京，很有意思。</div>
@@ -1061,10 +1062,10 @@
                         </div>
                         
                         <div class="speaking-item">
-                            <div class="speaking-item-title">8️⃣ 情境：有人问你中国古代的诗怎么样，你完全不懂。</div>
+                            <div class="speaking-item-title">8️⃣ 情境：有人问你中国古代的诗怎么样，你完全<span style="color:#64748b; font-size: 1rem;"> wánquá-comletely, totoally </span>不懂。</div>
                             <div class="speaking-item-content">目标词：<span class="highlight-word">古诗</span> <span class="highlight-word">读不懂</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp1-8')">显示答案</button>
-                            <div id="sp1-8" class="speaking-item-answer hidden">✅ 我读不懂古诗，太难了。</div>
+                            <div id="sp1-8" class="speaking-item-answer hidden">✅ 我读不懂古诗，太难<span style="color:#64748b; font-size: 1rem;">nán</span>了。</div>
                         </div>
                     </div>
                 </div>
@@ -1072,33 +1073,41 @@
                 <!-- 类型2：看图说话 -->
                 <div class="card speaking-practice-area">
                     <div class="card-header" onclick="toggleCard(this)">
-                        <span>📷 类型2：看图说话 (目标词：流利/古诗/文静)</span>
+                        <span>📷 第2题：看图说话 <small style="color:#64748b;">(Picture Description)</small></span>
                         <span class="toggle-icon">▼</span>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content collapsed">
                         <div class="speaking-item">
-                            <div class="speaking-item-title">1️⃣ 场景：一个女生在台上流利地讲英语，台下观众在鼓掌。<br><span style="color:#64748b; font-size: 1rem;">(A girl is speaking English fluently on stage, and the audience is clapping.)</span></div>
+                            <div class="speaking-item-title">
+                                1️⃣ 场景：一个女生在台上流利地讲英语，台下观众在鼓掌。<br>
+                                <span style="color:#64748b; font-size: 1rem;">(A girl is speaking English fluently on stage, and the audience is clapping.)</span><br>
+                                <img src="https://thumbs.dreamstime.com/b/%E5%95%86%E7%95%8C%E4%BA%BA%E5%A3%AB%E5%9C%A8%E7%A0%94%E8%AE%A8%E4%BC%9A%E4%B8%8A%E8%B5%9E%E6%89%AC%E5%A5%B3%E6%95%99%E7%BB%83-262753114.jpg?w=768" alt="女生在台上讲英语，观众鼓掌" style="max-width: 260px; margin-top: 8px; border-radius: 8px;">
+                            </div>
                             <div class="speaking-item-content">目标词：<span class="highlight-word">流利</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-1')">显示答案</button>
                             <div id="sp2-1" class="speaking-item-answer hidden">✅ 她英语说得很流利。/ 她的英语很流利。</div>
                         </div>
                         
                         <div class="speaking-item">
-                            <div class="speaking-item-title">2️⃣ 场景：一个人拿着一本古诗集，皱着眉头，挠着头。<br><span style="color:#64748b; font-size: 1rem;">(A person is holding a book of ancient poems,皱着眉头，挠着头。)</span></div>
+                            <div class="speaking-item-title">2️⃣ 场景：一个人拿着一本古诗集，皱着眉头，挠着头。<br><span style="color:#64748b; font-size: 1rem;">(A person is holding a book of ancient poems,frowning and scratching his/her head.)</span></div>
                             <div class="speaking-item-content">目标词：<span class="highlight-word">古诗</span> <span class="highlight-word">读不懂</span></div>
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjdmKKoUjcLyFpAx8tvrKUAxTxCaKYKxctoTk8npwTFw&s alt="" style="max-width: 260px; margin-top: 8px; border-radius: 8px;">
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-2')">显示答案</button>
                             <div id="sp2-2" class="speaking-item-answer hidden">✅ 他读不懂古诗。/ 古诗太难了，他读不懂。</div>
                         </div>
                         
                         <div class="speaking-item">
-                            <div class="speaking-item-title">3️⃣ 场景：埃菲尔铁塔的照片，旁边有一个行李箱。<br><span style="color:#64748b; font-size: 1rem;">(A photo of the Eiffel Tower, with a suitcase next to it.)</span><       /div>
+                            <div class="speaking-item-title">3️⃣ 场景：埃菲尔铁塔的照片，旁边有一个行李箱。<br><span style="color:#64748b; font-size: 1rem;">(A photo of the Eiffel Tower, with a suitcase next to it.)</span><     
                             <div class="speaking-item-content">目标词：<span class="highlight-word">去过</span> <span class="highlight-word">法国</span></div>
+                            <img src="https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/10/5a/6b/48.jpg"" style="max-width: 260px; margin-top: 8px; border-radius: 8px;">
+                            
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-3')">显示答案</button>
                             <div id="sp2-3" class="speaking-item-answer hidden">✅ 我去过法国。/ 我没去过法国，但是想去。</div>
                         </div>
 
                         <div class="speaking-item">
                             <div class="speaking-item-title">4️⃣ 场景：图书馆里，一个女生安静地看书，表情温柔。<br><span style="color:#64748b; font-size: 1rem;">(A girl is quietly reading in the library, with a gentle expression.)</span></div> 
+                            <img src="https://pic1.zhimg.com/v2-8dbbfe8abfc31238c2fa73473f533855_720w.jpg?source=172ae18b"" style="max-width: 260px; margin-top: 8px; border-radius: 8px;">
                             <div class="speaking-item-content">目标词：<span class="highlight-word">文静</span> <span class="highlight-word">姑娘</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-4')">显示答案</button>
                             <div id="sp2-4" class="speaking-item-answer hidden">✅ 她是一个文静的姑娘。/ 她很文静。</div>
@@ -1106,13 +1115,15 @@
                         
                         <div class="speaking-item">
                             <div class="speaking-item-title">5️⃣ 场景：一个翻译在两个人之间做翻译，两个人都笑了。<br><span style="color:#64748b; font-size: 1rem;">(A translator is translating between two people, and both people are smiling.)</span></div>
+                            <img src="https://d3nb97lilvchvx.cloudfront.net/category_page/english_interpretation.jpg" style="max-width: 260px; margin-top: 8px; border-radius: 8px;">
                             <div class="speaking-item-content">目标词：<span class="highlight-word">翻译</span> <span class="highlight-word">听懂</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-5')">显示答案</button>
                             <div id="sp2-5" class="speaking-item-answer hidden">✅ 翻译让他们听懂了彼此。/ 翻译很有用。</div>
                         </div>
                         
                         <div class="speaking-item">
-                            <div class="speaking-item-title">6️⃣ 场景：一个老人给小孩讲古代的故事。<br><span style="color:#64748b; font-size: 1rem;">(A老人给小孩讲古代的故事。)</span></div>
+                            <div class="speaking-item-title">6️⃣ 场景：一个老人给小孩讲古代的故事。<br><span style="color:#64748b; font-size: 1rem;">(An old man telling ancient story to the kids)</span></div>
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzdwdlgRK7Pehg5lZApA82h80JYNBhwaHXtw&s style="max-width: 260px; margin-top: 8px; border-radius: 8px;">
                             <div class="speaking-item-content">目标词：<span class="highlight-word">古代</span> <span class="highlight-word">古老</span></div>
                             <button class="btn-answer" onclick="toggleAnswer(this, 'sp2-6')">显示答案</button>
                             <div id="sp2-6" class="speaking-item-answer hidden">✅ 这是一个古老的故事。/ 古代的人是这样生活的。</div>
@@ -1123,10 +1134,10 @@
                 <!-- 类型3：句子接龙 -->
                 <div class="card speaking-practice-area">
                     <div class="card-header" onclick="toggleCard(this)">
-                        <span>🔗 类型3：句子接龙 (目标词：姑娘/翻译/流利)</span>
+                        <span>🔗 第3题：句子接龙 <small style="color:#64748b;">(Sentence Chain)</small></span>
                         <span class="toggle-icon">▼</span>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content collapsed">
                         <div class="speaking-item">
                             <div class="speaking-item-title">第1组</div>
                             <div class="speaking-item-content">
@@ -1192,10 +1203,10 @@
                 <!-- 类型4：二选一辩论 -->
                 <div class="card speaking-practice-area">
                     <div class="card-header" onclick="toggleCard(this)">
-                        <span>⚔️ 类型4：二选一辩论 (目标词：见识/知识/不过)</span>
+                        <span>⚔️ 第4题：二选一辩论 <small style="color:#64748b;">(Debate - Choose A or B)</small></span>
                         <span class="toggle-icon">▼</span>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content collapsed">
                         <div class="speaking-item">
                             <div class="speaking-item-title">第1题：旅行 vs 读书</div>
                             <div class="speaking-item-content">
@@ -1247,10 +1258,10 @@
                 <!-- 类型5：信息差填空 -->
                 <div class="card speaking-practice-area">
                     <div class="card-header" onclick="toggleCard(this)">
-                        <span>🔍 类型5：信息差填空 (目标词：去过/翻译/流利)</span>
+                        <span>🔍 第5题：信息差填空 <small style="color:#64748b;">(Information Gap)</small></span>
                         <span class="toggle-icon">▼</span>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content collapsed">
                         <div class="speaking-item">
                             <div class="speaking-item-title">第1组：人物信息卡</div>
                             <div class="speaking-item-content">
@@ -1305,10 +1316,10 @@
                 <!-- 类型6：角色扮演 -->
                 <div class="card speaking-practice-area">
                     <div class="card-header" onclick="toggleCard(this)">
-                        <span>🎭 类型6：角色扮演 (目标词：介绍/认识/山东/翻译)</span>
+                        <span>🎭 第6题：角色扮演 <small style="color:#64748b;">(Role Play)</small></span>
                         <span class="toggle-icon">▼</span>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content collapsed">
                         <div class="speaking-item">
                             <div class="speaking-item-title">场景1：介绍新朋友</div>
                             <div class="speaking-item-content">
@@ -1357,10 +1368,10 @@
                 <!-- 类型7：改错挑战 -->
                 <div class="card speaking-practice-area">
                     <div class="card-header" onclick="toggleCard(this)">
-                        <span>🔧 类型7：改错挑战 (目标词：去过/说得流利/听懂)</span>
+                        <span>🔧 第7题：改错挑战 (目标词：去过/说得流利/听懂)</span>
                         <span class="toggle-icon">▼</span>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content collapsed">
                         <div class="speaking-item">
                             <div class="speaking-item-title">1️⃣ 错误句子：我不去过美国。</div>
                             <div class="speaking-item-content">错误类型："过"的否定形式错误</div>
