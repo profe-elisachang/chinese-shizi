@@ -357,15 +357,34 @@
         }
 
         .form-item-card.dragging {
-            opacity: 0.8;
-            transform: scale(0.98);
+            opacity: 0.9;
             border-color: var(--primary-dark);
-            box-shadow: 0 0 0 2px var(--primary-dark);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             transition: none !important;
+            position: fixed;
+            z-index: 1000;
+            pointer-events: none;
+            transform: rotate(-2deg) scale(1.02);
+            background: var(--bg-card);
+        }
+
+        .form-item-card.placeholder {
+            opacity: 0.3;
+            background: var(--bg-light);
+            border-style: dashed;
+            border-color: var(--primary-color);
         }
 
         .form-item-card:not(.dragging) {
             transition: transform 0.2s ease-out;
+        }
+        
+        .form-item-card.drag-over-top {
+            border-top: 3px solid var(--primary-color);
+        }
+        
+        .form-item-card.drag-over-bottom {
+            border-bottom: 3px solid var(--primary-color);
         }
 
         .form-item-card.collapsed .form-item-body {
@@ -899,9 +918,11 @@
         let currentLesson = '';
         let saveTimeout = null;
         let draggedElement = null;
+        let placeholderElement = null;
         let isDragging = false;
+        let dragOffsetX = 0;
         let dragOffsetY = 0;
-        let dragInitialRect = null;
+        let draggedIndex = -1;
         let editingIndex = -1;
 
         // ==================== DOM 元素 ====================
@@ -1379,57 +1400,145 @@
         // ==================== 拖拽功能 ====================
         function startDrag(e, card) {
             e.preventDefault();
+            e.stopPropagation();
+            
             isDragging = true;
             draggedElement = card;
-            card.classList.add('dragging');
+            draggedIndex = parseInt(card.dataset.index);
             
+            // 記錄初始位置和偏移
             const rect = card.getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left;
             dragOffsetY = e.clientY - rect.top;
-            dragInitialRect = rect;
-
+            
+            // 創建佔位符元素
+            placeholderElement = card.cloneNode(true);
+            placeholderElement.classList.remove('dragging');
+            placeholderElement.classList.add('placeholder');
+            placeholderElement.style.height = rect.height + 'px';
+            
+            // 插入佔位符
+            card.parentNode.insertBefore(placeholderElement, card.nextSibling);
+            
+            // 設置拖拽元素樣式
+            card.classList.add('dragging');
+            card.style.width = rect.width + 'px';
+            card.style.left = rect.left + 'px';
+            card.style.top = rect.top + 'px';
+            
+            // 綁定事件
             document.addEventListener('mousemove', handleDrag);
             document.addEventListener('mouseup', stopDrag);
+            
+            // 初始位置
+            updateDragPosition(e);
+        }
+
+        function updateDragPosition(e) {
+            if (!draggedElement) return;
+            
+            const left = e.clientX - dragOffsetX;
+            const top = e.clientY - dragOffsetY;
+            
+            draggedElement.style.left = left + 'px';
+            draggedElement.style.top = top + 'px';
         }
 
         function handleDrag(e) {
-            if (!isDragging || !draggedElement) return;
+            if (!isDragging || !draggedElement || !placeholderElement) return;
             
-            const cards = Array.from(document.querySelectorAll('.form-item-card'));
-            const draggedIndex = parseInt(draggedElement.dataset.index);
+            // 更新拖拽元素位置
+            updateDragPosition(e);
+            
+            // 找到鼠標下方的卡片
+            const cards = Array.from(document.querySelectorAll('.form-item-card:not(.dragging):not(.placeholder)'));
+            
+            // 清除所有拖放指示器
+            cards.forEach(card => {
+                card.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+            
+            // 找到最接近的卡片
+            let closestCard = null;
+            let closestDistance = Infinity;
+            let insertBefore = true;
             
             const mouseY = e.clientY;
-            const cardHeight = dragInitialRect.height;
-            const cardTop = mouseY - dragOffsetY;
             
-            // 找到當前位置應該插入的索引
-            let newIndex = draggedIndex;
-            cards.forEach((card, index) => {
-                if (card === draggedElement) return;
+            cards.forEach(card => {
                 const rect = card.getBoundingClientRect();
-                if (cardTop < rect.top + rect.height / 2 && index < draggedIndex) {
-                    newIndex = index;
-                } else if (cardTop > rect.top + rect.height / 2 && index > draggedIndex) {
-                    newIndex = index + 1;
+                const cardMiddle = rect.top + rect.height / 2;
+                const distance = Math.abs(mouseY - cardMiddle);
+                
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestCard = card;
+                    insertBefore = mouseY < cardMiddle;
                 }
             });
-
-            // 移動元素
-            if (newIndex !== draggedIndex) {
-                const item = currentData.splice(draggedIndex, 1)[0];
-                currentData.splice(newIndex, 0, item);
-                renderEditPanel();
-                debounceSave();
+            
+            // 移動佔位符到新位置
+            if (closestCard) {
+                if (insertBefore) {
+                    closestCard.classList.add('drag-over-top');
+                    closestCard.parentNode.insertBefore(placeholderElement, closestCard);
+                } else {
+                    closestCard.classList.add('drag-over-bottom');
+                    closestCard.parentNode.insertBefore(placeholderElement, closestCard.nextSibling);
+                }
             }
         }
 
-        function stopDrag() {
-            if (draggedElement) {
-                draggedElement.classList.remove('dragging');
-                draggedElement = null;
-            }
+        function stopDrag(e) {
+            if (!isDragging) return;
+            
             isDragging = false;
             document.removeEventListener('mousemove', handleDrag);
             document.removeEventListener('mouseup', stopDrag);
+            
+            // 清除所有拖放指示器
+            const cards = Array.from(document.querySelectorAll('.form-item-card'));
+            cards.forEach(card => {
+                card.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+            
+            if (draggedElement && placeholderElement) {
+                // 計算新位置
+                const allCards = Array.from(document.querySelectorAll('.form-item-card:not(.dragging)'));
+                let newIndex = allCards.indexOf(placeholderElement);
+                
+                // 調整索引（因為佔位符本身也算一個元素）
+                if (newIndex > draggedIndex) {
+                    newIndex--;
+                }
+                
+                // 如果位置改變了，更新數據
+                if (newIndex !== draggedIndex && newIndex >= 0 && newIndex < currentData.length) {
+                    const item = currentData.splice(draggedIndex, 1)[0];
+                    currentData.splice(newIndex, 0, item);
+                    renderEditPanel();
+                    renderPreviewPanel();
+                    debounceSave();
+                } else {
+                    // 如果位置沒變，只需移除拖拽狀態
+                    if (placeholderElement && placeholderElement.parentNode) {
+                        placeholderElement.parentNode.removeChild(placeholderElement);
+                    }
+                    if (draggedElement) {
+                        draggedElement.classList.remove('dragging');
+                        draggedElement.style.position = '';
+                        draggedElement.style.left = '';
+                        draggedElement.style.top = '';
+                        draggedElement.style.width = '';
+                        draggedElement.style.zIndex = '';
+                    }
+                }
+            }
+            
+            // 清理
+            draggedElement = null;
+            placeholderElement = null;
+            draggedIndex = -1;
         }
 
         // ==================== 新增/編輯/刪除 ====================
@@ -1825,10 +1934,46 @@
                     const chinese = parts[0] || '';
                     const pinyin = parts[1] || '';
                     const english = parts[2] || '';
+                    
+                    let examplesHtml = '';
+                    if (item.notes || item.example_en || item.example_es) {
+                        examplesHtml = '<div style="margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--border-light);">';
+                        
+                        if (item.notes) {
+                            examplesHtml += `
+                                <div style="margin-bottom: var(--spacing-sm);">
+                                    <div style="font-weight: var(--font-semibold); color: var(--text-secondary); font-size: 0.85em; margin-bottom: var(--spacing-xs);">📝 例句（中文）：</div>
+                                    <div style="color: var(--text-primary); font-size: 0.95em; line-height: 1.6;">${item.notes}</div>
+                                </div>
+                            `;
+                        }
+                        
+                        if (item.example_en) {
+                            examplesHtml += `
+                                <div style="margin-bottom: var(--spacing-sm);">
+                                    <div style="font-weight: var(--font-semibold); color: var(--english-color); font-size: 0.85em; margin-bottom: var(--spacing-xs);">🇬🇧 English：</div>
+                                    <div style="color: var(--english-color); font-size: 0.9em; font-style: italic; line-height: 1.6;">${item.example_en}</div>
+                                </div>
+                            `;
+                        }
+                        
+                        if (item.example_es) {
+                            examplesHtml += `
+                                <div style="margin-bottom: var(--spacing-sm);">
+                                    <div style="font-weight: var(--font-semibold); color: var(--spanish-color); font-size: 0.85em; margin-bottom: var(--spacing-xs);">🇪🇸 Español：</div>
+                                    <div style="color: var(--spanish-color); font-size: 0.9em; font-style: italic; line-height: 1.6;">${item.example_es}</div>
+                                </div>
+                            `;
+                        }
+                        
+                        examplesHtml += '</div>';
+                    }
+                    
                     return `
                         <div style="font-size: 1.2em; font-weight: bold; margin-bottom: var(--spacing-xs);">${chinese}</div>
                         <div style="color: var(--pinyin-color);">${pinyin}</div>
                         <div style="color: var(--meaning-color);">${english}</div>
+                        ${examplesHtml}
                     `;
                 }
                 case 'dialogues': {
