@@ -1334,21 +1334,21 @@
     <div id="usernameModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 9999; align-items: center; justify-content: center;">
         <div style="background: white; padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
             <div style="text-align: center; margin-bottom: 24px;">
-                <h2 style="color: var(--primary-dark); font-size: 2rem; margin-bottom: 8px;">请输入用户名 👤</h2>
+                <h2 style="color: var(--primary-dark); font-size: 2rem; margin-bottom: 8px;">Enter Username 👤</h2>
                 <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">
-                    请输入您的用户名以访问学习系统<br>
-                    <small style="color: var(--text-muted);">（用户名由老师提供）</small>
+                    Please enter your username to access the learning system<br>
+                    <small style="color: var(--text-muted);">(Username provided by teacher)</small>
                 </p>
             </div>
 
-            <input type="text" id="usernameInput" placeholder="输入用户名（如：zhangwei）"
+            <input type="text" id="usernameInput" placeholder="Enter username (e.g., zhangwei)"
                    style="width: 100%; padding: 14px; font-size: 1.1rem; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 12px; text-transform: lowercase;"
                    autocomplete="off">
             
             <div id="usernameError" style="color: var(--danger-color); font-size: 0.9em; margin-bottom: 12px; min-height: 20px; display: none;"></div>
 
             <div style="display: flex; gap: 12px;">
-                <button class="btn btn-primary" onclick="verifyAndSaveUsername()" style="flex: 1;">确认</button>
+                <button class="btn btn-primary" onclick="verifyAndSaveUsername()" style="flex: 1;">Confirm</button>
             </div>
         </div>
     </div>
@@ -2712,20 +2712,20 @@ async function verifyAndSaveUsername() {
     errorDiv.style.display = 'none';
     
     if (!usernameValue) {
-        errorDiv.textContent = '❌ 请输入用户名！';
+        errorDiv.textContent = '❌ Please enter a username!';
         errorDiv.style.display = 'block';
         return;
     }
     
     // 检查格式（只允许字母、数字、下划线）
     if (!/^[a-z0-9_]+$/.test(usernameValue)) {
-        errorDiv.textContent = '❌ 用户名只能包含小写字母、数字和下划线！';
+        errorDiv.textContent = '❌ Username can only contain lowercase letters, numbers, and underscores!';
         errorDiv.style.display = 'block';
         return;
     }
     
     // 显示验证中
-    errorDiv.textContent = '⏳ 正在验证...';
+    errorDiv.textContent = '⏳ Verifying...';
     errorDiv.style.color = 'var(--primary-color)';
     errorDiv.style.display = 'block';
     
@@ -2765,17 +2765,17 @@ async function verifyAndSaveUsername() {
                 updateDeviceCodeDisplay();
                 checkAndShowNameModal();
                 
-                showMessage('✅ 用户名验证成功！', 'success');
+                showMessage('✅ Username verified successfully!', 'success');
             }
         } else {
             // 验证失败
-            errorDiv.textContent = '❌ 该用户名不在允许列表中，请联系老师！';
+            errorDiv.textContent = '❌ This username is not in the allowed list. Please contact your teacher!';
             errorDiv.style.color = 'var(--danger-color)';
             errorDiv.style.display = 'block';
         }
     } catch (error) {
         console.error('验证用户名失败:', error);
-        errorDiv.textContent = '❌ 验证失败：' + error.message;
+        errorDiv.textContent = '❌ Verification failed: ' + error.message;
         errorDiv.style.color = 'var(--danger-color)';
         errorDiv.style.display = 'block';
     }
