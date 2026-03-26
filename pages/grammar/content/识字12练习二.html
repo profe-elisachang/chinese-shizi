@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>识字12 · 语法练习</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1714;
+    --ink-muted: #6b6460;
+    --ink-faint: #b0aaa6;
+    --paper: #faf8f5;
+    --paper-warm: #f2ede6;
+    --paper-card: #ffffff;
+    --red: #c0392b;
+    --red-light: #fbeae8;
+    --green: #2d6a4f;
+    --green-light: #e8f4ee;
+    --amber: #92580a;
+    --amber-light: #fdf3e0;
+    --border: rgba(26,23,20,0.12);
+    --border-strong: rgba(26,23,20,0.22);
+    --shadow: 0 2px 12px rgba(26,23,20,0.07);
+    --shadow-hover: 0 4px 20px rgba(26,23,20,0.12);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .page-header {
+    background: var(--ink);
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(255,255,255,0.02) 20px,
+      rgba(255,255,255,0.02) 21px
+    );
+  }
+  .page-header h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: .04em;
+    position: relative;
+  }
+  .page-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 6px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    position: relative;
+  }
+  .hsk-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: .1em;
+    position: relative;
+  }
+
+  /* Score bar */
+  .score-wrap {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: .75rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .score-label {
+    font-size: 12px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    letter-spacing: .04em;
+  }
+  .score-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .score-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+  .score-num {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    min-width: 44px;
+    text-align: right;
+  }
+
+  /* Main layout */
+  .main {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* Grammar section */
+  .grammar-section { margin-bottom: 2.5rem; }
+
+  .section-tag {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1rem;
+  }
+  .section-tag .num {
+    width: 28px;
+    height: 28px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .section-tag .label-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .section-tag .label-en {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-left: 2px;
+  }
+
+  .grammar-rule {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--ink);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: .75rem 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .grammar-rule .cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .grammar-rule .en {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+  .grammar-rule .pattern {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .pill {
+    padding: 2px 10px;
+    background: var(--paper-warm);
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  /* Question card */
+  .qcard {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.25rem 1rem;
+    margin-bottom: .75rem;
+    box-shadow: var(--shadow);
+    transition: box-shadow .2s;
+  }
+  .qcard:hover { box-shadow: var(--shadow-hover); }
+
+  .qhead {
+    display: flex;
+    align-items: baseline;
+    gap: .5rem;
+    margin-bottom: .75rem;
+  }
+  .qnum {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-faint);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .qtype {
+    font-size: 11px;
+    padding: 1px 8px;
+    background: var(--paper-warm);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--ink-muted);
+  }
+
+  .qtext-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    color: var(--ink);
+    line-height: 1.7;
+    margin-bottom: 4px;
+  }
+  .qtext-cn .blank {
+    display: inline-block;
+    width: 36px;
+    border-bottom: 2px solid var(--ink);
+    margin: 0 2px;
+    text-align: center;
+    vertical-align: bottom;
+  }
+  .qtext-en {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  /* Options */
+  .opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: .75rem;
+  }
+  .opt {
+    padding: 6px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    cursor: pointer;
+    background: var(--paper);
+    color: var(--ink);
+    transition: all .15s;
+  }
+  .opt:hover:not(.disabled) { background: var(--paper-warm); border-color: var(--ink-muted); }
+  .opt.correct { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .opt.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .opt.disabled { pointer-events: none; opacity: .45; }
+  .opt.correct.disabled { opacity: 1; }
+  .opt.wrong.disabled { opacity: 1; }
+
+  /* Drag zone */
+  .drag-instruction {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+  }
+  .drop-zone {
+    min-height: 44px;
+    border: 1.5px dashed var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 6px 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: .6rem;
+    background: var(--paper);
+    transition: border-color .2s;
+  }
+  .drop-zone.drag-over { border-color: var(--amber); background: var(--amber-light); }
+  .drop-zone.correct-zone { border-color: var(--green); border-style: solid; background: var(--green-light); }
+  .drop-zone.wrong-zone { border-color: var(--red); border-style: solid; background: var(--red-light); }
+  .word-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: .75rem;
+    min-height: 36px;
+  }
+  .token {
+    padding: 5px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--paper-card);
+    color: var(--ink);
+    user-select: none;
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .token:hover:not(.used) { background: var(--paper-warm); }
+  .token.used { opacity: .25; pointer-events: none; }
+  .token.placed {
+    cursor: pointer;
+    background: var(--paper-warm);
+  }
+  .token.placed:hover { border-color: var(--red); color: var(--red); }
+
+  /* Fill input */
+  .fill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: .75rem;
+  }
+  .fill-input {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15px;
+    background: var(--paper);
+    color: var(--ink);
+    width: 100px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .fill-input:focus { border-color: var(--ink); }
+  .fill-input.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .fill-input.wrong { border-color: var(--red); background: var(--red-light); color: var(--red); }
+
+  /* Action row */
+  .action-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn-submit {
+    padding: 6px 16px;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius-sm);
+    background: var(--ink);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn-submit:hover { opacity: .8; }
+  .btn-submit:disabled { opacity: .35; cursor: default; }
+  .btn-toggle {
+    padding: 6px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-toggle:hover { background: var(--paper-warm); color: var(--ink); }
+  .verdict {
+    font-size: 13px;
+    font-weight: 500;
+    margin-left: 2px;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .verdict.show { opacity: 1; }
+  .verdict.ok { color: var(--green); }
+  .verdict.fail { color: var(--red); }
+
+  /* Answer box */
+  .answer-box {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s;
+    opacity: 0;
+  }
+  .answer-box.open {
+    max-height: 200px;
+    opacity: 1;
+  }
+  .answer-inner {
+    border-top: 1px solid var(--border);
+    margin-top: .75rem;
+    padding-top: .75rem;
+  }
+  .ans-tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 5px;
+  }
+  .ans-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.6;
+  }
+  .ans-en {
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.55;
+  }
+
+  /* Footer */
+  .page-footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: .05em;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 { font-size: 1.5rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .qtext-cn { font-size: 15px; }
+    .opts { gap: 6px; }
+    .opt { padding: 5px 12px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>识字12 · 语法练习</h1>
+  <p>Grammar Exercises · Interactive Practice</p>
+  <span class="hsk-badge">HSK 3 · 10 Questions</span>
+</header>
+
+<div class="score-wrap">
+  <span class="score-label">Score 得分</span>
+  <div class="score-track"><div class="score-fill" id="sfill"></div></div>
+  <span class="score-num" id="stxt">0 / 10</span>
+</div>
+
+<main class="main">
+
+  <!-- SECTION 1 -->
+  <div class="grammar-section">
+    <div class="section-tag">
+      <div class="num">1</div>
+      <div>
+        <span class="label-cn">疑问代词的非疑问用法</span>
+        <span class="label-en">— Interrogative pronouns as indefinites</span>
+      </div>
+    </div>
+    <div class="grammar-rule">
+      <div class="cn">谁 / 什么 / 哪儿 / 怎么 ＋ 都 / 也</div>
+      <div class="en">Used not to ask questions, but to mean "anyone / anything / anywhere / any way" — usually followed by 都 (positive) or 也 (negative).</div>
+      <div class="pattern">
+        <span class="pill">谁都…</span>
+        <span class="pill">什么也不…</span>
+        <span class="pill">哪儿都…</span>
+        <span class="pill">怎么…都行</span>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="qcard">
+      <div class="qhead">
+        <span class="qnum">Q 01</span>
+        <span class="qtype">拖拽排序 Drag & reorder</span>
+      </div>
+      <div class="qtext-en">Arrange the words: "Every film fan loves this festival."</div>
+      <div class="drag-instruction">Click a word to add it → click a placed word to remove it</div>
+      <div class="drop-zone" id="dz1"></div>
+      <div class="word-bank" id="wb1"></div>
+      <div class="action-row">
+        <button class="btn-submit" onclick="checkDrag(1)">提交 Submit</button>
+        <button class="btn-toggle" onclick="toggleAns('a1',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v1"></span>
+      </div>
+      <div class="answer-box" id="a1">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案</div>
+          <div class="ans-cn">每个电影迷都喜欢这个节日。</div>
+          <div class="ans-en">都 here covers all members of the subject — "every single film fan". 谁都 / 每个…都 are both valid ways to express "everyone".</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="qcard">
+      <div class="qhead">
+        <span class="qnum">Q 02</span>
+        <span class="qtype">拖拽排序 Drag & reorder</span>
+      </div>
+      <div class="qtext-en">Arrange the words: "I don't want to eat anything."</div>
+      <div class="drag-instruction">Click a word to add it → click a placed word to remove it</div>
+      <div class="drop-zone" id="dz2"></div>
+      <div class="word-bank" id="wb2"></div>
+      <div class="action-row">
+        <button class="btn-submit" onclick="checkDrag(2)">提交 Submit</button>
+        <button class="btn-toggle" onclick="toggleAns('a2',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v2"></span>
+      </div>
+      <div class="answer-box" id="a2">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案</div>
+          <div class="ans-cn">我什么也不想吃。</div>
+          <div class="ans-en">什么 + 也 + negative verb = "nothing at all". The negative 也 is used (not 都) because the sentence is negative.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="qcard">
+      <div class="qhead">
+        <span class="qnum">Q 03</span>
+        <span class="qtype">拖拽排序 Drag & reorder</span>
+      </div>
+      <div class="qtext-en">Arrange the words: "She is careful about everything she does."</div>
+      <div class="drag-instruction">Click a word to add it → click a placed word to remove it</div>
+      <div class="drop-zone" id="dz3"></div>
+      <div class="word-bank" id="wb3"></div>
+      <div class="action-row">
+        <button class="btn-submit" onclick="checkDrag(3)">提交 Submit</button>
+        <button class="btn-toggle" onclick="toggleAns('a3',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v3"></span>
+      </div>
+      <div class="answer-box" id="a3">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案</div>
+          <div class="ans-cn">她做什么都很细心。</div>
+          <div class="ans-en">什么 + 都 = "whatever / everything". The positive 都 is used because the sentence is affirmative.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="grammar-section">
+    <div class="section-tag">
+      <div class="num">2</div>
+      <div>
+        <span class="label-cn">结果补语 出、上、到、见</span>
+        <span class="label-en">— Resultative complements</span>
+      </div>
+    </div>
+    <div class="grammar-rule">
+      <div class="cn">动词 ＋ 出 / 上 / 到 / 见</div>
+      <div class="en">出 (identify/perceive) · 上 (achieve/enter) · 到 (reach/obtain) · 见 (sense/encounter) — placed after the main verb to show the result of the action.</div>
+      <div class="pattern">
+        <span class="pill">认出</span>
+        <span class="pill">考上</span>
+        <span class="pill">买到</span>
+        <span class="pill">遇到</span>
+        <span class="pill">听见 / 听到</span>
+        <span class="pill">爱上</span>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qnum">Q 04</span><span class="qtype">选择题 Multiple choice</span></div>
+      <div class="qtext-cn">他一眼就认<span class="blank"></span>了那个美食家。</div>
+      <div class="qtext-en">He recognised the gourmet at a glance.</div>
+      <div class="opts" id="opts4">
+        <button class="opt" onclick="pickOpt(4,this,'出')">出</button>
+        <button class="opt" onclick="pickOpt(4,this,'上')">上</button>
+        <button class="opt" onclick="pickOpt(4,this,'到')">到</button>
+        <button class="opt" onclick="pickOpt(4,this,'见')">见</button>
+      </div>
+      <div class="action-row">
+        <button class="btn-toggle" onclick="toggleAns('a4',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v4"></span>
+      </div>
+      <div class="answer-box" id="a4">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案 — 出</div>
+          <div class="ans-cn">他一眼就认出了那个美食家。</div>
+          <div class="ans-en">认出 = to identify / recognise. 出 signals that something is "brought out" — an identity is revealed or perceived successfully.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qnum">Q 05</span><span class="qtype">选择题 Multiple choice</span></div>
+      <div class="qtext-cn">他考<span class="blank"></span>了高中，现在是高中生了。</div>
+      <div class="qtext-en">He passed the entrance exam and is now a senior high school student.</div>
+      <div class="opts" id="opts5">
+        <button class="opt" onclick="pickOpt(5,this,'出')">出</button>
+        <button class="opt" onclick="pickOpt(5,this,'上')">上</button>
+        <button class="opt" onclick="pickOpt(5,this,'到')">到</button>
+        <button class="opt" onclick="pickOpt(5,this,'见')">见</button>
+      </div>
+      <div class="action-row">
+        <button class="btn-toggle" onclick="toggleAns('a5',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v5"></span>
+      </div>
+      <div class="answer-box" id="a5">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案 — 上</div>
+          <div class="ans-cn">他考上了高中，现在是高中生了。</div>
+          <div class="ans-en">考上 = to pass an exam and gain entry. 上 indicates successful achievement of a goal or entering a new state/place.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qnum">Q 06</span><span class="qtype">选择题 Multiple choice</span></div>
+      <div class="qtext-cn">我在图书馆遇<span class="blank"></span>了一个美学家。</div>
+      <div class="qtext-en">I ran into an aesthetician at the library.</div>
+      <div class="opts" id="opts6">
+        <button class="opt" onclick="pickOpt(6,this,'出')">出</button>
+        <button class="opt" onclick="pickOpt(6,this,'上')">上</button>
+        <button class="opt" onclick="pickOpt(6,this,'到')">到</button>
+        <button class="opt" onclick="pickOpt(6,this,'见')">见</button>
+      </div>
+      <div class="action-row">
+        <button class="btn-toggle" onclick="toggleAns('a6',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v6"></span>
+      </div>
+      <div class="answer-box" id="a6">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案 — 到</div>
+          <div class="ans-cn">我在图书馆遇到了一个美学家。</div>
+          <div class="ans-en">遇到 = to run into / encounter. 到 indicates the action reached its object. 见 also works (遇见) — both are accepted in modern Chinese.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qnum">Q 07</span><span class="qtype">选择题 Multiple choice</span></div>
+      <div class="qtext-cn">他在电台里听<span class="blank"></span>了那个节目。</div>
+      <div class="qtext-en">He heard that programme on the radio station.</div>
+      <div class="opts" id="opts7">
+        <button class="opt" onclick="pickOpt(7,this,'出')">出</button>
+        <button class="opt" onclick="pickOpt(7,this,'上')">上</button>
+        <button class="opt" onclick="pickOpt(7,this,'到')">到</button>
+        <button class="opt" onclick="pickOpt(7,this,'见')">见</button>
+      </div>
+      <div class="action-row">
+        <button class="btn-toggle" onclick="toggleAns('a7',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v7"></span>
+      </div>
+      <div class="answer-box" id="a7">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案 — 到 or 见</div>
+          <div class="ans-cn">他在电台里听到了那个节目。/ 他在电台里听见了那个节目。</div>
+          <div class="ans-en">Both 听到 and 听见 mean "to hear (successfully)". 见 emphasises sensory perception; 到 emphasises that the listening reached its result. Both are correct.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="grammar-section">
+    <div class="section-tag">
+      <div class="num">3</div>
+      <div>
+        <span class="label-cn">能愿动词 能、想、要、可以</span>
+        <span class="label-en">— Modal verbs</span>
+      </div>
+    </div>
+    <div class="grammar-rule">
+      <div class="cn">能 / 想 / 要 / 可以 ＋ 动词（negated with 不）</div>
+      <div class="en">能 (ability/possibility) · 想 (wish/intention) · 要 (want/will) · 可以 (permission/possibility). Always placed before the main verb. Negated by adding 不 before the modal.</div>
+      <div class="pattern">
+        <span class="pill">能够说出</span>
+        <span class="pill">不想吃</span>
+        <span class="pill">要买</span>
+        <span class="pill">可以来</span>
+        <span class="pill">不可以去</span>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qnum">Q 08</span><span class="qtype">填空 Fill in the blank</span></div>
+      <div class="qtext-cn">他目前<span class="blank"></span>当电视节目主持人。</div>
+      <div class="qtext-en">He currently <em>wants to</em> become a TV host. (expressing a personal wish)</div>
+      <div class="fill-row">
+        <input class="fill-input" id="f8" placeholder="能愿动词" autocomplete="off" />
+        <button class="btn-submit" onclick="checkFill(8,['想','要'])">提交 Submit</button>
+        <button class="btn-toggle" onclick="toggleAns('a8',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v8"></span>
+      </div>
+      <div class="answer-box" id="a8">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案 — 想 (or 要)</div>
+          <div class="ans-cn">他目前想当电视节目主持人。</div>
+          <div class="ans-en">想 expresses a personal wish or hope — softer than 要. 要 also works but sounds more decisive/determined. The dialogue uses 想, so that's the primary answer.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qnum">Q 09</span><span class="qtype">填空 Fill in the blank</span></div>
+      <div class="qtext-cn">你<span class="blank"></span>说出她是哪国人吗？</div>
+      <div class="qtext-en">Are you <em>able to</em> identify which country she is from? (asking about ability)</div>
+      <div class="fill-row">
+        <input class="fill-input" id="f9" placeholder="能愿动词" autocomplete="off" />
+        <button class="btn-submit" onclick="checkFill(9,['能','能够'])">提交 Submit</button>
+        <button class="btn-toggle" onclick="toggleAns('a9',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v9"></span>
+      </div>
+      <div class="answer-box" id="a9">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案 — 能 (or 能够)</div>
+          <div class="ans-cn">你能说出她是哪国人吗？</div>
+          <div class="ans-en">能 and 能够 both express capability/ability. The dialogue uses 能够 — both are accepted here. 可以 leans toward permission, so it's a weaker choice.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="qcard">
+      <div class="qhead"><span class="qnum">Q 10</span><span class="qtype">找错题 Spot the error</span></div>
+      <div class="qtext-cn">下面哪句话有语法错误？</div>
+      <div class="qtext-en">Which sentence contains a grammar error?</div>
+      <div class="opts" id="opts10" style="flex-direction:column;">
+        <button class="opt" style="text-align:left;width:100%" onclick="pickOpt(10,this,'A')">A. 她不可以来上课，因为她病了。</button>
+        <button class="opt" style="text-align:left;width:100%" onclick="pickOpt(10,this,'B')">B. 我要不买这本简单的书。</button>
+        <button class="opt" style="text-align:left;width:100%" onclick="pickOpt(10,this,'C')">C. 他能够支持我的想法。</button>
+        <button class="opt" style="text-align:left;width:100%" onclick="pickOpt(10,this,'D')">D. 我不想去电影院。</button>
+      </div>
+      <div class="action-row">
+        <button class="btn-toggle" onclick="toggleAns('a10',this)">查看答案 Show answer</button>
+        <span class="verdict" id="v10"></span>
+      </div>
+      <div class="answer-box" id="a10">
+        <div class="answer-inner">
+          <div class="ans-tag">Answer 答案 — B</div>
+          <div class="ans-cn">正确说法：我不要买这本简单的书。</div>
+          <div class="ans-en">In sentence B, 要不 is wrong word order. The negative 不 must come directly before the modal: 不要. Note: 要不 is a real phrase but means "otherwise / or else" — a completely different meaning.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="page-footer">识字12 · Grammar Practice · HSK 3</footer>
+
+<script>
+var score = 0;
+var answered = {};
+
+function upScore(id, correct) {
+  if (answered[id] !== undefined) return;
+  answered[id] = correct;
+  if (correct) score++;
+  var total = 10;
+  document.getElementById('sfill').style.width = (score / total * 100) + '%';
+  document.getElementById('stxt').textContent = score + ' / ' + total;
+}
+
+function toggleAns(id, btn) {
+  var box = document.getElementById(id);
+  box.classList.toggle('open');
+  if (btn) btn.textContent = box.classList.contains('open') ? '隐藏答案 Hide' : '查看答案 Show answer';
+}
+
+function setVerdict(id, correct) {
+  var v = document.getElementById('v' + id);
+  v.textContent = correct ? '✓ Correct!' : '✗ Try again';
+  v.className = 'verdict show ' + (correct ? 'ok' : 'fail');
+}
+
+/* ---- DRAG (click-based) ---- */
+var drags = {
+  1: { words: ['每个','电影迷','都','喜欢','这个','节日','。'], answer: '每个 电影迷 都 喜欢 这个 节日 。' },
+  2: { words: ['我','什么','也','不想','吃','。'], answer: '我 什么 也 不想 吃 。' },
+  3: { words: ['她','做','什么','都','很','细心','。'], answer: '她 做 什么 都 很 细心 。' }
+};
+
+function initDrag(n) {
+  var d = drags[n];
+  var shuffled = d.words.slice().sort(function() { return Math.random() - 0.5; });
+  var wb = document.getElementById('wb' + n);
+  shuffled.forEach(function(w) {
+    var t = document.createElement('span');
+    t.className = 'token';
+    t.textContent = w;
+    t.dataset.word = w;
+    t.addEventListener('click', function() { addToken(n, this); });
+    wb.appendChild(t);
+  });
+}
+
+function addToken(n, tok) {
+  if (tok.classList.contains('used')) return;
+  tok.classList.add('used');
+  var dz = document.getElementById('dz' + n);
+  var placed = document.createElement('span');
+  placed.className = 'token placed';
+  placed.textContent = tok.dataset.word;
+  placed.dataset.word = tok.dataset.word;
+  placed.dataset.src = tok.dataset.word;
+  placed.addEventListener('click', function() { removeToken(n, this, tok); });
+  dz.appendChild(placed);
+}
+
+function removeToken(n, placed, original) {
+  placed.remove();
+  original.classList.remove('used');
+}
+
+function checkDrag(n) {
+  var dz = document.getElementById('dz' + n);
+  var placed = dz.querySelectorAll('.token');
+  var attempt = Array.from(placed).map(function(t) { return t.dataset.word; }).join(' ');
+  var correct = attempt === drags[n].answer;
+  dz.classList.remove('correct-zone', 'wrong-zone');
+  dz.classList.add(correct ? 'correct-zone' : 'wrong-zone');
+  setVerdict(n, correct);
+  upScore(n, correct);
+}
+
+/* ---- MULTIPLE CHOICE ---- */
+var optAnswers = { 4: '出', 5: '上', 6: '到', 7: '到', 10: 'B' };
+var optAccept = { 6: ['到', '见'], 7: ['到', '见'] };
+
+function pickOpt(n, btn, val) {
+  if (btn.classList.contains('disabled')) return;
+  var correct;
+  if (optAccept[n]) {
+    correct = optAccept[n].indexOf(val) !== -1;
+  } else {
+    correct = optAnswers[n] === val;
+  }
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  var allOpts = document.getElementById('opts' + n).querySelectorAll('.opt');
+  allOpts.forEach(function(o) { o.classList.add('disabled'); });
+  if (!correct) {
+    allOpts.forEach(function(o) {
+      var isCorrect;
+      if (optAccept[n]) isCorrect = optAccept[n].indexOf(o.textContent.trim()) !== -1;
+      else isCorrect = o.textContent.trim() === optAnswers[n] || o.textContent.trim().startsWith(optAnswers[n] + '.');
+      if (isCorrect) o.classList.add('correct');
+    });
+  }
+  setVerdict(n, correct);
+  upScore(n, correct);
+}
+
+/* ---- FILL ---- */
+function checkFill(n, acceptList) {
+  var inp = document.getElementById('f' + n);
+  var val = inp.value.trim();
+  var correct = acceptList.indexOf(val) !== -1;
+  inp.classList.remove('correct', 'wrong');
+  inp.classList.add(correct ? 'correct' : 'wrong');
+  inp.disabled = true;
+  setVerdict(n, correct);
+  upScore(n, correct);
+}
+
+/* init drag zones */
+[1, 2, 3].forEach(initDrag);
+</script>
+</body>
+</html>

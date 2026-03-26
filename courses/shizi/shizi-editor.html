@@ -484,6 +484,23 @@
             gap: var(--spacing-sm);
         }
 
+        /* 語法類型標籤（規則 / 例句） */
+        .grammar-subtype-badge {
+            flex-shrink: 0;
+            padding: 2px 8px;
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+        }
+        .grammar-subtype-badge.grammar-subtype-rule {
+            background: rgba(8, 145, 178, 0.15);
+            color: var(--primary-dark);
+        }
+        .grammar-subtype-badge.grammar-subtype-example {
+            background: rgba(34, 197, 94, 0.2);
+            color: #15803d;
+        }
+
         .btn-edit, .btn-delete {
             padding: var(--spacing-xs) var(--spacing-md);
             border: none;
@@ -868,6 +885,7 @@
             <div class="edit-panel-header">
                 <div class="edit-panel-title" id="editPanelTitle">請選擇課次和類型</div>
                 <div class="edit-panel-header-right">
+                    <button class="btn btn-secondary" id="btnBatchExamples" style="display: none;">📋 批次貼上例句</button>
                     <button class="btn-add" id="btnAdd" style="display: none;">+ 新增</button>
                 </div>
             </div>
@@ -932,6 +950,7 @@
         const editPanelContent = document.getElementById('editPanelContent');
         const editPanelTitle = document.getElementById('editPanelTitle');
         const btnAdd = document.getElementById('btnAdd');
+        const btnBatchExamples = document.getElementById('btnBatchExamples');
         const btnSave = document.getElementById('btnSave');
         const btnToggleEdit = document.getElementById('btnToggleEdit');
         const previewPanelContent = document.getElementById('previewPanelContent');
@@ -949,6 +968,7 @@
             });
         });
         btnAdd.addEventListener('click', handleAdd);
+        if (btnBatchExamples) btnBatchExamples.addEventListener('click', showBatchExamplesModal);
         btnSave.addEventListener('click', handleSave);
         btnToggleEdit.addEventListener('click', toggleEditPanel);
 
@@ -1114,6 +1134,7 @@
                 emptyEditState.style.display = 'block';
                 editPanelTitle.textContent = '請選擇課次和類型';
                 btnAdd.style.display = 'none';
+                if (btnBatchExamples) btnBatchExamples.style.display = 'none';
                 return;
             }
 
@@ -1132,6 +1153,7 @@
             // reading_text 是單一文字區域，不需要卡片列表和新增按鈕
             if (currentType === 'reading_text') {
                 btnAdd.style.display = 'none';
+                if (btnBatchExamples) btnBatchExamples.style.display = 'none';
                 editPanelTitle.textContent = typeNames[currentType];
                 const content = currentData.length > 0 ? currentData[0].content : '';
                 editPanelContent.innerHTML = `
@@ -1150,6 +1172,7 @@
             }
             
             btnAdd.style.display = 'block';
+            if (btnBatchExamples) btnBatchExamples.style.display = (currentType === 'phrases') ? 'inline-block' : 'none';
             
             editPanelTitle.textContent = `${typeNames[currentType]} (${currentData.length} 項)`;
 
@@ -1168,12 +1191,15 @@
 
         function createFormItemCard(item, index) {
             const preview = getItemPreview(item, currentType);
+            const grammarSubtype = (currentType === 'grammar') ? (item.subtype || 'rule') : '';
+            const grammarBadge = grammarSubtype ? `<span class="grammar-subtype-badge grammar-subtype-${grammarSubtype}">${grammarSubtype === 'example' ? '例句' : '規則'}</span>` : '';
             return `
                 <div class="form-item-card expanded" data-index="${index}">
                     <div class="drag-bar"></div>
                     <div class="form-item-content">
                         <div class="form-item-header">
                             <div class="form-item-index">${index + 1}</div>
+                            ${grammarBadge}
                             <div class="form-item-preview">${preview}</div>
                             <div class="form-item-actions">
                                 <button class="btn-edit" onclick="handleEdit(${index})">編輯</button>
@@ -1272,17 +1298,28 @@
                             <input type="text" id="field-notes-${index}" value="${item.notes || ''}" placeholder="对话一" onchange="updateItemField(${index}, 'notes', this.value)">
                         </div>
                     `;
-                case 'grammar':
-                    return `
+                case 'grammar': {
+                    const isExample = item.subtype === 'example';
+                    const ruleValue = (item.chinese || '') + (item.chinese || item.english ? '|' : '') + (item.english || '');
+                    if (isExample) {
+                        return `
                         <div class="form-field required">
-                            <label>中文規則</label>
+                            <label>例句（中文）</label>
                             <input type="text" id="field-chinese-${index}" value="${item.chinese || ''}" onchange="updateItemField(${index}, 'chinese', this.value)">
                         </div>
-                        <div class="form-field required">
-                            <label>英文說明</label>
+                        <div class="form-field">
+                            <label>例句英文翻譯（可選）</label>
                             <textarea id="field-english-${index}" onchange="updateItemField(${index}, 'english', this.value)">${item.english || ''}</textarea>
                         </div>
                     `;
+                    }
+                    return `
+                        <div class="form-field required">
+                            <label>規則</label>
+                            <textarea id="field-grammar-content-${index}" placeholder="中文|Eng" onchange="updateGrammarRuleField(${index}, this.value)" style="min-height: 80px;">${ruleValue}</textarea>
+                        </div>
+                    `;
+                }
                 case 'exercises':
                     const exerciseType = item.subtype || 'fill_blank';
                     return `
@@ -1360,6 +1397,17 @@
             }
             
             // 更新預覽
+            renderEditPanel();
+            renderPreviewPanel();
+            debounceSave();
+        }
+
+        function updateGrammarRuleField(index, value) {
+            if (currentType !== 'grammar' || index < 0 || index >= currentData.length) return;
+            const parts = (value || '').split('|').map(s => s.trim());
+            currentData[index].chinese = parts[0] || '';
+            currentData[index].english = parts[1] || '';
+            if (!currentData[index].subtype) currentData[index].subtype = 'rule';
             renderEditPanel();
             renderPreviewPanel();
             debounceSave();
@@ -1613,6 +1661,7 @@
             // 填充表單字段
             const formFields = modalContent.querySelector('#modalFormFields');
             formFields.innerHTML = createModalFormFields(item);
+            if (currentType === 'grammar') updateGrammarModalLabels();
             
             // 點擊背景關閉
             modal.addEventListener('click', (e) => {
@@ -1718,17 +1767,35 @@
                             <input type="text" id="modal-notes" value="${item.notes || ''}" placeholder="对话一">
                         </div>
                     `;
-                case 'grammar':
+                case 'grammar': {
+                    const gSubtype = item.subtype || 'rule';
+                    const ruleContent = (item.chinese || '') + (item.chinese || item.english ? '|' : '') + (item.english || '');
                     return `
                         <div class="form-field required">
-                            <label>中文規則</label>
-                            <input type="text" id="modal-chinese" value="${item.chinese || ''}">
+                            <label>類型</label>
+                            <select id="modal-grammar-subtype" onchange="updateGrammarModalLabels()">
+                                <option value="rule" ${gSubtype === 'rule' ? 'selected' : ''}>規則</option>
+                                <option value="example" ${gSubtype === 'example' ? 'selected' : ''}>例句</option>
+                            </select>
                         </div>
-                        <div class="form-field required">
-                            <label>英文說明</label>
-                            <textarea id="modal-english" style="min-height: 100px;">${item.english || ''}</textarea>
+                        <div id="modal-grammar-rule-wrap" style="display: ${gSubtype === 'rule' ? 'block' : 'none'};">
+                            <div class="form-field required">
+                                <label>規則</label>
+                                <textarea id="modal-grammar-content" placeholder="中文|Eng" style="min-height: 100px;">${ruleContent}</textarea>
+                            </div>
+                        </div>
+                        <div id="modal-grammar-example-wrap" style="display: ${gSubtype === 'example' ? 'block' : 'none'};">
+                            <div class="form-field required">
+                                <label>例句（中文）</label>
+                                <input type="text" id="modal-chinese" value="${item.chinese || ''}" placeholder="例：我肚子不舒服。">
+                            </div>
+                            <div class="form-field">
+                                <label>例句英文翻譯（可選）</label>
+                                <textarea id="modal-english" style="min-height: 100px;" placeholder="例：My stomach is uncomfortable.">${item.english || ''}</textarea>
+                            </div>
                         </div>
                     `;
+                }
                 case 'exercises':
                     const exerciseType = item.subtype || 'fill_blank';
                     return `
@@ -1761,6 +1828,26 @@
                     `;
                 default:
                     return '<div>未知類型</div>';
+            }
+        }
+
+        function updateGrammarModalLabels() {
+            const sel = document.getElementById('modal-grammar-subtype');
+            const ruleWrap = document.getElementById('modal-grammar-rule-wrap');
+            const exampleWrap = document.getElementById('modal-grammar-example-wrap');
+            const contentField = document.getElementById('modal-grammar-content');
+            const chineseField = document.getElementById('modal-chinese');
+            const englishField = document.getElementById('modal-english');
+            if (!sel) return;
+            const isExample = sel.value === 'example';
+            if (ruleWrap) ruleWrap.style.display = isExample ? 'none' : 'block';
+            if (exampleWrap) exampleWrap.style.display = isExample ? 'block' : 'none';
+            if (isExample && contentField && chineseField && englishField) {
+                const parts = (contentField.value || '').split('|').map(s => s.trim());
+                chineseField.value = parts[0] || '';
+                englishField.value = parts[1] || '';
+            } else if (!isExample && contentField && chineseField && englishField) {
+                contentField.value = (chineseField.value || '') + (chineseField.value || englishField.value ? '|' : '') + (englishField.value || '');
             }
         }
 
@@ -1818,17 +1905,34 @@
                         return;
                     }
                     break;
-                case 'grammar':
-                    newItem = {
-                        chinese: document.getElementById('modal-chinese').value.trim(),
-                        english: document.getElementById('modal-english').value.trim(),
-                        subtype: 'rule'
-                    };
-                    if (!newItem.chinese || !newItem.english) {
-                        alert('請填寫所有必填字段');
-                        return;
+                case 'grammar': {
+                    const grammarSubtype = document.getElementById('modal-grammar-subtype').value;
+                    if (grammarSubtype === 'rule') {
+                        const contentVal = (document.getElementById('modal-grammar-content') || {}).value || '';
+                        const trimmed = contentVal.trim();
+                        const parts = trimmed.split('|').map(s => s.trim());
+                        newItem = {
+                            chinese: parts[0] || '',
+                            english: parts[1] || '',
+                            subtype: 'rule'
+                        };
+                        if (!trimmed) {
+                            alert('請填寫規則（格式：中文|Eng）');
+                            return;
+                        }
+                    } else {
+                        newItem = {
+                            chinese: (document.getElementById('modal-chinese') || {}).value.trim(),
+                            english: (document.getElementById('modal-english') || {}).value.trim(),
+                            subtype: 'example'
+                        };
+                        if (!newItem.chinese) {
+                            alert('請填寫例句（中文）');
+                            return;
+                        }
                     }
                     break;
+                }
                 case 'exercises':
                     newItem = {
                         content: document.getElementById('modal-content').value.trim(),
@@ -1872,6 +1976,102 @@
                 window.currentModalItem = null;
             }
             editingIndex = -1;
+        }
+
+        // ==================== 批次貼上例句 ====================
+        function showBatchExamplesModal() {
+            if (currentType !== 'phrases' || !currentData.length) {
+                alert('請先選擇詞組並確保有詞組數據');
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.className = 'edit-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 3000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: var(--radius-lg);
+                padding: var(--spacing-xl);
+                max-width: 640px;
+                width: 90%;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: var(--shadow-xl);
+            `;
+            modalContent.innerHTML = `
+                <h2 style="margin-bottom: var(--spacing-md);">📋 批次貼上例句</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: var(--spacing-md); line-height: 1.5;">
+                    每行一筆，格式：<strong>詞組|例句（中文）|例句英文|例句西文</strong>。以詞組匹配本課詞組，只更新例句欄位。例句西文可留空。
+                </p>
+                <div class="form-field">
+                    <label>貼上內容</label>
+                    <textarea id="batchExamplesInput" style="min-height: 220px; width: 100%; font-family: inherit; padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--radius-md);" placeholder="国家|中国是一个很大的国家。|China is a very big country.|España es un país muy grande.&#10;作家|他是一位作家。|He is a writer.|"></textarea>
+                </div>
+                <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                    <button class="btn btn-primary" onclick="applyBatchExamples(this)">套用</button>
+                    <button class="btn btn-secondary" onclick="this.closest('.edit-modal').remove()">取消</button>
+                </div>
+            `;
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+            modalContent.querySelector('#batchExamplesInput').focus();
+        }
+
+        function applyBatchExamples(btn) {
+            const modal = btn.closest('.edit-modal');
+            const textarea = document.getElementById('batchExamplesInput');
+            if (!textarea || !modal) return;
+            const text = (textarea.value || '').trim();
+            if (!text) {
+                alert('請貼上至少一筆例句內容');
+                return;
+            }
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            let applied = 0;
+            let skipped = 0;
+            for (const line of lines) {
+                const parts = line.split('|').map(p => p.trim());
+                const phraseKey = (parts[0] || '').trim();
+                if (!phraseKey) continue;
+                const notes = parts[1] || '';
+                const example_en = parts[2] || '';
+                const example_es = parts[3] || '';
+                let found = false;
+                for (let i = 0; i < currentData.length; i++) {
+                    const item = currentData[i];
+                    const content = (item.content || '').trim();
+                    const firstPart = content.split('|')[0].trim();
+                    if (firstPart === phraseKey) {
+                        currentData[i].notes = notes;
+                        currentData[i].example_en = example_en;
+                        currentData[i].example_es = example_es;
+                        if (!item.subtype) currentData[i].subtype = 'phrase';
+                        applied++;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) skipped++;
+            }
+            modal.remove();
+            renderEditPanel();
+            renderPreviewPanel();
+            debounceSave();
+            alert(`已套用 ${applied} 筆例句${skipped > 0 ? '，' + skipped + ' 筆未匹配到本課詞組' : ''}。`);
         }
 
         // ==================== 渲染預覽面板 ====================
