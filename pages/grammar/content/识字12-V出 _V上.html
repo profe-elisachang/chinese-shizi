@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>HSK3 语法精讲：V出 & V上 | 互动练习</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(145deg, #f5f7fc 0%, #eef2f6 100%);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            color: #1e2a3e;
+        }
+
+        /* 主容器 */
+        .app-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.75);
+            border-radius: 2rem;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* 标签栏 */
+        .tabs {
+            display: flex;
+            background: #ffffffcc;
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 1.5rem;
+            gap: 0.25rem;
+        }
+
+        .tab-btn {
+            flex: 0 1 auto;
+            padding: 1rem 2rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #4a5b6e;
+            border-radius: 1.5rem 1.5rem 0 0;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn i {
+            font-style: normal;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .tab-btn.active {
+            color: #1e6f3f;
+            background: white;
+            box-shadow: 0 -2px 0 #1e6f3f, 0 4px 8px rgba(0,0,0,0.02);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #e9edf2;
+            color: #2c3e50;
+        }
+
+        /* 内容面板 */
+        .panel {
+            display: none;
+            background: white;
+            padding: 2rem 2rem 2.5rem;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .panel.active-panel {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* 语法卡片布局 */
+        .grammar-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .grammar-card {
+            background: #fefefe;
+            border-radius: 1.5rem;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f8;
+            overflow: hidden;
+            transition: transform 0.1s;
+        }
+
+        .card-header {
+            background: #f8fafd;
+            padding: 1rem 1.8rem;
+            border-bottom: 2px solid #e2edf2;
+        }
+
+        .card-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1f4f3a;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-header .en-sub {
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: #5b6e8c;
+            margin-top: 6px;
+        }
+
+        .card-body {
+            padding: 1.2rem 1.8rem 1.8rem;
+        }
+
+        .meaning-box {
+            background: #eef6f0;
+            padding: 0.8rem 1.2rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            color: #1c4e3a;
+            font-weight: 500;
+            border-left: 5px solid #2b8c5e;
+        }
+
+        .example-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .example-table th {
+            text-align: left;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            font-weight: 600;
+            color: #2c5a3b;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .example-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9edf2;
+            vertical-align: top;
+        }
+
+        .ch-ex {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #1f2e3a;
+        }
+
+        .en-ex {
+            font-size: 0.85rem;
+            color: #6f7f97;
+            margin-top: 4px;
+        }
+
+        .note {
+            background: #fef7e0;
+            padding: 0.8rem 1.2rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: #8e6b1f;
+        }
+
+        /* 练习题区域 */
+        .quiz-section {
+            margin-top: 1rem;
+            background: #fafcff;
+            border-radius: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .quiz-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #cbdde6;
+            display: inline-block;
+        }
+
+        .question-item {
+            background: white;
+            border: 1px solid #e2edf2;
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.2rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1f2f3c;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 0.5rem 0 0.8rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f3f6fb;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid transparent;
+        }
+
+        .option:hover {
+            background: #e6edf6;
+        }
+
+        input[type="radio"] {
+            accent-color: #2b8c5e;
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .feedback {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .feedback.correct {
+            background: #dff0e4;
+            color: #146b3a;
+        }
+
+        .feedback.wrong {
+            background: #ffe6e5;
+            color: #b13a3a;
+        }
+
+        .submit-btn {
+            background: #1f6e48;
+            border: none;
+            padding: 10px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 2.5rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 1rem;
+            margin-right: 1rem;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .submit-btn:hover {
+            background: #0f5a3a;
+            transform: scale(0.97);
+        }
+
+        .reset-btn {
+            background: #5f6c80;
+        }
+        .reset-btn:hover {
+            background: #3e4a5e;
+        }
+
+        .score-area {
+            font-weight: bold;
+            margin: 1rem 0 0.5rem;
+            font-size: 1.1rem;
+            padding: 8px 12px;
+            background: #eef2fa;
+            border-radius: 2rem;
+            display: inline-block;
+        }
+
+        hr {
+            margin: 20px 0;
+            border-color: #e2edf2;
+        }
+
+        footer {
+            font-size: 0.75rem;
+            text-align: center;
+            color: #7f8c9a;
+            padding: 1rem 0 0.5rem;
+        }
+
+        @media (max-width: 680px) {
+            body { padding: 1rem; }
+            .tab-btn { padding: 0.7rem 1rem; font-size: 1rem; }
+            .panel { padding: 1.2rem; }
+            .card-header h2 { font-size: 1.3rem; }
+            .option { padding: 0.2rem 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tab1">🔍 V出 · 辨出结果</button>
+        <button class="tab-btn" data-tab="tab2">⬆️ V上 · 接触目标</button>
+    </div>
+
+    <!-- V出 面板 -->
+    <div id="tab1" class="panel active-panel">
+        <div class="grammar-grid">
+            <div class="grammar-card">
+                <div class="card-header">
+                    <h2>V出 <span style="font-size:1rem;">🔎 结果补语</span></h2>
+                    <div class="en-sub">Verb + 出 (chū) : to successfully obtain information / result through the action</div>
+                </div>
+                <div class="card-body">
+                    <div class="meaning-box">
+                        💡 核心意思：通过动作“得到/分辨出”一个明确的结果。<br>
+                        🔹 <strong>“出”</strong> 表示动作有了成果 —— 就像从模糊中“提取”出答案或信息。<br>
+                        🔹 常用于感官(看/听/闻) 和 思维(猜/问/说) 等动词后。
+                    </div>
+                    <table class="example-table">
+                        <thead>
+                            <tr><th>结构</th><th>英文解释</th><th>例句</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>看出</strong></td><td>to see / tell (by looking)</td><td class="ch-ex">我<strong>看出</strong>他不开心。<div class="en-ex">I can tell he is unhappy.</div></td></tr>
+                            <tr><td><strong>听出</strong></td><td>to recognize / hear clearly</td><td class="ch-ex">你<strong>听出</strong>这首歌的名字了吗？<div class="en-ex">Did you figure out the name of this song?</div></td></tr>
+                            <tr><td><strong>闻出</strong></td><td>to smell / detect by smell</td><td class="ch-ex">我<strong>闻出</strong>了咖啡的味道。<div class="en-ex">I smelled the coffee.</div></td></tr>
+                            <tr><td><strong>认出</strong></td><td>to recognize (someone)</td><td class="ch-ex">十年后我<strong>认出</strong>了她。<div class="en-ex">I recognized her after ten years.</div></td></tr>
+                            <tr><td><strong>猜出</strong></td><td>to guess correctly</td><td class="ch-ex">他<strong>猜出</strong>了谜语答案。<div class="en-ex">He guessed the riddle correctly.</div></td></tr>
+                            <tr><td><strong>问出</strong></td><td>to find out (by asking)</td><td class="ch-ex">警察<strong>问出</strong>了真相。<div class="en-ex">The police found out the truth.</div></td></tr>
+                            <tr><td><strong>说出</strong></td><td>to speak out / utter</td><td class="ch-ex">他终于<strong>说出</strong>了答案。<div class="en-ex">He finally said the answer.</div></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="note">
+                        📌 注意：<strong>看 ≠ 看出</strong>；<strong>听 ≠ 听出</strong>。“看出”强调结果：成功辨认/了解。<br>
+                        🧪 否定式：没 + V + 出 (例：我没听出区别) &nbsp;&nbsp; 可能式：V + 得/不 + 出 (看得出 / 看不出)
+                    </div>
+                </div>
+            </div>
+            <!-- 练习题区域 V出 -->
+            <div class="quiz-section">
+                <div class="quiz-title">✍️ 练一练 · V出 (HSK3)</div>
+                <div id="quiz-vchu"></div>
+                <div class="score-area" id="scoreVchuDisplay">✨ 未答题</div>
+                <button class="submit-btn" id="submitVchu">✅ 检查答案</button>
+                <button class="submit-btn reset-btn" id="resetVchu">⟳ 重置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- V上 面板 -->
+    <div id="tab2" class="panel">
+        <div class="grammar-grid">
+            <div class="grammar-card">
+                <div class="card-header">
+                    <h2>V上 <span style="font-size:1rem;">🎯 接触 / 达成 / 开始</span></h2>
+                    <div class="en-sub">Verb + 上 (shàng) : to successfully make contact, reach a goal, or start an action</div>
+                </div>
+                <div class="card-body">
+                    <div class="meaning-box">
+                        💡 核心意象：动作“接触并附着”到目标上 → 引申为达成目标、进入状态或开始持续。<br>
+                        💡 Core image: The action "touches and attaches" to the target → extended to mean achieving a goal, entering a state, or starting a process.<br>
+                        🔹 四大类（Four main types）：<br>
+                        ① 附着 (贴上/穿上) — attach (stick on/put on)<br>
+                        ② 达成目标 (考上/爱上/当上) — achieve a goal (get into/fall in love with/become)<br>
+                        ③ 开始持续 (说上/吃上) — begin and continue (start talking/start eating)<br>
+                        ④ 添加 (加上) — add (add on)
+                    </div>
+                    <table class="example-table">
+                        <thead><tr><th>分类</th><th>结构·例句</th><th>英文解释</th></tr></thead>
+                        <tbody>
+                            <tr><td>📎 附着 attach </td><td class="ch-ex">贴tiē上邮票yóupiào / <strong>穿上</strong>外套tào / <strong>关上</strong>窗户chuānghù</td><td>stick on / put on / close</td></tr>
+                            <tr><td>🏆 达成目标 achieve a goal</td><td class="ch-ex"><strong>考上</strong>高中 / <strong>爱上</strong>她 / <strong>当上</strong>经理</td><td>get into / fall in love with / become</td></tr>
+                            <tr><td>▶️ 开始并持续 begin and continue</td><td class="ch-ex"><strong>说上</strong>话 / <strong>用上</strong>新手机 / <strong>住zhù上</strong>新房fáng子</td><td>start talking / start using / move into</td></tr>
+                            <tr><td>➕ 添加 add </td><td class="ch-ex"><strong>加jiā上</strong>名字 / <strong>写上</strong>地址</td><td>add on / fill in</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="note">
+                        📌 对比：<strong>考上大学</strong> (成功录取) vs <strong>考到600分</strong> (达到分数点) <br>
+                        ⚠️ “爱上”是瞬间动词，可说“爱上她三年了”(表示从爱上至今三年)。<br>
+                        🧪 否定：没+ V + 上 (没考上) &nbsp; 可能式：V + 得/不 + 上 (考得上/考不上)
+                    </div>
+                    <div class="note">
+                        💡 <strong>ENGLISH NOTES</strong><br><br>
+                        
+                        <strong>📌 Compare: 考上 vs 考到</strong><br>
+                        • <strong>考上</strong> = "get INTO" (a school, a platform)<br>
+                        &nbsp;&nbsp; → 她<strong>考上</strong>了大学。 = She <strong>got into</strong> college.<br>
+                        • <strong>考到</strong> = "reach UP TO" (a number, a point)<br>
+                        &nbsp;&nbsp; → 她<strong>考到</strong>了600分。 = She <strong>scored up to</strong> 600 points.<br>
+                        💬 <em>Think: 上 = onto a surface/platform &nbsp;|&nbsp; 到 = up to a point/limit</em><br><br>
+                        
+                        <strong>⚠️ 爱上 (fall in love) is a "punctual verb" — it happens in a MOMENT.</strong><br>
+                        • You CANNOT say: ❌ 我爱上她三年。<br>
+                        • You MUST say: ✅ 我爱上她<strong>三年了</strong>。<br>
+                        &nbsp;&nbsp; → <em>Meaning: "It has been three years <strong>since</strong> I fell in love with her."</em><br>
+                        • Structure: <strong>V上 + Object + 了 + Duration</strong> = "It has been [time] since the event happened."<br>
+                        &nbsp;&nbsp; Examples: 他考上大学两年了。 / 她当上经理一年了。<br><br>
+                        
+                        <strong>🧪 Negative & Potential Forms</strong><br>
+                        • <strong>Negative:</strong> 没 + V + 上 = didn't successfully V<br>
+                        &nbsp;&nbsp; → 他<strong>没考上</strong>大学。 = He <strong>didn't get into</strong> college.<br>
+                        • <strong>Potential (ability):</strong> V + 得/不 + 上 = can / cannot successfully V<br>
+                        &nbsp;&nbsp; → 他<strong>考得上</strong>大学。 = He <strong>can get into</strong> college.<br>
+                        &nbsp;&nbsp; → 他<strong>考不上</strong>大学。 = He <strong>cannot get into</strong> college.<br>
+                    </div>
+
+                </div>
+            </div>
+            <div class="quiz-section">
+                <div class="quiz-title">✍️ 练一练 · V上 (HSK3)</div>
+                <div id="quiz-vshang"></div>
+                <div class="score-area" id="scoreVshangDisplay">📖 未答题</div>
+                <button class="submit-btn" id="submitVshang">✅ 检查答案</button>
+                <button class="submit-btn reset-btn" id="resetVshang">⟳ 重置</button>
+            </div>
+        </div>
+    </div>
+    <footer>🎯 HSK3 语法练习 · 结果补语 “V出 / V上” ｜ 选择正确的词语填空</footer>
+</div>
+
+<script>
+    // ---------------------  V出 题库 -------------------------
+    const vchuQuestions = [
+        {
+            text: "1. 这张相片是十年前拍的，我差点没______她。",
+            options: ["看出", "认出", "听出"],
+            correct: "认出",
+            explanation: "认出 = recognize a person"
+        },
+        {
+            text: "2. 这个菜里有很多调料tiáoliào(seasonings)，你能______有酱油jiàngyóu(soy sauce)吗？",
+            options: ["尝cháng出", "闻出", "问出"],
+            correct: "尝出",
+            explanation: "尝出 = taste (by eating)"
+        },
+        {
+            text: "3. 老师的问题太难nán了，没有人能______答案dá àn。",
+            options: ["说出", "听出", "看上"],
+            correct: "说出",
+            explanation: "说出答案 = speak out the answer"
+        },
+        {
+            text: "4. 虽然suīrán她没告诉gàosù我，但是我已经______她喜欢谁了。",
+            options: ["问出", "看出", "猜出(猜cāi-guess"],
+            correct: "猜出",
+            explanation: "猜出 = guess correctly"
+        },
+        {
+            text: "5. 我只听了一遍biàn，就______这首歌是他唱chàng的。",
+            options: ["听出", "看出", "认出"],
+            correct: "听出",
+            explanation: "听出 = recognize by listening"
+        },
+        {
+            text: "6. 我______了花香，好像是从花园(huāyuán-garden)来的。",
+            options: ["闻出", "尝出(cháng:taste)", "看出"],
+            correct: "闻出",
+            explanation: "闻出 = smell"
+        }
+    ];
+
+    // ---------------------  V上 题库 -------------------------
+    const vshangQuestions = [
+        {
+            text: "1. 她努力(nǔlì-work hard)学习了一年，终于(zhōngyú-finally)______了北京大学。",
+            options: ["考上", "看上", "爱上"],
+            correct: "考上",
+            explanation: "考上 = pass exam and get into"
+        },
+        {
+            text: "2. 出门前别忘了______窗户chuānghù-window。",
+            options: ["关上(guān-close)", "闭上(bì-close|body parts that naturally open and close like eyes, ears, etc.)", "锁上(suǒ-lock)"],
+            correct: "关上",
+            explanation: "关上窗户 = close the window"
+        },
+        {
+            text: "3. 他们一见钟情(fell in love at first sight)，很快kuài______了对方。",
+ㄋ            options: ["爱上", "看上", "喜欢上"],
+            correct: "爱上",
+            explanation: "爱上 = fall in love with"
+        },
+        {
+            text: "4. 请把bǎ这张名片______那个盒子(hézi-box)上。",
+            options: ["贴上(tiē-stick onto)", "粘上(nián-glue onto)", "放上(fàng-put onto)"],
+            correct: "贴上		",
+            explanation: "贴上 = stick onto"
+        },
+        {
+            text: "5. 昨天我们终于(zhōngyú-finally)______了新房子fángzǐ(new house)，特别开心。",
+            options: ["住上(zhù-move in)", "搬上(bān-move)", "看上(kàn-look at)"],
+            correct: "住上",
+            explanation: "住上 = move in & start living"
+        },
+        {
+            text: "6. 别着急(zháojí-worried/hurried)，等(děng)大家都______饭了再走。",
+            options: ["吃上", "做上", "买上"],
+            correct: "吃上",
+            explanation: "吃上 = start eating (开始吃)"
+        }
+    ];
+
+    // 存储用户选择的状态
+    let vchuAnswers = new Array(vchuQuestions.length).fill(null);
+    let vshangAnswers = new Array(vshangQuestions.length).fill(null);
+    let vchuSubmitted = false;
+    let vshangSubmitted = false;
+
+    // 渲染V出题目
+    function renderVchuQuiz() {
+        const container = document.getElementById('quiz-vchu');
+        if (!container) return;
+        let html = '';
+        vchuQuestions.forEach((q, idx) => {
+            const selectedVal = vchuAnswers[idx];
+            html += `
+                <div class="question-item" data-qidx="${idx}">
+                    <div class="question-text">${q.text}</div>
+                    <div class="options">
+            `;
+            q.options.forEach(opt => {
+                const checkedAttr = (selectedVal === opt) ? 'checked' : '';
+                html += `
+                    <label class="option">
+                        <input type="radio" name="vchu_q${idx}" value="${opt}" ${checkedAttr} data-idx="${idx}" data-val="${opt}">
+                        <span>${opt}</span>
+                    </label>
+                `;
+            });
+            html += `</div><div class="feedback-area" id="vchu_fb_${idx}"></div></div>`;
+        });
+        container.innerHTML = html;
+
+        // 绑定radio事件 (实时更新存储)
+        document.querySelectorAll('#quiz-vchu input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const idx = parseInt(e.target.getAttribute('data-idx'));
+                const val = e.target.getAttribute('data-val');
+                if (!isNaN(idx)) {
+                    vchuAnswers[idx] = val;
+                    // 一旦修改，清除提交标记并隐藏反馈（可选）
+                    if (vchuSubmitted) {
+                        // 如果已经提交过，重新提交时刷新反馈，这里先重置提交状态让评分重新计算
+                        vchuSubmitted = false;
+                        document.getElementById('scoreVchuDisplay').innerHTML = '📝 已修改答案，点击“检查答案”重新评分';
+                        // 清除所有反馈消息
+                        for (let i = 0; i < vchuQuestions.length; i++) {
+                            const fbDiv = document.getElementById(`vchu_fb_${i}`);
+                            if (fbDiv) fbDiv.innerHTML = '';
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    function renderVshangQuiz() {
+        const container = document.getElementById('quiz-vshang');
+        if (!container) return;
+        let html = '';
+        vshangQuestions.forEach((q, idx) => {
+            const selectedVal = vshangAnswers[idx];
+            html += `
+                <div class="question-item" data-qidx="${idx}">
+                    <div class="question-text">${q.text}</div>
+                    <div class="options">
+            `;
+            q.options.forEach(opt => {
+                const checkedAttr = (selectedVal === opt) ? 'checked' : '';
+                html += `
+                    <label class="option">
+                        <input type="radio" name="vshang_q${idx}" value="${opt}" ${checkedAttr} data-idx="${idx}" data-val="${opt}">
+                        <span>${opt}</span>
+                    </label>
+                `;
+            });
+            html += `</div><div class="feedback-area" id="vshang_fb_${idx}"></div></div>`;
+        });
+        container.innerHTML = html;
+        // 绑定事件
+        document.querySelectorAll('#quiz-vshang input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const idx = parseInt(e.target.getAttribute('data-idx'));
+                const val = e.target.getAttribute('data-val');
+                if (!isNaN(idx)) {
+                    vshangAnswers[idx] = val;
+                    if (vshangSubmitted) {
+                        vshangSubmitted = false;
+                        document.getElementById('scoreVshangDisplay').innerHTML = '✏️ 答案已更新，请重新评分';
+                        for (let i = 0; i < vshangQuestions.length; i++) {
+                            const fbDiv = document.getElementById(`vshang_fb_${i}`);
+                            if (fbDiv) fbDiv.innerHTML = '';
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    // 评分逻辑 V出
+    function gradeVchu() {
+        let correctCount = 0;
+        for (let i = 0; i < vchuQuestions.length; i++) {
+            const userAnswer = vchuAnswers[i];
+            const isCorrect = (userAnswer === vchuQuestions[i].correct);
+            if (isCorrect) correctCount++;
+            const fbDiv = document.getElementById(`vchu_fb_${i}`);
+            if (fbDiv) {
+                if (userAnswer === null) {
+                    fbDiv.innerHTML = '<span class="feedback wrong">⚠️ 未选择答案</span>';
+                } else if (isCorrect) {
+                    fbDiv.innerHTML = `<span class="feedback correct">✓ 正确！ ${vchuQuestions[i].explanation}</span>`;
+                } else {
+                    fbDiv.innerHTML = `<span class="feedback wrong">✗ 错误。正确答案是 “${vchuQuestions[i].correct}”。${vchuQuestions[i].explanation}</span>`;
+                }
+            }
+        }
+        const total = vchuQuestions.length;
+        const scoreMsg = `📊 得分：${correctCount} / ${total}  (${Math.round(correctCount/total*100)}分)`;
+        document.getElementById('scoreVchuDisplay').innerHTML = scoreMsg;
+        vchuSubmitted = true;
+    }
+
+    function gradeVshang() {
+        let correctCount = 0;
+        for (let i = 0; i < vshangQuestions.length; i++) {
+            const userAnswer = vshangAnswers[i];
+            const isCorrect = (userAnswer === vshangQuestions[i].correct);
+            if (isCorrect) correctCount++;
+            const fbDiv = document.getElementById(`vshang_fb_${i}`);
+            if (fbDiv) {
+                if (userAnswer === null) {
+                    fbDiv.innerHTML = '<span class="feedback wrong">❓ 未选择答案</span>';
+                } else if (isCorrect) {
+                    fbDiv.innerHTML = `<span class="feedback correct">✔️ 正确！ ${vshangQuestions[i].explanation}</span>`;
+                } else {
+                    fbDiv.innerHTML = `<span class="feedback wrong">❌ 错误。正确答案：${vshangQuestions[i].correct}。${vshangQuestions[i].explanation}</span>`;
+                }
+            }
+        }
+        const total = vshangQuestions.length;
+        document.getElementById('scoreVshangDisplay').innerHTML = `🏅 得分：${correctCount} / ${total} (${Math.round(correctCount/total*100)}分)`;
+        vshangSubmitted = true;
+    }
+
+    function resetVchu() {
+        vchuAnswers.fill(null);
+        vchuSubmitted = false;
+        renderVchuQuiz();
+        for (let i = 0; i < vchuQuestions.length; i++) {
+            const fbDiv = document.getElementById(`vchu_fb_${i}`);
+            if (fbDiv) fbDiv.innerHTML = '';
+        }
+        document.getElementById('scoreVchuDisplay').innerHTML = '✨ 已重置，重新答题吧';
+    }
+
+    function resetVshang() {
+        vshangAnswers.fill(null);
+        vshangSubmitted = false;
+        renderVshangQuiz();
+        for (let i = 0; i < vshangQuestions.length; i++) {
+            const fbDiv = document.getElementById(`vshang_fb_${i}`);
+            if (fbDiv) fbDiv.innerHTML = '';
+        }
+        document.getElementById('scoreVshangDisplay').innerHTML = '🔄 已重置，试试你的新选择';
+    }
+
+    // 标签切换逻辑
+    function initTabs() {
+        const btns = document.querySelectorAll('.tab-btn');
+        const panels = document.querySelectorAll('.panel');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                btns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                panels.forEach(panel => panel.classList.remove('active-panel'));
+                const activePanel = document.getElementById(tabId);
+                if (activePanel) activePanel.classList.add('active-panel');
+            });
+        });
+    }
+
+    // 事件绑定
+    function bindButtons() {
+        const submitVchu = document.getElementById('submitVchu');
+        if (submitVchu) submitVchu.addEventListener('click', gradeVchu);
+        const resetVchuBtn = document.getElementById('resetVchu');
+        if (resetVchuBtn) resetVchuBtn.addEventListener('click', resetVchu);
+        
+        const submitVshang = document.getElementById('submitVshang');
+        if (submitVshang) submitVshang.addEventListener('click', gradeVshang);
+        const resetVshangBtn = document.getElementById('resetVshang');
+        if (resetVshangBtn) resetVshangBtn.addEventListener('click', resetVshang);
+    }
+
+    // 初始化渲染
+    function init() {
+        renderVchuQuiz();
+        renderVshangQuiz();
+        bindButtons();
+        initTabs();
+    }
+    init();
+</script>
+</body>
+</html>
