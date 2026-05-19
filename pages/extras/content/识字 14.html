@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>集中识字14 · 语法补充 | 好歹 / 一直·总是·老是 / 总</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f2f0e6;
+            font-family: system-ui, 'Segoe UI', 'Noto Sans', 'Helvetica Neue', sans-serif;
+            padding: 20px;
+            color: #1e2a2e;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            padding: 1.5rem 1.8rem 2.2rem 1.8rem;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #c4452c;
+            letter-spacing: -0.3px;
+        }
+        .sub {
+            font-size: 1rem;
+            color: #5c6e6b;
+            border-left: 4px solid #c4452c;
+            padding-left: 12px;
+            margin-bottom: 2rem;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .tab-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2ddd0;
+            padding-bottom: 8px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #4f6b66;
+            font-family: inherit;
+            letter-spacing: 1px;
+        }
+        .tab-btn.active {
+            background: #c4452c;
+            color: white;
+            box-shadow: 0 6px 12px rgba(196,69,44,0.25);
+        }
+        .tab-btn:not(.active):hover {
+            background: #e6dfd1;
+            color: #2c3e32;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fade 0.25s ease;
+        }
+        .tab-panel.active-panel {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .grammar-card {
+            background: #fefaf5;
+            border-radius: 32px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid #f0e4d4;
+        }
+
+        .def-box {
+            background: #eef3f0;
+            padding: 1.2rem 1.5rem;
+            border-radius: 28px;
+            margin-bottom: 1.8rem;
+            border-left: 8px solid #c4452c;
+        }
+        .def-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+            color: #2f5e4c;
+        }
+        .def-text {
+            font-size: 1rem;
+            line-height: 1.45;
+            color: #1e2a2e;
+            margin-bottom: 8px;
+        }
+        .lang-en {
+            color: #2c5f8a;
+            font-weight: 500;
+        }
+        .lang-es {
+            color: #b55b2c;
+            font-weight: 500;
+        }
+        .mini-table {
+            background: white;
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin: 15px 0 5px;
+            border: 1px solid #e2d5c4;
+        }
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            margin: 1.2rem 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .comp-table th, .comp-table td {
+            text-align: left;
+            padding: 14px 12px;
+            border-bottom: 1px solid #e9e2d6;
+            vertical-align: top;
+        }
+        .comp-table th {
+            background: #f2ede3;
+            font-size: 1.1rem;
+            color: #9b4b34;
+        }
+        .example-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+            margin: 1.8rem 0;
+        }
+        .example-item {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1rem 1.3rem;
+            border: 1px solid #e8dfd1;
+        }
+        .chinese-sent {
+            font-size: 1.45rem;
+            font-weight: 550;
+            margin-bottom: 8px;
+            color: #2c3e2b;
+            line-height: 1.4;
+        }
+        .translation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            border-top: 1px dashed #efe0cf;
+            padding-top: 8px;
+        }
+        .translation span {
+            background: #f9f4ea;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+        .quiz-box {
+            background: #f7f2e9;
+            border-radius: 28px;
+            padding: 1.2rem 1.5rem;
+            margin-top: 2rem;
+        }
+        .quiz-question {
+            margin: 1rem 0 1.2rem 0;
+            padding: 0.2rem 0;
+            border-bottom: 1px solid #e0cfbc;
+        }
+        .quiz-question p {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin: 8px 0 6px;
+        }
+        .options label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #ddd0be;
+            cursor: pointer;
+        }
+        .quiz-answer {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #4c6a5e;
+            background: #eae3d6;
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 60px;
+        }
+        .true-false-opt {
+            display: flex;
+            gap: 20px;
+            margin: 6px 0;
+        }
+        .true-false-opt label {
+            background: white;
+            padding: 4px 20px;
+            border-radius: 40px;
+            border: 1px solid #ccc2b2;
+        }
+        button.small-toggle {
+            background: #ddd0be;
+            border: none;
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 12px;
+            font-family: inherit;
+        }
+        hr {
+            margin: 12px 0;
+            border-color: #e8ddcf;
+        }
+        @media (max-width: 700px) {
+            body { padding: 12px; }
+            .container { padding: 1.2rem; }
+            .tab-btn { font-size: 1.1rem; padding: 8px 18px; }
+            .chinese-sent { font-size: 1.25rem; }
+        }
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #9d8b78;
+        }
+        .note {
+            font-size: 0.85rem;
+            background: #f9f3e0;
+            border-radius: 20px;
+            padding: 8px 14px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📖 集中识字14 · 语法补充</h1>
+    <div class="sub">🔹 好歹 · 一直/总是/老是 · 总 (情态副词)</div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tab1">❶ 好歹 hǎodǎi</button>
+        <button class="tab-btn" data-tab="tab2">❷ 一直 vs 总是 vs 老是</button>
+        <button class="tab-btn" data-tab="tab3">❸ 总 (modal adverb)</button>
+    </div>
+
+    <!-- ================= TAB 1 : 好歹 ================= -->
+    <div id="tab1" class="tab-panel active-panel">
+        <div class="grammar-card">
+            <div class="def-box">
+                <div class="def-title">🎯 好歹 (hǎodǎi) </div>
+                <div class="def-text">
+                    <span class="lang-en">✔ at least / anyhow (accepting an imperfect but acceptable situation)</span><br>
+                    <span class="lang-es">✔ al menos / de todas formas (aceptar una situación que no es perfecta pero es suficiente)</span>
+                </div>
+                <div class="mini-table">
+                    <div style="font-weight:700;">🔁 比较 / Compare</div>
+                    <div><span class="lang-en">至少 (at least) — objective, minimum quantity.</span> <span class="lang-es">Al menos — objetivo, cantidad mínima.</span></div>
+                    <div><span class="lang-en">一定 (surely) — determination, promise.</span> <span class="lang-es">Seguro — determinación, promesa.</span></div>
+                    <div><span class="lang-en">好歹 (at least/anyhow) — spoken, accepting a less-than-ideal result.</span> <span class="lang-es">Hǎodǎi — coloquial, aceptar un resultado no ideal.</span></div>
+                    <div style="margin-top:8px;">✨ 例: 至少及格了 ✅ / 好歹及格了 ✅ (自然) &nbsp;&nbsp; 一定去 ❌ → 好歹去 ❌</div>
+                </div>
+                <div class="def-text" style="margin-top:12px;">
+                    💡 <span class="lang-en">Position: can be at the beginning of the sentence or after the subject.</span><br>
+                    <span class="lang-es">Posición: puede ir al inicio de la oración o después del sujeto.</span><br>
+                    ✔ <strong>好歹</strong>及格了。 / 我<strong>好歹</strong>及格了。
+                </div>
+            </div>
+
+            <div class="example-list">
+                <div class="example-item">
+                    <div class="chinese-sent">① 虽然我英语不太好，<strong>好歹</strong>能说几句。</div>
+                    <div class="translation"><span>🇬🇧 Although my English isn't great, at least I can say a few sentences.</span><span>🇪🇸 Aunque mi inglés no es muy bueno, al menos puedo decir algunas frases.</span></div>
+                </div>
+                <div class="example-item">
+                    <div class="chinese-sent">② 路远是远，<strong>好歹</strong>能走到。</div>
+                    <div class="translation"><span>🇬🇧 It's a long way, but at least we can get there on foot.</span><span>🇪🇸 El camino es largo, pero al menos podemos llegar caminando.</span></div>
+                </div>
+                <div class="example-item">
+                    <div class="chinese-sent">③ <strong>好歹</strong>我自己住了好几年，煮面条没问题。</div>
+                    <div class="translation"><span>🇬🇧 I've lived by myself for several years — at least making noodles is no problem.</span><span>🇪🇸 He vivido solo varios años — al menos hacer fideos no es problema.</span></div>
+                </div>
+                <div class="example-item">
+                    <div class="chinese-sent">④ 虽然慢，<strong>好歹</strong>做完了。</div>
+                    <div class="translation"><span>🇬🇧 It was slow, but at least I finished it.</span><span>🇪🇸 Fue lento, pero al menos lo terminé.</span></div>
+                </div>
+            </div>
+
+            <!-- Quiz 好歹：选择最通顺的选项 -->
+            <div class="quiz-box">
+                <div style="font-weight: 700; font-size: 1.2rem;">📝 小测验 · Quiz</div>
+                <div class="quiz-question">
+                    <p>1️⃣ 我汉语说得不太好，<strong>好歹</strong> ______</p>
+                    <div class="options">
+                        <label><input type="radio" name="hao1" value="A"> A. 能听懂简单的对话</label>
+                        <label><input type="radio" name="hao1" value="B"> B. 一定会去北京</label>
+                        <label><input type="radio" name="hao1" value="C"> C. 每天都练两小时</label>
+                    </div>
+                    <div class="translation" style="border:none; padding:0; margin:6px 0 0 0;"><span>🇬🇧 I can't speak Chinese well, but at least I can understand simple conversations.</span><span>🇪🇸 No hablo bien chino, pero al menos puedo entender conversaciones sencillas.</span></div>
+                    <div class="quiz-answer" id="haodaiAns1"></div>
+                </div>
+                <div class="quiz-question">
+                    <p>2️⃣ 这家饭馆味道一般，<strong>好歹</strong> ______ ，就别抱怨了。</p>
+                    <div class="options">
+                        <label><input type="radio" name="hao2" value="A"> A. 特别贵</label>
+                        <label><input type="radio" name="hao2" value="B"> B. 能吃饱</label>
+                        <label><input type="radio" name="hao2" value="C"> C. 下次还来</label>
+                    </div>
+                    <div class="translation" style="border:none; padding:0; margin:6px 0 0 0;"><span>🇬🇧 This restaurant is just so-so, but at least we can get full, don't complain.</span><span>🇪🇸 Este restaurante es regular, pero al menos podemos llenarnos, no te quejes.</span></div>
+                    <div class="quiz-answer" id="haodaiAns2"></div>
+                </div>
+                <div class="quiz-question">
+                    <p>3️⃣ <strong>好歹</strong>我自己住了好几年，______</p>
+                    <div class="options">
+                        <label><input type="radio" name="hao3" value="A"> A. 不会做饭</label>
+                        <label><input type="radio" name="hao3" value="B"> B. 煮面条没问题</label>
+                        <label><input type="radio" name="hao3" value="C"> C. 从来没做过家务</label>
+                    </div>
+                    <div class="translation" style="border:none; padding:0; margin:6px 0 0 0;"><span>🇬🇧 I've lived alone for years — at least making noodles is fine.</span><span>🇪🇸 He vivido solo varios años — al menos hacer fideos no hay problema.</span></div>
+                    <div class="quiz-answer" id="haodaiAns3"></div>
+                </div>
+                <div class="quiz-question">
+                    <p>4️⃣ 虽然我考不好，<strong>好歹</strong> ______</p>
+                    <div class="options">
+                        <label><input type="radio" name="hao4" value="A"> A. 我及格了</label>
+                        <label><input type="radio" name="hao4" value="B"> B. 我考了满分</label>
+                        <label><input type="radio" name="hao4" value="C"> C. 我不想再考了</label>
+                    </div>
+                    <div class="translation" style="border:none; padding:0; margin:6px 0 0 0;"><span>🇬🇧 Even though I didn't do well on the exam, at least I passed.</span><span>🇪🇸 Aunque no me fue bien en el examen, al menos aprobé.</span></div>
+                    <div class="quiz-answer" id="haodaiAns4"></div>
+                </div>
+                <button class="small-toggle" id="checkHaodai">✔️ 显示答案 / Show answers</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB 2 : 一直 vs 总是 vs 老是 ================= -->
+    <div id="tab2" class="tab-panel">
+        <div class="grammar-card">
+            <div class="def-box">
+                <div class="def-title">📌 一直 · 总是 · 老是</div>
+                <div class="def-text"><span class="lang-en">Three ways to express "always" with different nuances.</span><br><span class="lang-es">Tres formas de decir "siempre" con diferentes matices.</span></div>
+            </div>
+            <table class="comp-table">
+                <thead><tr><th>词</th><th>含义 (EN/ES)</th><th>语气 / 用法</th></tr></thead>
+                <tbody>
+                    <tr><td style="font-weight:700;">一直</td><td><span class="lang-en">continuously, without stopping</span><br><span class="lang-es">continuamente, sin interrupción</span></td><td>强调动作或状态持续不断 (中性)</td></tr>
+                    <tr><td style="font-weight:700;">总是</td><td><span class="lang-en">always (habitually, every time)</span><br><span class="lang-es">siempre (hábito, cada vez)</span></td><td>表示规律性习惯，客观陈述</td></tr>
+                    <tr><td style="font-weight:700;">老是</td><td><span class="lang-en">always (with annoyance / criticism)</span><br><span class="lang-es">siempre (con fastidio o queja)</span></td><td>口语常用，表达不满、厌烦</td></tr>
+                </tbody>
+            </table>
+            <div class="example-list">
+                <div class="example-item"><div class="chinese-sent">❶ <strong>一直</strong>：从早上到现在，雨<strong>一直</strong>在下。</div><div class="translation"><span>🇬🇧 It has been raining continuously from morning till now.</span><span>🇪🇸 Ha estado lloviendo sin parar desde la mañana hasta ahora.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">❷ <strong>总是</strong>：他上班<strong>总是</strong>迟到十分钟。</div><div class="translation"><span>🇬🇧 He is always ten minutes late for work. (habit)</span><span>🇪🇸 Siempre llega diez minutos tarde al trabajo. (hábito)</span></div></div>
+                <div class="example-item"><div class="chinese-sent">❸ <strong>老是</strong>：你怎么<strong>老是</strong>忘带手机？真受不了。</div><div class="translation"><span>🇬🇧 Why do you keep forgetting your phone? So annoying.</span><span>🇪🇸 ¿Por qué siempre se te olvida el móvil? Es molesto.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">❹ 对比：他<strong>总是</strong>帮助别人。（中性）/ 他<strong>老是</strong>帮倒忙。（抱怨）</div><div class="translation"><span>🇬🇧 He always helps others. (neutral) / He always messes things up. (complaint)</span><span>🇪🇸 Siempre ayuda a otros (neutro) / Siempre causa problemas (queja).</span></div></div>
+            </div>
+            <div class="quiz-box">
+                <div style="font-weight: 700; font-size: 1.2rem;">📝 小测验 · Quiz</div>
+                <div class="quiz-question"><p>1️⃣ 他学习很努力，成绩_______很好。（习惯）</p><div class="options"><label><input type="radio" name="c2q1" value="A"> A. 一直</label><label><input type="radio" name="c2q1" value="B"> B. 总是</label><label><input type="radio" name="c2q1" value="C"> C. 老是</label></div><div class="translation"><span>🇬🇧 He studies hard, his grades are always good (habit).</span><span>🇪🇸 Él estudia duro, sus notas siempre son buenas (hábito).</span></div><div class="quiz-answer" id="compAns1"></div></div>
+                <div class="quiz-question"><p>2️⃣ 别说了，这个问题我们_______在讨论，还没结束。（持续）</p><div class="options"><label><input type="radio" name="c2q2" value="A"> A. 总是</label><label><input type="radio" name="c2q2" value="B"> B. 一直</label><label><input type="radio" name="c2q2" value="C"> C. 老是</label></div><div class="translation"><span>🇬🇧 Stop talking, we have been discussing this issue continuously and it's not over yet.</span><span>🇪🇸 Deja de hablar, hemos estado discutiendo esto sin parar y aún no termina.</span></div><div class="quiz-answer" id="compAns2"></div></div>
+                <div class="quiz-question"><p>3️⃣ 妈妈抱怨：你_______把房间弄得乱七八糟！</p><div class="options"><label><input type="radio" name="c2q3" value="A"> A. 一直</label><label><input type="radio" name="c2q3" value="B"> B. 老是</label><label><input type="radio" name="c2q3" value="C"> C. 总是</label></div><div class="translation"><span>🇬🇧 Mom complains: You always leave the room in a mess! (annoyance)</span><span>🇪🇸 Mamá se queja: ¡Siempre dejas la habitación hecha un desastre! (fastidio)</span></div><div class="quiz-answer" id="compAns3"></div></div>
+                <div class="quiz-question"><p>4️⃣ 小时候我家附近_______很安静，现在太吵了。</p><div class="options"><label><input type="radio" name="c2q4" value="A"> A. 一直</label><label><input type="radio" name="c2q4" value="B"> B. 老是</label><label><input type="radio" name="c2q4" value="C"> C. 总是</label></div><div class="translation"><span>🇬🇧 When I was a child, it was continuously quiet near my home, now it's too noisy.</span><span>🇪🇸 Cuando era niño, siempre estuvo tranquilo cerca de mi casa, ahora es demasiado ruidoso.</span></div><div class="quiz-answer" id="compAns4"></div></div>
+                <button class="small-toggle" id="checkCompare">✔️ 显示答案 / Show answers</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TAB 3 : 总 modal adverb ================= -->
+    <div id="tab3" class="tab-panel">
+        <div class="grammar-card">
+            <div class="def-box">
+                <div class="def-title">⚡ 总 (modal adverb)</div>
+                <div class="def-text">
+                    <span class="lang-en">"Surely / at least / inevitably" — The speaker believes something SHOULD happen given the situation; it's reasonable to expect.</span><br>
+                    <span class="lang-es">"Seguramente / al menos / tiene que" — El hablante cree que algo debería suceder dadas las circunstancias, es razonable esperarlo.</span>
+                </div>
+                <div class="def-text" style="margin-top:10px;">
+                    💡 常见搭配：<strong>总会 / 总能 / 总得 / 总该</strong><br>
+                    <span class="lang-en">Common patterns: zǒng huì (will eventually), zǒng néng (can at least), zǒng děi (must at least), zǒng gāi (should at least).</span><br>
+                    <span class="lang-es">Patrones comunes: zǒng huì (finalmente), zǒng néng (al menos puede), zǒng děi (tiene que al menos), zǒng gāi (debería al menos).</span>
+                </div>
+            </div>
+            <div class="example-list">
+                <div class="example-item"><div class="chinese-sent">① 今天你忙，明天你<strong>总</strong>有时间了吧？</div><div class="translation"><span>🇬🇧 You're busy today, but surely you'll have time tomorrow, right?</span><span>🇪🇸 Hoy estás ocupado, pero mañana seguro que tendrás tiempo, ¿no?</span></div></div>
+                <div class="example-item"><div class="chinese-sent">② 你工作三年了，<strong>总</strong>有一些钱了吧？</div><div class="translation"><span>🇬🇧 You've worked for three years — you must have at least some savings, right?</span><span>🇪🇸 Llevas tres años trabajando — al menos tendrás algo de dinero, ¿no?</span></div></div>
+                <div class="example-item"><div class="chinese-sent">③ 路远是远，走过去<strong>总</strong>能到。</div><div class="translation"><span>🇬🇧 It's a long way, but if you walk, you'll eventually get there.</span><span>🇪🇸 Es un camino largo, pero si caminas, al final llegarás.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">④ 慢是慢，<strong>总</strong>比不做强。</div><div class="translation"><span>🇬🇧 It's slow, but it's still better than doing nothing.</span><span>🇪🇸 Es lento, pero es mejor que no hacer nada.</span></div></div>
+            </div>
+            <div class="quiz-box">
+                <div style="font-weight: 700; font-size: 1.2rem;">📝 小测验 · Quiz</div>
+                <div class="quiz-question"><p>1️⃣ 判断句子是否自然：<br>今天你忙，明天你<strong>总</strong>有时间了吧？</p><div class="true-false-opt"><label><input type="radio" name="zong1" value="correct"> ✓ 自然 (Natural)</label><label><input type="radio" name="zong1" value="wrong"> ✗ 不自然 (Unnatural)</label></div><div class="translation"><span>🇬🇧 You are busy today, surely you'll have time tomorrow, right?</span><span>🇪🇸 Hoy estás ocupado, seguramente mañana tendrás tiempo, ¿no?</span></div><div class="quiz-answer" id="zongAns1"></div></div>
+                <div class="quiz-question"><p>2️⃣ 判断句子是否自然：<br>你工作三年了，<strong>总</strong>有一些钱了吧？</p><div class="true-false-opt"><label><input type="radio" name="zong2" value="correct"> ✓ 自然 (Natural)</label><label><input type="radio" name="zong2" value="wrong"> ✗ 不自然 (Unnatural)</label></div><div class="translation"><span>🇬🇧 You've worked for three years — you must have some money, right?</span><span>🇪🇸 Llevas tres años trabajando — tendrás algo de dinero, ¿no?</span></div><div class="quiz-answer" id="zongAns2"></div></div>
+                <div class="quiz-question"><p>3️⃣ 判断句子是否自然：<br>我<strong>总</strong>不会说汉语。（想表达：I never can speak Chinese）</p><div class="true-false-opt"><label><input type="radio" name="zong3" value="correct"> ✓ 自然</label><label><input type="radio" name="zong3" value="wrong"> ✗ 不自然</label></div><div class="translation"><span>🇬🇧 I never can speak Chinese. (incorrect use of 总)</span><span>🇪🇸 Nunca puedo hablar chino. (uso incorrecto de 总)</span></div><div class="quiz-answer" id="zongAns3"></div></div>
+                <div class="quiz-question"><p>4️⃣ 判断句子是否自然：<br>路远是远，走过去<strong>总</strong>能到。</p><div class="true-false-opt"><label><input type="radio" name="zong4" value="correct"> ✓ 自然</label><label><input type="radio" name="zong4" value="wrong"> ✗ 不自然</label></div><div class="translation"><span>🇬🇧 The road is long, but if you walk you'll eventually get there.</span><span>🇪🇸 El camino es largo, pero si caminas al final llegarás.</span></div><div class="quiz-answer" id="zongAns4"></div></div>
+                <button class="small-toggle" id="checkZong">✔️ 显示答案 / Show answers</button>
+            </div>
+        </div>
+    </div>
+    <footer>集中识字14 · 补充练习 | 自主学习课件 (English + Español)</footer>
+</div>
+
+<script>
+    // Tabs
+    const btns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            panels.forEach(p => p.classList.remove('active-panel'));
+            document.getElementById(tabId).classList.add('active-panel');
+        });
+    });
+
+    // 好歹答案
+    document.getElementById('checkHaodai').addEventListener('click', () => {
+        document.getElementById('haodaiAns1').innerHTML = '✓ 正确答案 A: 能听懂简单的对话';
+        document.getElementById('haodaiAns2').innerHTML = '✓ 正确答案 B: 能吃饱';
+        document.getElementById('haodaiAns3').innerHTML = '✓ 正确答案 B: 煮面条没问题';
+        document.getElementById('haodaiAns4').innerHTML = '✓ 正确答案 A: 我及格了';
+    });
+    // 对比答案
+    document.getElementById('checkCompare').addEventListener('click', () => {
+        document.getElementById('compAns1').innerHTML = '✓ B (总是) — habit';
+        document.getElementById('compAns2').innerHTML = '✓ B (一直) — continuous';
+        document.getElementById('compAns3').innerHTML = '✓ B (老是) — complaint, spoken';
+        document.getElementById('compAns4').innerHTML = '✓ A (一直) — continuous state';
+    });
+    // 总答案
+    document.getElementById('checkZong').addEventListener('click', () => {
+        document.getElementById('zongAns1').innerHTML = '✓ 自然 / Natural';
+        document.getElementById('zongAns2').innerHTML = '✓ 自然 / Natural';
+        document.getElementById('zongAns3').innerHTML = '✗ 不自然 / Unnatural (总 cannot express “never”)';
+        document.getElementById('zongAns4').innerHTML = '✓ 自然 / Natural';
+    });
+</script>
+</body>
+</html>

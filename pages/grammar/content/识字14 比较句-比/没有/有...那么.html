@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>集中识字14 · 语法补充 | 比较句（比/没有/有...那么）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f0;
+            font-family: system-ui, 'Segoe UI', 'Noto Sans', 'Helvetica Neue', sans-serif;
+            padding: 20px;
+            color: #1e2a2e;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            padding: 1.5rem 1.8rem 2.2rem 1.8rem;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #2c6e5c;
+            letter-spacing: -0.3px;
+        }
+        .sub {
+            font-size: 1rem;
+            color: #5c6e6b;
+            border-left: 4px solid #2c6e5c;
+            padding-left: 12px;
+            margin-bottom: 2rem;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .tab-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #d4dfd8;
+            padding-bottom: 12px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #3f6b5e;
+            font-family: inherit;
+        }
+        .tab-btn.active {
+            background: #2c6e5c;
+            color: white;
+            box-shadow: 0 4px 10px rgba(44,110,92,0.25);
+        }
+        .tab-btn:not(.active):hover {
+            background: #e0ece6;
+            color: #1e4a3e;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fade 0.2s ease;
+        }
+        .tab-panel.active-panel {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .grammar-card {
+            background: #fefaf5;
+            border-radius: 32px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2ecd7;
+        }
+
+        .formula {
+            background: #e9f3ef;
+            padding: 1rem 1.2rem;
+            border-radius: 24px;
+            margin-bottom: 1.8rem;
+            font-family: monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: 500;
+            color: #1a5c4a;
+            border-left: 6px solid #2c6e5c;
+        }
+        .example-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 1.2rem 0 2rem 0;
+        }
+        .example-item {
+            background: white;
+            border-radius: 24px;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid #e0d9ce;
+        }
+        .chinese-sent {
+            font-size: 1.3rem;
+            font-weight: 550;
+            margin-bottom: 6px;
+            color: #2d4a3b;
+        }
+        .translation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            border-top: 1px dashed #d9d0c0;
+            padding-top: 8px;
+        }
+        .translation span {
+            background: #f5f0e6;
+            padding: 3px 10px;
+            border-radius: 25px;
+        }
+
+        .translate-section {
+            background: #f2f6f0;
+            border-radius: 28px;
+            padding: 1.2rem;
+            margin-top: 1rem;
+        }
+        .trans-item {
+            background: white;
+            border-radius: 24px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .en-es {
+            background: #faf3e0;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 6px 0;
+        }
+        .student-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 1rem;
+            border-radius: 28px;
+            border: 1px solid #ccc2b2;
+            background: #fffdf9;
+            margin: 10px 0 6px;
+            font-family: inherit;
+        }
+        .show-ans-btn {
+            background: #ddd0be;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        .model-answer {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #2c6e5c;
+            background: #eef3ea;
+            padding: 6px 12px;
+            border-radius: 24px;
+            display: inline-block;
+        }
+        hr {
+            margin: 10px 0;
+        }
+        .badge {
+            background: #2c6e5c20;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        @media (max-width: 700px) {
+            body { padding: 12px; }
+            .container { padding: 1rem; }
+            .tab-btn { font-size: 0.85rem; padding: 6px 12px; }
+            .chinese-sent { font-size: 1.1rem; }
+        }
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #9aa79f;
+        }
+        .note {
+            font-size: 0.8rem;
+            color: #647a6b;
+            background: #f6fcf4;
+            border-radius: 20px;
+            padding: 8px 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📐 集中识字14 · 比较句</h1>
+    <div class="sub">🔹 比 / 没有 / 有……那么 / 差别描述 / 动词比较 / 程度补语</div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tab0">📖 复习 · 比/没有 + adj</button>
+        <button class="tab-btn" data-tab="tab1">📏 差别词：一点儿/得多/数量</button>
+        <button class="tab-btn" data-tab="tab2">⚖️ 有/没有 + 那么 + adj</button>
+        <button class="tab-btn" data-tab="tab3">🍜 动词比较 (喜欢/想)</button>
+        <button class="tab-btn" data-tab="tab4">✍️ 能力比较：V得比…adj</button>
+    </div>
+
+    <!-- ========= TAB 0: 快速复习 ========= -->
+    <div id="tab0" class="tab-panel active-panel">
+        <div class="grammar-card">
+            <div class="formula">
+                📌 A <strong style="color:#c44a2c;">比</strong> B + adj <span style="font-size:0.9rem;">(A is more adj than B)</span><br>
+                📌 A <strong style="color:#c44a2c;">没有</strong> B + adj <span style="font-size:0.9rem;">(A is not as adj as B)</span>
+            </div>
+            <div class="example-list">
+                <div class="example-item"><div class="chinese-sent">中国的西服 <strong>比</strong> 法国的贵吗？</div><div class="translation"><span>🇬🇧 Is Chinese suit more expensive than French suit?</span><span>🇪🇸 ¿Es más caro el traje chino que el francés?</span></div></div>
+                <div class="example-item"><div class="chinese-sent">中国的西服 <strong>没有</strong> 法国的贵。</div><div class="translation"><span>🇬🇧 Chinese suit is not as expensive as French suit.</span><span>🇪🇸 El traje chino no es tan caro como el francés.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">北京比上海大吗？</div><div class="translation"><span>🇬🇧 Is Beijing bigger than Shanghai?</span><span>🇪🇸 ¿Es Pekín más grande que Shanghái?</span></div></div>
+            </div>
+            <!-- 翻译练习 3题 -->
+            <div class="translate-section">
+                <div class="badge">✍️ 翻译练习 / Translation Practice</div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 Chinese food is more delicious than Western food.<br>🇪🇸 La comida china es más deliciosa que la comida occidental.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="rev0_1">
+                    <button class="show-ans-btn" data-ans="rev0_1">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_rev0_1" style="display:none;">中国菜比西餐好吃。</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 My Chinese isn't as good as yours.<br>🇪🇸 Mi chino no es tan bueno como el tuyo.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="rev0_2">
+                    <button class="show-ans-btn" data-ans="rev0_2">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_rev0_2" style="display:none;">我的汉语没有你的好。</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 Is this book more interesting than that one?<br>🇪🇸 ¿Es este libro más interesante que aquel?</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="rev0_3">
+                    <button class="show-ans-btn" data-ans="rev0_3">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_rev0_3" style="display:none;">这本书比那本有意思吗？</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========= TAB 1: 差别词 ========= -->
+    <div id="tab1" class="tab-panel">
+        <div class="grammar-card">
+            <div class="formula">
+                A 比 B + adj + <strong style="background:#f3e1be;">一点儿 / 得多 / 数量词</strong><br>
+                <span style="font-size:0.8rem;">一点儿 = a little bit &nbsp;&nbsp; 得多 = much more &nbsp;&nbsp; 数量词 = exact difference</span>
+            </div>
+            <div class="example-list">
+                <div class="example-item"><div class="chinese-sent">他比我大<strong>五岁</strong>。</div><div class="translation"><span>🇬🇧 He is five years older than me.</span><span>🇪🇸 Él es cinco años mayor que yo.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">中国比日本大<strong>得多</strong>。</div><div class="translation"><span>🇬🇧 China is much larger than Japan.</span><span>🇪🇸 China es mucho más grande que Japón.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">我比他高<strong>一点儿</strong>。</div><div class="translation"><span>🇬🇧 I am a little bit taller than him.</span><span>🇪🇸 Soy un poco más alto que él.</span></div></div>
+            </div>
+            <div class="translate-section">
+                <div class="badge">✍️ 翻译练习 / Translation Practice</div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 This phone is much cheaper than that one.<br>🇪🇸 Este teléfono es mucho más barato que aquel.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="diff1">
+                    <button class="show-ans-btn" data-ans="diff1">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_diff1" style="display:none;">这个手机比那个便宜得多。</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 My sister is three years younger than me.<br>🇪🇸 Mi hermana es tres años menor que yo.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="diff2">
+                    <button class="show-ans-btn" data-ans="diff2">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_diff2" style="display:none;">我妹妹比我小三岁。</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 This dish is a little spicier than that dish.<br>🇪🇸 Este plato es un poco más picante que ese plato.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="diff3">
+                    <button class="show-ans-btn" data-ans="diff3">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_diff3" style="display:none;">这个菜比那个菜辣一点儿。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========= TAB 2: 有/没有 + 那么 + adj ========= -->
+    <div id="tab2" class="tab-panel">
+        <div class="grammar-card">
+            <div class="formula">
+                A <strong>有</strong> B <strong>那么</strong> + adj &nbsp; (A is as adj as B) <br>
+                A <strong>没有</strong> B <strong>那么</strong> + adj &nbsp; (A is not as adj as B) <br>
+                <span style="font-size:0.8rem;">“那么” = so / that (used for comparison)</span>
+            </div>
+            <div class="example-list">
+                <div class="example-item"><div class="chinese-sent">他有他哥哥<strong>那么</strong>高。</div><div class="translation"><span>🇬🇧 He is as tall as his older brother.</span><span>🇪🇸 Él es tan alto como su hermano mayor.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">我没有他<strong>那么</strong>努力。</div><div class="translation"><span>🇬🇧 I am not as hardworking as him.</span><span>🇪🇸 No soy tan trabajador como él.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">中国的西服没有法国的<strong>那么</strong>贵。</div><div class="translation"><span>🇬🇧 Chinese suit is not as expensive as French suit.</span><span>🇪🇸 El traje chino no es tan caro como el francés.</span></div></div>
+            </div>
+            <div class="translate-section">
+                <div class="badge">✍️ 翻译练习 / Translation Practice</div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 My new phone is not as good as yours.<br>🇪🇸 Mi teléfono nuevo no es tan bueno como el tuyo.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="namei1">
+                    <button class="show-ans-btn" data-ans="namei1">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_namei1" style="display:none;">我的新手机没有你的那么好。</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 Is this computer as fast as that one?<br>🇪🇸 ¿Es este ordenador tan rápido como aquel?</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="namei2">
+                    <button class="show-ans-btn" data-ans="namei2">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_namei2" style="display:none;">这个电脑有那个那么快吗？</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 Today is not as cold as yesterday.<br>🇪🇸 Hoy no hace tanto frío como ayer.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="namei3">
+                    <button class="show-ans-btn" data-ans="namei3">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_namei3" style="display:none;">今天没有昨天那么冷。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========= TAB 3: 动词比较 (比 + V + O) ========= -->
+    <div id="tab3" class="tab-panel">
+        <div class="grammar-card">
+            <div class="formula">
+                A <strong>比</strong> B + V + O &nbsp;&nbsp; (compare preference/degree of action)<br>
+                否定: A <strong>没有</strong> B (那么) + V + O
+            </div>
+            <div class="example-list">
+                <div class="example-item"><div class="chinese-sent">他比我<strong>喜欢</strong>吃中国菜。</div><div class="translation"><span>🇬🇧 He likes eating Chinese food more than me.</span><span>🇪🇸 A él le gusta más la comida china que a mí.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">我没有他<strong>那么想去</strong>旅行。</div><div class="translation"><span>🇬🇧 I don't want to travel as much as he does.</span><span>🇪🇸 No quiero viajar tanto como él.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">她比我能吃辣。</div><div class="translation"><span>🇬🇧 She can eat spicier food than me.</span><span>🇪🇸 Ella puede comer más picante que yo.</span></div></div>
+            </div>
+            <div class="translate-section">
+                <div class="badge">✍️ 翻译练习 / Translation Practice</div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 My father loves watching football more than my mother.<br>🇪🇸 A mi padre le gusta más ver fútbol que a mi madre.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="verb1">
+                    <button class="show-ans-btn" data-ans="verb1">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_verb1" style="display:none;">我爸爸比我妈妈喜欢看足球。</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 She doesn't want to study as much as I do.<br>🇪🇸 Ella no quiere estudiar tanto como yo.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="verb2">
+                    <button class="show-ans-btn" data-ans="verb2">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_verb2" style="display:none;">她没有我那么想学习。</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 My younger brother runs faster than me.<br>🇪🇸 Mi hermano menor corre más rápido que yo.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="verb3">
+                    <button class="show-ans-btn" data-ans="verb3">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_verb3" style="display:none;">我弟弟比我跑得快。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========= TAB 4: 能力比较 (V得比...adj) ========= -->
+    <div id="tab4" class="tab-panel">
+        <div class="grammar-card">
+            <div class="formula">
+                A + Object + V + <strong>得</strong> + 比 B + adj<br>
+                (compare ability / result of an action)
+            </div>
+            <div class="example-list">
+                <div class="example-item"><div class="chinese-sent">他汉字写<strong>得比</strong>我好<strong>得多</strong>。</div><div class="translation"><span>🇬🇧 He writes Chinese characters much better than me.</span><span>🇪🇸 Él escribe caracteres chinos mucho mejor que yo.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">我英语说<strong>得没有</strong>他流利。</div><div class="translation"><span>🇬🇧 I don't speak English as fluently as he does.</span><span>🇪🇸 No hablo inglés con tanta fluidez como él.</span></div></div>
+                <div class="example-item"><div class="chinese-sent">她做饭做得比我好吃一点儿。</div><div class="translation"><span>🇬🇧 She cooks a little bit better than me.</span><span>🇪🇸 Ella cocina un poco mejor que yo.</span></div></div>
+            </div>
+            <div class="translate-section">
+                <div class="badge">✍️ 翻译练习 / Translation Practice</div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 My sister sings much better than me.<br>🇪🇸 Mi hermana canta mucho mejor que yo.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="deg1">
+                    <button class="show-ans-btn" data-ans="deg1">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_deg1" style="display:none;">我妹妹唱歌唱得比我好得多。</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 Do you speak Chinese more fluently than him?<br>🇪🇸 ¿Hablas chino con más fluidez que él?</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="deg2">
+                    <button class="show-ans-btn" data-ans="deg2">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_deg2" style="display:none;">你汉语说得比他流利吗？</div>
+                </div>
+                <div class="trans-item">
+                    <div class="en-es">🇬🇧 I don't run as fast as my friend.<br>🇪🇸 No corro tan rápido como mi amigo.</div>
+                    <input type="text" class="student-input" placeholder="你的中文翻译 ..." id="deg3">
+                    <button class="show-ans-btn" data-ans="deg3">📖 显示参考答案</button>
+                    <div class="model-answer" id="ans_deg3" style="display:none;">我跑得没有我朋友那么快。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>集中识字14 · 比较句专项｜用英语/西班牙语提示翻译成中文，点击按钮对照答案</footer>
+</div>
+
+<script>
+    // 选项卡切换
+    const btns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            panels.forEach(p => p.classList.remove('active-panel'));
+            document.getElementById(tabId).classList.add('active-panel');
+        });
+    });
+
+    // 通用显示答案逻辑 (每个按钮点击后显示对应的隐藏model div)
+    const allShowBtns = document.querySelectorAll('.show-ans-btn');
+    allShowBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const targetId = btn.getAttribute('data-ans');
+            const answerDiv = document.getElementById(`ans_${targetId}`);
+            if (answerDiv) {
+                answerDiv.style.display = 'block';
+            } else {
+                // 特殊处理id rev0_1 对应 ans_rev0_1 已经在html定义好
+                const possibleDiv = document.getElementById(`ans_${targetId}`);
+                if(possibleDiv) possibleDiv.style.display = 'block';
+            }
+        });
+    });
+    // 额外确保每个答案区域初始隐藏
+    document.querySelectorAll('.model-answer').forEach(el => el.style.display = 'none');
+</script>
+</body>
+</html>
