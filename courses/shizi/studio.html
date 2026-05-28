@@ -662,6 +662,26 @@
             margin-top: var(--spacing-xs);
         }
 
+        .btn-upload-cloudinary {
+            display: block;
+            margin-top: var(--spacing-sm);
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: var(--font-semibold);
+            font-family: var(--font-primary);
+            background: var(--text-secondary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-upload-cloudinary:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+
         .publish-toggle {
             display: flex;
             align-items: center;
@@ -1162,6 +1182,31 @@
         let dragInitialRect = null;  // 初始卡片位置信息
         let currentPlaceholder = null;  // 當前 placeholder 元素
         let lastAfterElement = null;  // 上次插入位置，避免重複計算
+        let pendingUploadTarget = null;  // { index, field } for Cloudinary upload
+
+        const MARKDOWN_FIELDS = new Set([
+            'book_explanation',
+            'story',
+            'pronunciation_cue',
+            'phrases'
+        ]);
+
+        const CLOUDINARY_WIDGET_STYLES = {
+            palette: {
+                window: "#FFFFFF",
+                windowBorder: "#0891b2",
+                tabIcon: "#0891b2",
+                menuIcons: "#0891b2",
+                textDark: "#000000",
+                textLight: "#FFFFFF",
+                link: "#0891b2",
+                action: "#0891b2",
+                inProgress: "#0891b2",
+                complete: "#28a745",
+                error: "#dc3545",
+                sourceBg: "#0891b2"
+            }
+        };
 
         // ==================== 工具函數 ====================
         function showMessage(text, type = 'info') {
@@ -1433,6 +1478,7 @@
                         <div class="form-field">
                             <label>顯示圖片（字形補丁）</label>
                             <input type="text" data-field="display_image" value="${item.display_image || ''}" placeholder="https://res.cloudinary.com/...">
+                            <button type="button" class="btn-upload-cloudinary" data-upload-field="display_image">🖼️ 上傳字形補丁到 Cloudinary</button>
                             <small>當字無法正常顯示時使用</small>
                         </div>
                         <div class="form-field required">
@@ -1462,6 +1508,7 @@
                         <div class="form-field">
                             <label>圖片網址（輔助插圖）</label>
                             <input type="text" data-field="image" value="${item.image || ''}" placeholder="https://res.cloudinary.com/...">
+                            <button type="button" class="btn-upload-cloudinary" data-upload-field="image">🖼️ 上傳輔助插圖到 Cloudinary</button>
                             <small>故事圖、象形演變圖等</small>
                         </div>
                         <div class="form-field">
@@ -1696,6 +1743,133 @@
                 // 更新右侧预览
                 renderPreviewPanel(index);
             }
+        }
+
+        function setFormFieldValue(index, field, value) {
+            const card = document.querySelector(`.form-item-card[data-index="${index}"]`);
+            const input = card?.querySelector(`[data-field="${field}"]`);
+            if (!input || !currentData[index]) return;
+            input.value = value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        function addMarkdownFormat(textarea, prefix, suffix) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+
+            if (!selectedText) return;
+
+            const leadingSpaces = selectedText.match(/^\s*/)[0];
+            const trailingSpaces = selectedText.match(/\s*$/)[0];
+            const trimmedText = selectedText.trim();
+
+            const before = textarea.value.substring(0, start);
+            const after = textarea.value.substring(end);
+
+            textarea.value = before + leadingSpaces + prefix + trimmedText + suffix + trailingSpaces + after;
+
+            const newStart = start + leadingSpaces.length + prefix.length;
+            const newEnd = newStart + trimmedText.length;
+            textarea.selectionStart = newStart;
+            textarea.selectionEnd = newEnd;
+            textarea.focus();
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        function initMarkdownShortcuts() {
+            const container = document.getElementById('editPanelContent');
+            if (!container || container.dataset.markdownShortcutsInit) return;
+            container.dataset.markdownShortcutsInit = '1';
+
+            container.addEventListener('keydown', (e) => {
+                const el = e.target;
+                if (!el.matches('textarea[data-field]')) return;
+                if (!MARKDOWN_FIELDS.has(el.dataset.field)) return;
+
+                if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                    e.preventDefault();
+                    addMarkdownFormat(el, '**', '**');
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                    e.preventDefault();
+                    addMarkdownFormat(el, '*', '*');
+                }
+            });
+        }
+
+        function initCloudinaryUpload() {
+            if (typeof cloudinary === 'undefined') {
+                console.warn('Cloudinary widget not loaded');
+                return;
+            }
+
+            const imageWidget = cloudinary.createUploadWidget({
+                cloudName: 'dxc8rcjuh',
+                uploadPreset: 'elisa_shizi',
+                folder: 'shizi-lessons',
+                cropping: false,
+                multiple: false,
+                clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
+                maxFileSize: 10000000,
+                styles: CLOUDINARY_WIDGET_STYLES
+            }, (error, result) => {
+                if (error || !result) return;
+                if (result.event === 'close') {
+                    pendingUploadTarget = null;
+                    return;
+                }
+                if (result.event === 'success' && pendingUploadTarget?.field === 'image') {
+                    setFormFieldValue(pendingUploadTarget.index, 'image', result.info.secure_url);
+                    showMessage('🖼️ 輔助插圖上傳成功！已自動填入網址', 'success');
+                    pendingUploadTarget = null;
+                }
+            });
+
+            const displayImageWidget = cloudinary.createUploadWidget({
+                cloudName: 'dxc8rcjuh',
+                uploadPreset: 'elisa_shizi',
+                folder: 'shizi-lessons/display-images',
+                cropping: false,
+                multiple: false,
+                clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
+                maxFileSize: 10000000,
+                styles: CLOUDINARY_WIDGET_STYLES
+            }, (error, result) => {
+                if (error || !result) return;
+                if (result.event === 'close') {
+                    pendingUploadTarget = null;
+                    return;
+                }
+                if (result.event === 'success' && pendingUploadTarget?.field === 'display_image') {
+                    setFormFieldValue(pendingUploadTarget.index, 'display_image', result.info.secure_url);
+                    showMessage('🖼️ 字形補丁上傳成功！已自動填入網址', 'success');
+                    pendingUploadTarget = null;
+                }
+            });
+
+            const container = document.getElementById('editPanelContent');
+            if (!container || container.dataset.cloudinaryUploadInit) return;
+            container.dataset.cloudinaryUploadInit = '1';
+
+            container.addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-upload-field]');
+                if (!btn) return;
+
+                const card = btn.closest('.form-item-card');
+                if (!card) return;
+
+                const index = parseInt(card.dataset.index, 10);
+                if (Number.isNaN(index) || !currentData[index]) return;
+
+                pendingUploadTarget = { index, field: btn.dataset.uploadField };
+
+                if (btn.dataset.uploadField === 'display_image') {
+                    displayImageWidget.open();
+                } else if (btn.dataset.uploadField === 'image') {
+                    imageWidget.open();
+                }
+            });
         }
 
         function attachFormEvents() {
@@ -2220,6 +2394,8 @@
         initResizer();
         initToggleEdit();
         initDragAndDrop();
+        initMarkdownShortcuts();
+        initCloudinaryUpload();
 
         // 載入全域導航腳本
         const navScript = document.createElement('script');

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中文詞彙遊戲 ⭐</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FF6EB4;
+    --pink-light: #FFD6EC;
+    --pink-pale: #FFF0F8;
+    --gold: #FFD700;
+    --gold-dark: #E6A800;
+    --purple: #C97EE8;
+    --purple-light: #F0D6FF;
+    --coral: #FF8C69;
+    --white: #FFFFFF;
+    --text: #3D1A4A;
+    --text-soft: #9B6BAD;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+    background: linear-gradient(135deg, #FFE0F5 0%, #F0D6FF 50%, #FFE8D6 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== SETUP SCREEN ===== */
+  #setup-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .setup-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--pink);
+    text-shadow: 3px 3px 0 var(--pink-light);
+    margin-bottom: 0.25rem;
+    text-align: center;
+  }
+
+  .setup-subtitle {
+    font-size: 1rem;
+    color: var(--text-soft);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 2rem;
+  }
+
+  .setup-group {
+    background: white;
+    border-radius: 20px;
+    padding: 1.25rem;
+    border: 2.5px solid var(--pink-light);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .setup-group-title {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--pink);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .setup-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .setup-pair label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-soft);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .setup-pair label .word-badge {
+    background: var(--pink-light);
+    color: var(--pink);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 900;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .setup-pair input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--pink-light);
+    font-size: 0.78rem;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    background: var(--pink-pale);
+  }
+
+  .setup-pair input:focus {
+    border-color: var(--pink);
+    background: white;
+  }
+
+  .setup-pair input::placeholder {
+    color: #CCA0CC;
+    font-size: 0.72rem;
+  }
+
+  .img-preview {
+    width: 100%;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: none;
+    border: 1.5px solid var(--pink-light);
+  }
+
+  .start-btn {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 3rem;
+    font-size: 1.3rem;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 6px 20px rgba(255,110,180,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .start-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 28px rgba(255,110,180,0.5);
+  }
+
+  /* ===== GAME SCREEN ===== */
+  #game-screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    position: relative;
+  }
+
+  /* Stars progress */
+  .stars-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .star-icon {
+    font-size: 2rem;
+    filter: grayscale(1) opacity(0.3);
+    transition: filter 0.4s, transform 0.4s;
+  }
+
+  .star-icon.earned {
+    filter: none;
+    transform: scale(1.2) rotate(-10deg);
+  }
+
+  /* Round label */
+  .round-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-soft);
+    margin-bottom: 1.5rem;
+    background: white;
+    padding: 0.3rem 1.2rem;
+    border-radius: 20px;
+    border: 2px solid var(--pink-light);
+  }
+
+  /* Image cards row */
+  .cards-row {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+  }
+
+  .vocab-card {
+    background: white;
+    border-radius: 24px;
+    padding: 1.25rem 1rem 1rem;
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    border: 3px solid var(--pink-light);
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vocab-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: var(--pink);
+    box-shadow: 0 10px 30px rgba(255,110,180,0.25);
+  }
+
+  .vocab-card.correct {
+    border-color: #4DD599;
+    background: #F0FFF8;
+    animation: correctPop 0.5s ease;
+  }
+
+  .vocab-card.wrong {
+    border-color: #FF6B6B;
+    background: #FFF0F0;
+    animation: wrongShake 0.4s ease;
+  }
+
+  @keyframes correctPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes wrongShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .card-img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 16px;
+    background: var(--pink-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+  }
+
+  .card-img img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  .card-img-placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 16px;
+    background: var(--pink-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+  }
+
+  .word-reveal {
+    font-size: 2.2rem;
+    font-weight: 900;
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--pink);
+    opacity: 0;
+    transform: translateY(8px) scale(0.8);
+    transition: opacity 0.4s, transform 0.4s;
+    min-height: 2.8rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .word-reveal.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .sentence-reveal {
+    font-size: 0.95rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--text-soft);
+    opacity: 0;
+    transition: opacity 0.4s 0.2s;
+    text-align: center;
+    min-height: 1.4rem;
+  }
+
+  .sentence-reveal.show { opacity: 1; }
+
+  /* Instruction */
+  .instruction {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    background: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 20px;
+    border: 2px solid var(--gold);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(255,215,0,0.2);
+  }
+
+  /* Nav buttons */
+  .nav-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .nav-btn {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.7rem 2rem;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 4px 15px rgba(255,110,180,0.3);
+    transition: transform 0.15s, opacity 0.3s;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .nav-btn.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .nav-btn:hover { transform: translateY(-2px) scale(1.03); }
+
+  .settings-btn {
+    background: white;
+    color: var(--text-soft);
+    border: 2px solid var(--pink-light);
+    border-radius: 50px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: border-color 0.2s;
+  }
+  .settings-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+  /* ===== CONFETTI ===== */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+    100% { opacity: 0; transform: translateY(100vh) rotate(720deg) scale(0.5); }
+  }
+
+  /* ===== COMPLETE SCREEN ===== */
+  #complete-screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .complete-emoji { font-size: 5rem; animation: bounce 0.8s infinite alternate; }
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-16px); }
+  }
+
+  .complete-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--pink);
+    text-shadow: 3px 3px 0 var(--pink-light);
+  }
+
+  .complete-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-soft);
+    font-weight: 700;
+  }
+
+  .complete-stars {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 2.5rem;
+  }
+
+  /* Pom pom decoration */
+  .pompom {
+    position: fixed;
+    font-size: 3rem;
+    pointer-events: none;
+    opacity: 0.15;
+    user-select: none;
+  }
+  .pompom-tl { top: 20px; left: 20px; transform: rotate(-20deg); }
+  .pompom-tr { top: 20px; right: 20px; transform: rotate(20deg); }
+  .pompom-bl { bottom: 20px; left: 20px; transform: rotate(20deg); }
+  .pompom-br { bottom: 20px; right: 20px; transform: rotate(-20deg); }
+</style>
+</head>
+<body>
+
+<div class="pompom pompom-tl">🎀</div>
+<div class="pompom pompom-tr">🌟</div>
+<div class="pompom pompom-bl">🌟</div>
+<div class="pompom pompom-br">🎀</div>
+
+<!-- ===== SETUP SCREEN ===== -->
+<div id="setup-screen">
+  <div class="setup-title">🎀 中文詞彙遊戲 🎀</div>
+  <div class="setup-subtitle">老師請貼上每個詞彙的圖片網址，然後按開始！</div>
+
+  <div class="setup-grid">
+
+    <div class="setup-group">
+      <div class="setup-group-title">🌸 第一組：香 / 臭</div>
+      <div class="setup-pair">
+        <label><span class="word-badge">香</span> 圖片網址</label>
+        <input type="text" id="img-xiang" placeholder="https://res.cloudinary.com/..." oninput="previewImg(this,'prev-xiang')">
+        <img id="prev-xiang" class="img-preview">
+      </div>
+      <div class="setup-pair">
+        <label><span class="word-badge">臭</span> 圖片網址</label>
+        <input type="text" id="img-chou" placeholder="https://res.cloudinary.com/..." oninput="previewImg(this,'prev-chou')">
+        <img id="prev-chou" class="img-preview">
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <div class="setup-group-title">👟 第二組：舊 / 新</div>
+      <div class="setup-pair">
+        <label><span class="word-badge">舊</span> 圖片網址</label>
+        <input type="text" id="img-jiu" placeholder="https://res.cloudinary.com/..." oninput="previewImg(this,'prev-jiu')">
+        <img id="prev-jiu" class="img-preview">
+      </div>
+      <div class="setup-pair">
+        <label><span class="word-badge">新</span> 圖片網址</label>
+        <input type="text" id="img-xin" placeholder="https://res.cloudinary.com/..." oninput="previewImg(this,'prev-xin')">
+        <img id="prev-xin" class="img-preview">
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <div class="setup-group-title">🧩 第三組：簡單 / 難</div>
+      <div class="setup-pair">
+        <label><span class="word-badge">簡單</span> 圖片網址</label>
+        <input type="text" id="img-easy" placeholder="https://res.cloudinary.com/..." oninput="previewImg(this,'prev-easy')">
+        <img id="prev-easy" class="img-preview">
+      </div>
+      <div class="setup-pair">
+        <label><span class="word-badge">難</span> 圖片網址</label>
+        <input type="text" id="img-hard" placeholder="https://res.cloudinary.com/..." oninput="previewImg(this,'prev-hard')">
+        <img id="prev-hard" class="img-preview">
+      </div>
+    </div>
+
+    <div class="setup-group">
+      <div class="setup-group-title">🍎 第四組：多 / 少</div>
+      <div class="setup-pair">
+        <label><span class="word-badge">多</span> 圖片網址</label>
+        <input type="text" id="img-many" placeholder="https://res.cloudinary.com/..." oninput="previewImg(this,'prev-many')">
+        <img id="prev-many" class="img-preview">
+      </div>
+      <div class="setup-pair">
+        <label><span class="word-badge">少</span> 圖片網址</label>
+        <input type="text" id="img-few" placeholder="https://res.cloudinary.com/..." oninput="previewImg(this,'prev-few')">
+        <img id="prev-few" class="img-preview">
+      </div>
+    </div>
+
+  </div>
+
+  <button class="start-btn" onclick="startGame()">✨ 開始遊戲 ✨</button>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game-screen">
+  <div class="stars-row" id="starsRow"></div>
+  <div class="round-label" id="roundLabel"></div>
+  <div class="instruction" id="instruction">老師說詞語，點點看正確的圖片！🎀</div>
+  <div class="cards-row" id="cardsRow"></div>
+  <div class="nav-row">
+    <button class="settings-btn" onclick="goSetup()">⚙️ 換圖片</button>
+    <button class="nav-btn" id="nextBtn" onclick="nextRound()">下一組 →</button>
+  </div>
+</div>
+
+<!-- ===== COMPLETE SCREEN ===== -->
+<div id="complete-screen">
+  <div class="complete-emoji">🎉</div>
+  <div class="complete-title">你好棒！！</div>
+  <div class="complete-stars">⭐⭐⭐⭐</div>
+  <div class="complete-subtitle">四組詞彙全部完成！<br>You're a superstar! 🌟</div>
+  <button class="start-btn" onclick="restartGame()">🔄 再玩一次</button>
+  <button class="settings-btn" style="margin-top:0.5rem" onclick="goSetup()">⚙️ 換圖片</button>
+</div>
+
+<script>
+  const ROUNDS = [
+    {
+      label: "第一組：香 / 臭",
+      pairs: [
+        { key: "xiang", word: "香", sentence: "很香的花。", placeholder: "🌸" },
+        { key: "chou",  word: "臭", sentence: "很臭的垃圾桶。", placeholder: "🗑️" }
+      ]
+    },
+    {
+      label: "第二組：舊 / 新",
+      pairs: [
+        { key: "jiu", word: "舊", sentence: "很舊的鞋子。", placeholder: "👞" },
+        { key: "xin", word: "新", sentence: "很新的鞋子。", placeholder: "👟" }
+      ]
+    },
+    {
+      label: "第三組：簡單 / 難",
+      pairs: [
+        { key: "easy", word: "簡單", sentence: "很簡單的樂高。", placeholder: "🦕" },
+        { key: "hard", word: "難",   sentence: "很難的樂高。",  placeholder: "🏰" }
+      ]
+    },
+    {
+      label: "第四組：多 / 少",
+      pairs: [
+        { key: "many", word: "多", sentence: "很多的蘋果。", placeholder: "🍎" },
+        { key: "few",  word: "少", sentence: "很少的蘋果。", placeholder: "🍏" }
+      ]
+    }
+  ];
+
+  let images = {};
+  let currentRound = 0;
+  let revealed = [];
+  let starsEarned = 0;
+
+  function previewImg(input, previewId) {
+    const prev = document.getElementById(previewId);
+    const url = input.value.trim();
+    if (url) {
+      prev.src = url;
+      prev.style.display = 'block';
+      prev.onerror = () => { prev.style.display = 'none'; };
+    } else {
+      prev.style.display = 'none';
+    }
+  }
+
+  function startGame() {
+    images = {
+      xiang: document.getElementById('img-xiang').value.trim(),
+      chou:  document.getElementById('img-chou').value.trim(),
+      jiu:   document.getElementById('img-jiu').value.trim(),
+      xin:   document.getElementById('img-xin').value.trim(),
+      easy:  document.getElementById('img-easy').value.trim(),
+      hard:  document.getElementById('img-hard').value.trim(),
+      many:  document.getElementById('img-many').value.trim(),
+      few:   document.getElementById('img-few').value.trim(),
+    };
+    currentRound = 0;
+    starsEarned = 0;
+    revealed = [];
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('complete-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'flex';
+    renderRound();
+  }
+
+  function renderRound() {
+    const round = ROUNDS[currentRound];
+    revealed = [];
+
+    document.getElementById('roundLabel').textContent = round.label;
+
+    const starsRow = document.getElementById('starsRow');
+    starsRow.innerHTML = ROUNDS.map((_, i) =>
+      `<div class="star-icon ${i < starsEarned ? 'earned' : ''}">⭐</div>`
+    ).join('');
+
+    document.getElementById('nextBtn').classList.remove('show');
+    document.getElementById('instruction').textContent = '老師說詞語，點點看正確的圖片！🎀';
+
+    const cardsRow = document.getElementById('cardsRow');
+    cardsRow.innerHTML = round.pairs.map((p, i) => {
+      const imgUrl = images[p.key];
+      const imgHtml = imgUrl
+        ? `<div class="card-img"><img src="${imgUrl}" alt="${p.word}" onerror="this.parentElement.innerHTML='<div class=\'card-img-placeholder\'>${p.placeholder}</div>'"></div>`
+        : `<div class="card-img-placeholder">${p.placeholder}</div>`;
+      return `
+        <div class="vocab-card" id="card-${i}" onclick="revealWord(${i})">
+          ${imgHtml}
+          <div class="word-reveal" id="word-${i}"></div>
+          <div class="sentence-reveal" id="sent-${i}"></div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function revealWord(index) {
+    if (revealed.includes(index)) return;
+    revealed.push(index);
+
+    const round = ROUNDS[currentRound];
+    const pair = round.pairs[index];
+    const card = document.getElementById(`card-${index}`);
+    const wordEl = document.getElementById(`word-${index}`);
+    const sentEl = document.getElementById(`sent-${index}`);
+
+    card.classList.add('correct');
+    wordEl.textContent = pair.word;
+    wordEl.classList.add('show');
+    sentEl.textContent = pair.sentence;
+    sentEl.classList.add('show');
+
+    launchConfetti(card);
+
+    if (revealed.length === round.pairs.length) {
+      starsEarned++;
+      setTimeout(() => {
+        document.getElementById('instruction').textContent = '✨ 跟著說說看！Say it out loud! ✨';
+        const starsRow = document.getElementById('starsRow');
+        starsRow.innerHTML = ROUNDS.map((_, i) =>
+          `<div class="star-icon ${i < starsEarned ? 'earned' : ''}">⭐</div>`
+        ).join('');
+        document.getElementById('nextBtn').classList.add('show');
+        document.getElementById('nextBtn').textContent =
+          currentRound < ROUNDS.length - 1 ? '下一組 →' : '完成 ✓';
+      }, 600);
+    }
+  }
+
+  function nextRound() {
+    currentRound++;
+    if (currentRound >= ROUNDS.length) {
+      showComplete();
+    } else {
+      renderRound();
+    }
+  }
+
+  function showComplete() {
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('complete-screen').style.display = 'flex';
+    for (let i = 0; i < 80; i++) {
+      setTimeout(() => spawnConfettiPiece(), i * 40);
+    }
+  }
+
+  function restartGame() {
+    currentRound = 0;
+    starsEarned = 0;
+    revealed = [];
+    document.getElementById('complete-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'flex';
+    renderRound();
+  }
+
+  function goSetup() {
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('complete-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'flex';
+  }
+
+  function launchConfetti(card) {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const colors = ['#FF6EB4','#FFD700','#C97EE8','#FF8C69','#4DD599','#FF6B6B','#67D4F8'];
+    for (let i = 0; i < 20; i++) {
+      spawnConfettiPiece(cx, cy, colors);
+    }
+  }
+
+  function spawnConfettiPiece(cx, cy, colors) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    const c = colors
+      ? colors[Math.floor(Math.random() * colors.length)]
+      : ['#FF6EB4','#FFD700','#C97EE8','#FF8C69','#4DD599'][Math.floor(Math.random()*5)];
+    const x = cx !== undefined ? cx + (Math.random() - 0.5) * 200 : Math.random() * window.innerWidth;
+    const startY = cy !== undefined ? cy : -10;
+    piece.style.cssText = `
+      left: ${x}px;
+      top: ${startY}px;
+      background: ${c};
+      width: ${6 + Math.random() * 8}px;
+      height: ${6 + Math.random() * 8}px;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      animation-duration: ${0.8 + Math.random() * 1.2}s;
+      animation-delay: ${Math.random() * 0.3}s;
+    `;
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 2500);
+  }
+</script>
+</body>
+</html>
