@@ -105,6 +105,67 @@
         
         /* Top Navigation styles are now in nav-global.css */
 
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .nav-dropdown-toggle {
+            background: none;
+            border: none;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .nav-dropdown-toggle::after {
+            content: '▾';
+            font-size: 0.8rem;
+            margin-left: 0.25rem;
+        }
+
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 0.35rem);
+            left: 0;
+            min-width: 160px;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .nav-dropdown.open .nav-dropdown-menu,
+        .nav-dropdown:hover .nav-dropdown-menu {
+            display: block;
+        }
+
+        .nav-dropdown-item {
+            display: block;
+            padding: 0.85rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-dropdown-item:hover,
+        .nav-dropdown-item.active {
+            background: var(--bg-hover);
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown-item:focus {
+            outline: none;
+            background: var(--bg-hover);
+        }
+
         /* ==================== Header ==================== */
         .header {
             background: var(--bg-card);
@@ -1345,7 +1406,13 @@
             <span class="nav-separator">|</span>
             <a href="../bct/lessons/lesson.html" class="nav-link">Lessons</a>
             <span class="nav-separator">|</span>
-            <a href="lesson.html" class="nav-link active">Literacy</a>
+            <div class="nav-dropdown" id="literacyDropdown">
+                <button class="nav-link nav-dropdown-toggle active" id="literacyDropdownToggle" onclick="toggleLiteracyMenu(event)">Literacy</button>
+                <div class="nav-dropdown-menu" id="literacyDropdownMenu">
+                    <a href="#" class="nav-dropdown-item" data-course="shizi" onclick="switchCourse('shizi'); return false;">识字</a>
+                    <a href="#" class="nav-dropdown-item" data-course="hsk2" onclick="switchCourse('hsk2'); return false;">HSK2</a>
+                </div>
+            </div>
             <span class="nav-separator">|</span>
             <a href="review.html" class="nav-link">Review Lit.</a>
             <span class="nav-separator group-separator">•</span>
@@ -1382,7 +1449,8 @@
                 <span>Courses</span>
             </div>
             <a href="../bct/lessons/lesson.html" class="mobile-menu-item">Lessons</a>
-            <a href="lesson.html" class="mobile-menu-item active">Literacy</a>
+            <a href="#" class="mobile-menu-item mobile-course-item" data-course="shizi" onclick="switchCourse('shizi'); return false;">识字</a>
+            <a href="#" class="mobile-menu-item mobile-course-item" data-course="hsk2" onclick="switchCourse('hsk2'); return false;">HSK2</a>
             <a href="review.html" class="mobile-menu-item">Review Lit.</a>
         </div>
 
@@ -1421,7 +1489,7 @@
             </div>
 
             <!-- Mobile: Dropdown -->
-            <select class="lesson-dropdown" id="lessonDropdown" onchange="navigateToLesson(this.value)">
+            <select class="lesson-dropdown" id="lessonDropdown" onchange="if (this.value) navigateToLesson(this.value)">
                 <!-- JavaScript will populate this -->
             </select>
         </div>
@@ -1593,7 +1661,115 @@
         
         // ==================== Global Variables ====================
         let currentLessonData = null;
+
+        const LESSON_COURSES = {
+            shizi: {
+                id: 'shizi',
+                label: '识字',
+                lessonCount: 25,
+                docIdPrefix: '',
+                titlePrefix: '识字'
+            },
+            hsk2: {
+                id: 'hsk2',
+                label: 'HSK2',
+                lessonCount: 15,
+                docIdPrefix: 'hsk2-',
+                titlePrefix: 'HSK2 '
+            }
+        };
+
+        let currentCourse = getCourseFromUrl();
         
+        function getCourseFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const course = urlParams.get('course');
+            if (course === 'hsk2') return 'hsk2';
+            const lessonId = urlParams.get('id');
+            if (lessonId && lessonId.startsWith('hsk2-')) return 'hsk2';
+            return 'shizi';
+        }
+
+        function getLessonIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id') || null;
+        }
+
+        function updateUrl(courseId, lessonId = null) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('course', courseId);
+            if (lessonId) {
+                url.searchParams.set('id', lessonId);
+            } else {
+                url.searchParams.delete('id');
+            }
+            history.pushState(null, '', url.pathname + url.search);
+        }
+
+        function setActiveCourseMenu() {
+            document.querySelectorAll('#literacyDropdownMenu .nav-dropdown-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.course === currentCourse);
+            });
+            document.querySelectorAll('.mobile-course-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.course === currentCourse);
+            });
+        }
+
+        function toggleLiteracyMenu(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const dropdown = document.getElementById('literacyDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        window.addEventListener('click', (event) => {
+            const dropdown = document.getElementById('literacyDropdown');
+            if (!event.target.closest('#literacyDropdown')) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        window.addEventListener('popstate', () => {
+            currentCourse = getCourseFromUrl();
+            renderLessonNavigation();
+            setActiveCourseMenu();
+            loadLesson();
+        });
+        
+        function getLessonNumberFromId(lessonId) {
+            if (!lessonId) return null;
+            const match = lessonId.match(/(?:hsk2-)?lesson(\d+)$/);
+            return match ? parseInt(match[1], 10) : null;
+        }
+
+        function getCourseConfig(courseId) {
+            return LESSON_COURSES[courseId] || LESSON_COURSES.shizi;
+        }
+
+        function getLessonTitle(courseId, lessonNum) {
+            return `${getCourseConfig(courseId).titlePrefix}${convertNumberToChinese(lessonNum)}`;
+        }
+
+        function convertNumberToChinese(num) {
+            const digits = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+            if (num === 10) return '十';
+            if (num < 10) return digits[num];
+            if (num < 20) return `十${digits[num - 10]}`;
+            const tens = Math.floor(num / 10);
+            const ones = num % 10;
+            return `${digits[tens]}十${ones ? digits[ones] : ''}`;
+        }
+
+        function switchCourse(courseId) {
+            if (!LESSON_COURSES[courseId]) return;
+            currentCourse = courseId;
+            updateUrl(courseId);
+            renderLessonNavigation();
+            setActiveCourseMenu();
+            document.getElementById('literacyDropdown').classList.remove('open');
+            loadLesson();
+        }
+
         // ==================== Tab Switching ====================
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -1652,8 +1828,8 @@
                 console.timeEnd('Loading ' + lessonId);
 
                 // Update header with Chinese number format
-                const lessonNum = parseInt(lessonId.replace('lesson', ''));
-                const chineseTitle = convertToChineseNumber(lessonNum);
+                const lessonNum = getLessonNumberFromId(lessonId);
+                const chineseTitle = lessonNum ? getLessonTitle(currentCourse, lessonNum) : lessonId;
                 lessonTitle.textContent = chineseTitle;
                 lessonSubtitle.textContent = 'Chinese Learning Platform';
 
@@ -2589,6 +2765,8 @@ modalCharacter.innerHTML = displayContent;
 }
         // ==================== Initialize ====================
         window.addEventListener('DOMContentLoaded', () => {
+            renderLessonNavigation();
+            setActiveCourseMenu();
             loadLesson();
         });
 
@@ -2599,21 +2777,21 @@ modalCharacter.innerHTML = displayContent;
 
  // ==================== Render Lesson Navigation (BBC Style) ====================
     function renderLessonNavigation() {
-        const currentLesson = getLessonId();
-        const currentNum = currentLesson ? parseInt(currentLesson.replace('lesson', '')) : null;
+        const currentLesson = getLessonIdFromUrl();
+        const currentNum = getLessonNumberFromId(currentLesson);
+        const config = getCourseConfig(currentCourse);
 
         const lessonNumbers = document.getElementById('lessonNumbers');
         const lessonDropdown = document.getElementById('lessonDropdown');
 
-        // Generate BBC-style horizontal bars for desktop (1-25)
         let barsHTML = '';
-        for (let i = 1; i <= 25; i++) {
+        for (let i = 1; i <= config.lessonCount; i++) {
             const isActive = i === currentNum;
             barsHTML += `
                 <div class="lesson-unit">
                     <div class="lesson-bar ${isActive ? 'active' : ''}"
                          onclick="navigateToLesson(${i})"
-                         title="识字${i}">
+                         title="${config.label} ${i}">
                     </div>
                     <span class="lesson-label">${i}</span>
                 </div>
@@ -2621,46 +2799,49 @@ modalCharacter.innerHTML = displayContent;
         }
         lessonNumbers.innerHTML = barsHTML;
 
-        // Generate dropdown options for mobile
         let dropdownHTML = '';
-        for (let i = 1; i <= 25; i++) {
-            const lessonTitle = convertToChineseNumber(i);
+        dropdownHTML += `<option value="">Select ${config.label} lesson</option>`;
+        for (let i = 1; i <= config.lessonCount; i++) {
             const isSelected = i === currentNum;
             dropdownHTML += `
                 <option value="${i}" ${isSelected ? 'selected' : ''}>
-                    ${lessonTitle}
+                    ${getLessonTitle(currentCourse, i)}
                 </option>
             `;
         }
         lessonDropdown.innerHTML = dropdownHTML;
     }
 
-    // ==================== Convert Number to Chinese Format ====================
-    function convertToChineseNumber(num) {
+    function getLessonNumberFromId(lessonId) {
+        if (!lessonId) return null;
+        const match = lessonId.match(/(?:hsk2-)?lesson(\d+)$/);
+        return match ? parseInt(match[1], 10) : null;
+    }
+
+    function getCourseConfig(courseId) {
+        return LESSON_COURSES[courseId] || LESSON_COURSES.shizi;
+    }
+
+    function getLessonTitle(courseId, lessonNum) {
+        return `${getCourseConfig(courseId).titlePrefix}${convertNumberToChinese(lessonNum)}`;
+    }
+
+    function convertNumberToChinese(num) {
         const digits = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
-        const units = ['十', '百', '千'];
-
-        if (num <= 10) {
-            if (num === 10) return '识字十';
-            return `识字${digits[num]}`;
-        }
-
-        if (num < 20) {
-            return `识字十${digits[num - 10]}`;
-        }
-
-        if (num < 100) {
-            const tens = Math.floor(num / 10);
-            const ones = num % 10;
-            return `识字${digits[tens]}十${ones > 0 ? digits[ones] : ''}`;
-        }
-
-        return `识字${num}`;
+        if (num === 10) return '十';
+        if (num < 10) return digits[num];
+        if (num < 20) return `十${digits[num - 10]}`;
+        const tens = Math.floor(num / 10);
+        const ones = num % 10;
+        return `${digits[tens]}十${ones ? digits[ones] : ''}`;
     }
 
     // ==================== Navigate to Lesson ====================
     function navigateToLesson(lessonNum) {
-        window.location.href = `lesson.html?id=lesson${lessonNum}`;
+        const config = getCourseConfig(currentCourse);
+        const lessonId = `${config.docIdPrefix}lesson${lessonNum}`;
+        updateUrl(currentCourse, lessonId);
+        loadLesson();
     }
 
     // ==================== Refresh Lesson Data ====================
