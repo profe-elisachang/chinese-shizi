@@ -13,6 +13,7 @@
 
     <!-- Marked.js for Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="courses-config.js"></script>
 
    <style>
     
@@ -1082,12 +1083,21 @@
         
         <!-- Main Content -->
         <div id="mainContent" class="hidden">
-            <!-- Tab System -->
-            <div class="tab-system">
+            <!-- Course Selection -->
+            <div class="tab-system" id="courseTabs">
                 <div class="tab-buttons">
-                    <button class="tab-btn active" data-tab="components">Radical Components</button>
-                    <button class="tab-btn" data-tab="characters">Character Lessons</button>
-                    <button class="tab-btn" data-tab="phrases">词组</button>
+                    <button class="tab-btn active" data-course="shizi">识字</button>
+                    <button class="tab-btn" data-course="hsk2">HSK 2</button>
+                </div>
+            </div>
+
+            <!-- Content Type Tabs -->
+            <div class="tab-system" id="contentTabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="components" id="tabComponents">Radical Components</button>
+                    <button class="tab-btn" data-tab="characters" id="tabCharacters">Character Lessons</button>
+                    <button class="tab-btn" data-tab="vocabulary" id="tabVocabulary" style="display:none;">字表</button>
+                    <button class="tab-btn" data-tab="phrases" id="tabPhrases">词组</button>
                 </div>
             </div>
             
@@ -1421,7 +1431,9 @@
         let componentCharacters = [];
         let targetCharacters = [];
         let phraseItems = [];
+        let vocabularyItems = [];
         let userProgress = {};
+        let currentCourse = 'shizi';
         let currentTab = 'components';
         let reviewQueue = [];
         let currentReviewIndex = 0;
@@ -1430,55 +1442,82 @@
         let saveProgressTimeout = null; // 防抖計時器
         let pendingSave = false; // 標記是否有待保存的更改
         
+        // ==================== Device Code Fallback ====================
+        function getOrCreateLocalDeviceCode() {
+            let code = localStorage.getItem('shizi_local_device_code');
+            if (!code) {
+                code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                localStorage.setItem('shizi_local_device_code', code);
+            }
+            return code;
+        }
+
+        function setAuthUser(user) {
+            if (user) {
+                currentUser = user;
+                deviceCode = user.uid.substring(0, 6).toUpperCase();
+            } else if (!deviceCode) {
+                deviceCode = getOrCreateLocalDeviceCode();
+            }
+            updateDeviceCodeDisplay();
+        }
+
+        async function bootstrapReviewApp() {
+            await checkAndVerifyUsername();
+
+            if (username) {
+                await loadLessonsFromFirebase();
+                await loadUserProgress();
+                updateStudentNameDisplay();
+                renderLessonCheckboxes();
+                document.getElementById('loadingContainer').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                updateContentTabsForCourse(currentCourse);
+                updateDueInfoText();
+                const directionSelector = document.getElementById('reviewDirectionSelector');
+                if (directionSelector) {
+                    directionSelector.style.display = usesDirectionReview() ? 'block' : 'none';
+                }
+                updateStats();
+                checkAndShowNameModal();
+            }
+        }
+
+        let reviewAppBootstrapped = false;
+
         // ==================== Initialization ====================
         window.addEventListener('DOMContentLoaded', async () => {
+            auth.onAuthStateChanged(async (user) => {
+                setAuthUser(user);
+                if (!reviewAppBootstrapped) {
+                    reviewAppBootstrapped = true;
+                    await bootstrapReviewApp();
+                }
+            });
+
             try {
-                // Anonymous login
                 await auth.signInAnonymously();
-                auth.onAuthStateChanged(async (user) => {
-                    if (user) {
-                        currentUser = user;
-                        deviceCode = user.uid.substring(0, 6).toUpperCase();
-                        // 显示 deviceCode，如果用户名已设置，也会在验证后更新显示
-                        updateDeviceCodeDisplay();
-                        
-                        // Check and verify username first
-                        await checkAndVerifyUsername();
-                        
-                        // Only proceed if username is verified
-                        if (username) {
-                            // Load data in correct order
-                            await loadLessonsFromFirebase();
-                            await loadUserProgress();
-
-                            // Update student name display
-                            updateStudentNameDisplay();
-
-                            // Render with progress data
-                            renderLessonCheckboxes();
-
-                            // Show main content
-                            document.getElementById('loadingContainer').classList.add('hidden');
-                            document.getElementById('mainContent').classList.remove('hidden');
-
-                            // 初始化显示逻辑
-                            updateDueInfoText();
-                            const directionSelector = document.getElementById('reviewDirectionSelector');
-                            if (directionSelector) {
-                                directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
-                            }
-
-                            updateStats();
-
-                            // Check if we need to show name input modal (for display name)
-                            checkAndShowNameModal();
-                        }
-                    }
-                });
             } catch (error) {
-                showMessage('初始化失败: ' + error.message, 'error');
+                console.error('Anonymous auth failed:', error);
+                if (!reviewAppBootstrapped) {
+                    reviewAppBootstrapped = true;
+                    setAuthUser(null);
+                    document.getElementById('loadingContainer').classList.add('hidden');
+                    showAuthErrorModal(error);
+                    await bootstrapReviewApp();
+                }
             }
         });
+
+        function showAuthErrorModal(error) {
+            const is403 = error?.code === 'auth/operation-not-allowed' ||
+                (error?.message && error.message.includes('403'));
+            const msg = is403
+                ? 'Firebase 匿名登入被拒絕（403）。請確認：\n1. Firebase Console → Authentication → 已啟用「匿名」\n2. Google Cloud API Key 的 HTTP referrer 包含你目前的網址（如 http://127.0.0.1:*）\n\n若無法登入，複習進度可能無法同步到雲端。'
+                : ('登入失敗：' + (error?.message || error));
+            console.warn(msg);
+            showMessage(msg, 'error');
+        }
         
         // ==================== Save on Page Unload ====================
         // 確保在頁面關閉時保存所有待保存的進度
@@ -1525,116 +1564,188 @@
                 .replace(/(<li>.*?<\/li>\s*)+/gs, '<ul>$&</ul>');
         }
         
-        // ==================== Load Lessons from Firebase ====================
-        async function loadLessonsFromFirebase() {
-            try {
-            console.time('Loading');  // ← 加这行
-
-            // ========== 緩存檢查（含版本控制）==========
-        const CACHE_VERSION = 3;  // 發布機制版本（增加phrases支持）
-        const MAX_CACHE_AGE = 1000 * 60 * 30;  // 30 分鐘緩存過期
-        const cached = localStorage.getItem('lessons_cache');
-        if (cached) {
-            const data = JSON.parse(cached);
-            const cacheAge = Date.now() - (data.cacheTime || 0);
-            // 檢查版本和時效
-            if (data.version === CACHE_VERSION && cacheAge < MAX_CACHE_AGE) {
-                componentCharacters = data.components;
-                targetCharacters = data.targets;
-                phraseItems = data.phrases || [];
-                console.log('✅ Loaded from cache!');
-                console.timeEnd('Loading');
-                return;
-            } else {
-                console.log('🔄 Cache expired or version mismatch, reloading...');
-                localStorage.removeItem('lessons_cache');
-            }
+        // ==================== Progress Key Helper ====================
+        function getItemProgressKey(item) {
+            return getProgressKey(currentCourse, currentTab, item);
         }
-                componentCharacters = [];
-                targetCharacters = [];
-                phraseItems = [];
-                
-// Load lessons 1-25
-for (let i = 1; i <= 25; i++) {
-    try {
-        const doc = await db.collection('lessons').doc(`lesson${i}`).get();
-        if (doc.exists) {
-            const data = doc.data();
 
-            // Components - 只載入已發布的 (is_published !== false，undefined 視為已發布以向後兼容)
+        function usesDirectionReview() {
+            return currentTab === 'phrases' || currentTab === 'vocabulary';
+        }
+
+        // ==================== Content Tabs per Course ====================
+        function updateContentTabsForCourse(courseId) {
+            const config = COURSES_CONFIG[courseId];
+            const tabMap = {
+                components: document.getElementById('tabComponents'),
+                characters: document.getElementById('tabCharacters'),
+                vocabulary: document.getElementById('tabVocabulary'),
+                phrases: document.getElementById('tabPhrases')
+            };
+
+            Object.keys(tabMap).forEach(tab => {
+                if (tabMap[tab]) {
+                    tabMap[tab].style.display = config.contentTabs.includes(tab) ? '' : 'none';
+                }
+            });
+
+            if (!config.contentTabs.includes(currentTab)) {
+                currentTab = config.contentTabs[0];
+            }
+
+            document.querySelectorAll('#contentTabs .tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === currentTab);
+            });
+
+            const directionSelector = document.getElementById('reviewDirectionSelector');
+            if (directionSelector) {
+                directionSelector.style.display = usesDirectionReview() ? 'block' : 'none';
+            }
+            updateDueInfoText();
+        }
+
+        function parseLessonDocument(lessonId, data, courseId) {
             if (data.components && data.components.length > 0) {
                 data.components
                     .filter(comp => comp.is_published !== false)
                     .forEach(comp => {
                         componentCharacters.push({
                             ...comp,
-                            lesson: `lesson${i}`,
+                            lesson: lessonId,
                             type: 'component'
                         });
                     });
             }
 
-            // Target characters - 只載入已發布的
             if (data.target_characters && data.target_characters.length > 0) {
                 data.target_characters
                     .filter(target => target.is_published !== false)
                     .forEach(target => {
                         targetCharacters.push({
                             ...target,
-                            lesson: `lesson${i}`,
+                            lesson: lessonId,
                             type: 'target'
                         });
                     });
             }
 
-            // Phrases - 只載入 subtype === 'phrase' 的詞組（排除對話）
             if (data.phrases && data.phrases.length > 0) {
                 data.phrases
-                    .filter(phrase => phrase.subtype === 'phrase')
+                    .filter(phrase => !phrase.subtype || phrase.subtype === 'phrase')
                     .forEach(phrase => {
-                        // 解析 content: "国家|guójiā|country"
                         const parts = phrase.content.split('|').map(s => s.trim());
                         const chinese = parts[0] || '';
-                        const pinyin = parts[1] || '';
-                        const english = parts[2] || '';
-                        
-                        // 生成唯一ID: lesson|词组汉字
-                        const uniqueId = `lesson${i}|${chinese}`;
-                        
                         phraseItems.push({
                             ...phrase,
-                            chinese: chinese,
-                            pinyin: pinyin,
-                            english: english,
-                            lesson: `lesson${i}`,
+                            chinese,
+                            pinyin: parts[1] || '',
+                            english: parts[2] || '',
+                            lesson: lessonId,
                             type: 'phrase',
-                            uniqueId: uniqueId
+                            uniqueId: `${lessonId}|${chinese}`
                         });
                     });
             }
+
+            if (data.vocabulary && data.vocabulary.length > 0) {
+                data.vocabulary.forEach(vocab => {
+                    const parts = (vocab.content || '').split('|').map(s => s.trim());
+                    const chinese = parts[0] || '';
+                    vocabularyItems.push({
+                        ...vocab,
+                        chinese,
+                        pinyin: parts[1] || '',
+                        english: parts[2] || '',
+                        lesson: lessonId,
+                        type: 'vocabulary',
+                        uniqueId: `${lessonId}|${chinese}`
+                    });
+                });
+            }
         }
-    } catch (error) {
-        console.log(`Lesson ${i} not found, skipping...`);
-    }
-}
-                
-                console.log(`Loaded ${componentCharacters.length} components, ${targetCharacters.length} targets, ${phraseItems.length} phrases`);
-                // ========== 存緩存（含版本和時間戳）==========
-                    localStorage.setItem('lessons_cache', JSON.stringify({
-                        components: componentCharacters,
-                        targets: targetCharacters,
-                        phrases: phraseItems,
-                        version: 3,  // 更新版本號（增加phrases支持）
-                        cacheTime: Date.now()
-                    }));
-                    console.log('💾 Saved to cache!');
-                    // ========== 到这里 ==========
-                 console.timeEnd('Loading');  // ← 加这行
-                
+
+        // ==================== Load Lessons from Firebase ====================
+        async function loadLessonsFromFirebase(courseId = currentCourse, options = {}) {
+            try {
+                console.time('Loading');
+                const config = COURSES_CONFIG[courseId];
+                const cacheKey = `lessons_cache_${courseId}`;
+                const MAX_CACHE_AGE = 1000 * 60 * 30;
+
+                if (options.bypassCache) {
+                    localStorage.removeItem(cacheKey);
+                }
+
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    const cacheAge = Date.now() - (data.cacheTime || 0);
+                    if (data.version === CACHE_VERSION && cacheAge < MAX_CACHE_AGE) {
+                        componentCharacters = data.components || [];
+                        targetCharacters = data.targets || [];
+                        phraseItems = data.phrases || [];
+                        vocabularyItems = data.vocabulary || [];
+                        console.log(`✅ Loaded ${courseId} from cache!`);
+                        console.timeEnd('Loading');
+                        return;
+                    }
+                    localStorage.removeItem(cacheKey);
+                }
+
+                componentCharacters = [];
+                targetCharacters = [];
+                phraseItems = [];
+                vocabularyItems = [];
+
+                for (let i = 1; i <= config.lessonCount; i++) {
+                    const lessonId = getLessonDocId(courseId, i);
+                    try {
+                        const doc = await db.collection('lessons').doc(lessonId).get();
+                        if (doc.exists) {
+                            parseLessonDocument(lessonId, doc.data(), courseId);
+                        }
+                    } catch (error) {
+                        console.log(`${lessonId} not found, skipping...`);
+                    }
+                }
+
+                console.log(`Loaded ${courseId}: ${componentCharacters.length} components, ${targetCharacters.length} targets, ${phraseItems.length} phrases`);
+
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    components: componentCharacters,
+                    targets: targetCharacters,
+                    phrases: phraseItems,
+                    vocabulary: vocabularyItems,
+                    version: CACHE_VERSION,
+                    cacheTime: Date.now()
+                }));
+
+                console.timeEnd('Loading');
             } catch (error) {
                 console.error('Error loading lessons:', error);
                 showMessage('加载课程失败: ' + error.message, 'error');
             }
+        }
+
+        async function switchCourse(courseId) {
+            if (courseId === currentCourse) return;
+
+            currentCourse = courseId;
+            document.querySelectorAll('#courseTabs .tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.course === courseId);
+            });
+
+            document.getElementById('loadingContainer').classList.remove('hidden');
+            document.getElementById('mainContent').classList.add('hidden');
+
+            updateContentTabsForCourse(courseId);
+            await loadLessonsFromFirebase(courseId, { bypassCache: true });
+            renderLessonCheckboxes();
+            clearAllLessons();
+            updateStats();
+
+            document.getElementById('loadingContainer').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
         }
         
         // ==================== Reset Layer 3 ====================
@@ -1644,33 +1755,28 @@ for (let i = 1; i <= 25; i++) {
             document.getElementById('difficultySection').style.display = 'none';
         }
         function renderLessonCheckboxes() {
-        console.time('Rendering');  // ← 加这行
+        console.time('Rendering');
             const container = document.getElementById('lessonCheckboxes');
             const lessons = [];
+            const lessonCount = COURSES_CONFIG[currentCourse].lessonCount;
             
-            for (let i = 1; i <= 25; i++) {
-                const lessonId = `lesson${i}`;
+            for (let i = 1; i <= lessonCount; i++) {
+                const lessonId = getLessonDocId(currentCourse, i);
                 let items = [];
                 if (currentTab === 'components') {
                     items = componentCharacters.filter(c => c.lesson === lessonId);
                 } else if (currentTab === 'characters') {
                     items = targetCharacters.filter(c => c.lesson === lessonId);
+                } else if (currentTab === 'vocabulary') {
+                    items = vocabularyItems.filter(v => v.lesson === lessonId);
                 } else if (currentTab === 'phrases') {
                     items = phraseItems.filter(p => p.lesson === lessonId);
                 }
                 
-                        // ✅ 計算進度：Easy 數量 / 總數量
         let easyCount = 0;
         if (items.length > 0) {
             easyCount = items.filter(item => {
-                let progress;
-                if (currentTab === 'phrases') {
-                    // 使用uniqueId作为key
-                    progress = userProgress[item.uniqueId];
-                } else {
-                    // 使用character作为key
-                    progress = userProgress[item.character];
-                }
+                const progress = userProgress[getItemProgressKey(item)];
                 return progress && progress.box === 'easy';
             }).length;
         }
@@ -1781,25 +1887,29 @@ for (let i = 1; i <= 25; i++) {
             return selected;
         }
         
-        // ==================== Layer 1: Tab Switching (Components vs Characters vs Phrases) ====================
-        document.querySelectorAll('.tab-system:first-of-type .tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active from all Layer 1 buttons
-                document.querySelectorAll('.tab-system:first-of-type .tab-btn').forEach(b => b.classList.remove('active'));
-                // Add active to clicked button
+        // ==================== Course Tab Switching ====================
+        document.querySelectorAll('#courseTabs .tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchCourse(btn.dataset.course));
+        });
+
+        // ==================== Content Tab Switching ====================
+        document.querySelectorAll('#contentTabs .tab-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                document.querySelectorAll('#contentTabs .tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentTab = btn.dataset.tab;
-                
-                // 显示/隐藏复习方向选择器（只在词组tab显示）
+
                 const directionSelector = document.getElementById('reviewDirectionSelector');
                 if (directionSelector) {
-                    directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+                    directionSelector.style.display = usesDirectionReview() ? 'block' : 'none';
                 }
-                
-                // 更新due-info的文字
+
+                // 字表/詞組常在 Editor 更新，切換時重新拉取避免快取過期
+                if (currentTab === 'vocabulary' || currentTab === 'phrases') {
+                    await loadLessonsFromFirebase(currentCourse, { bypassCache: true });
+                }
+
                 updateDueInfoText();
-                
-                // Render and reset
                 renderLessonCheckboxes();
                 clearAllLessons();
                 updateStats();
@@ -1810,13 +1920,13 @@ for (let i = 1; i <= 25; i++) {
         function updateDueInfoText() {
             const dueItemType = document.getElementById('dueItemType');
             if (dueItemType) {
-                if (currentTab === 'phrases') {
-                    dueItemType.textContent = 'phrases';
-                } else if (currentTab === 'components') {
-                    dueItemType.textContent = 'components';
-                } else {
-                    dueItemType.textContent = 'characters';
-                }
+                const labels = {
+                    phrases: 'phrases',
+                    vocabulary: 'vocabulary',
+                    components: 'components',
+                    characters: 'characters'
+                };
+                dueItemType.textContent = labels[currentTab] || 'characters';
             }
         }
         
@@ -1856,6 +1966,8 @@ for (let i = 1; i <= 25; i++) {
                 sourceItems = componentCharacters;
             } else if (currentTab === 'characters') {
                 sourceItems = targetCharacters;
+            } else if (currentTab === 'vocabulary') {
+                sourceItems = vocabularyItems;
             } else if (currentTab === 'phrases') {
                 sourceItems = phraseItems;
             }
@@ -1869,14 +1981,7 @@ for (let i = 1; i <= 25; i++) {
             const boxes = { forgot: 0, hard: 0, good: 0, easy: 0 };
             
             items.forEach(item => {
-                let progress;
-                if (currentTab === 'phrases') {
-                    // 使用uniqueId作为key
-                    progress = userProgress[item.uniqueId];
-                } else {
-                    // 使用character作为key
-                    progress = userProgress[item.character];
-                }
+                const progress = userProgress[getItemProgressKey(item)];
                 const box = progress ? progress.box : 'forgot';
                 boxes[box]++;
             });
@@ -1898,14 +2003,7 @@ for (let i = 1; i <= 25; i++) {
             const today = new Date().setHours(0, 0, 0, 0);
             
             return items.filter(item => {
-                let progress;
-                if (currentTab === 'phrases') {
-                    // 使用uniqueId作为key
-                    progress = userProgress[item.uniqueId];
-                } else {
-                    // 使用character作为key
-                    progress = userProgress[item.character];
-                }
+                const progress = userProgress[getItemProgressKey(item)];
                 
                 if (!progress) return true; // New item
                 
@@ -1937,14 +2035,7 @@ for (let i = 1; i <= 25; i++) {
             
             const breakdown = { forgot: 0, hard: 0, good: 0, easy: 0 };
             selectedItems.forEach(item => {
-                let progress;
-                if (currentTab === 'phrases') {
-                    // 使用uniqueId作为key
-                    progress = userProgress[item.uniqueId];
-                } else {
-                    // 使用character作为key
-                    progress = userProgress[item.character];
-                }
+                const progress = userProgress[getItemProgressKey(item)];
                 const box = progress ? progress.box : 'forgot';
                 breakdown[box]++;
             });
@@ -1978,7 +2069,7 @@ for (let i = 1; i <= 25; i++) {
             const amount = document.getElementById('reviewAmount').value;
             
             if (dueItems.length === 0) {
-                const itemType = currentTab === 'phrases' ? '词组' : '字';
+                const itemType = usesDirectionReview() ? (currentTab === 'vocabulary' ? '字表' : '词组') : '字';
                 showMessage(`No ${itemType} are due for review!没有到期的${itemType}需要复习！`, 'info');
                 return;
             }
@@ -1991,19 +2082,12 @@ for (let i = 1; i <= 25; i++) {
         function startBoxReview(box) {
             const items = getSelectedCharacters();
             reviewQueue = items.filter(item => {
-                let progress;
-                if (currentTab === 'phrases') {
-                    // 使用uniqueId作为key
-                    progress = userProgress[item.uniqueId];
-                } else {
-                    // 使用character作为key
-                    progress = userProgress[item.character];
-                }
+                const progress = userProgress[getItemProgressKey(item)];
                 return progress ? progress.box === box : box === 'forgot';
             });
             
             if (reviewQueue.length === 0) {
-                const itemType = currentTab === 'phrases' ? '词组' : '字';
+                const itemType = usesDirectionReview() ? (currentTab === 'vocabulary' ? '字表' : '词组') : '字';
                 showMessage(`没有 ${box} 难度的${itemType}！`, 'info');
                 return;
             }
@@ -2037,7 +2121,7 @@ for (let i = 1; i <= 25; i++) {
             
             // 显示复习方向选择器（如果在词组tab）
             const directionSelector = document.getElementById('reviewDirectionSelector');
-            if (directionSelector && currentTab === 'phrases') {
+            if (directionSelector && usesDirectionReview()) {
                 directionSelector.style.display = 'block';
             }
             
@@ -2067,8 +2151,8 @@ for (let i = 1; i <= 25; i++) {
             
             const characterElement = document.getElementById('character');
             
-            // 如果是词组
-            if (currentTab === 'phrases') {
+            // 詞組或字表（支援雙向複習）
+            if (usesDirectionReview()) {
                 if (direction === 'forward') {
                     // 正向：正面显示汉字，背面显示拼音+英文
                     characterElement.textContent = item.chinese;
@@ -2225,18 +2309,12 @@ for (let i = 1; i <= 25; i++) {
         async function handleCardMove(box) {
             const item = reviewQueue[currentReviewIndex];
             
-            // 确定使用的key
-            let progressKey;
-            if (currentTab === 'phrases') {
-                progressKey = item.uniqueId;
-            } else {
-                progressKey = item.character;
-            }
+            const progressKey = getItemProgressKey(item);
             
-            // Update progress
             userProgress[progressKey] = {
-                character: currentTab === 'phrases' ? item.chinese : item.character,
+                character: usesDirectionReview() ? item.chinese : item.character,
                 lesson: item.lesson,
+                course: currentCourse,
                 box: box,
                 reviews: (userProgress[progressKey]?.reviews || 0) + 1,
                 lastReviewed: new Date().toISOString()
@@ -2292,7 +2370,7 @@ for (let i = 1; i <= 25; i++) {
                 <div style="text-align: center;">
                     <div style="font-size: 3rem; margin-bottom: 16px;">🎉</div>
                     <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px;">Great job!</div>
-                    <div style="font-size: 1rem; margin-bottom: 24px;">You've reviewed ${reviewQueue.length} ${currentTab === 'phrases' ? 'phrases' : 'characters'}</div>
+                    <div style="font-size: 1rem; margin-bottom: 24px;">You've reviewed ${reviewQueue.length} ${usesDirectionReview() ? (currentTab === 'vocabulary' ? 'vocabulary items' : 'phrases') : 'characters'}</div>
                     <button class="btn btn-primary" onclick="returnToReviewHome()" style="padding: 14px 32px; font-size: 1rem;">
                         ← Back to Review Home
                     </button>
@@ -2312,8 +2390,7 @@ for (let i = 1; i <= 25; i++) {
             event.stopPropagation();
             let textToSpeak;
             
-            if (currentTab === 'phrases') {
-                // 词组：发音汉字部分
+            if (usesDirectionReview()) {
                 textToSpeak = document.getElementById('backCharacter').textContent;
             } else {
                 // 字符：发音字符
@@ -2397,6 +2474,9 @@ for (let i = 1; i <= 25; i++) {
                 console.log('✅ Progress saved to Firebase');
             } catch (error) {
                 console.error('❌ Error saving progress:', error);
+                if (!currentUser) {
+                    showMessage('進度無法同步：請確認 Firebase 匿名登入已啟用（Console → Authentication → Anonymous）', 'error');
+                }
             }
         }
         
@@ -2606,6 +2686,7 @@ for (let i = 1; i <= 25; i++) {
         // ========== 加这段（刷新数据功能）==========
             function refreshData() {
                 if (confirm('🔄 This will reload fresh data from the server. Continue?\n\n这将重新加载最新数据，确定吗？')) {
+                    Object.keys(COURSES_CONFIG).forEach(id => localStorage.removeItem(`lessons_cache_${id}`));
                     localStorage.removeItem('lessons_cache');
                     location.reload();
                 }
@@ -2632,7 +2713,7 @@ document.querySelectorAll('#reviewMethodTabs .tab-btn').forEach(btn => {
         // 显示/隐藏复习方向选择器（只在词组tab显示）
         const directionSelector = document.getElementById('reviewDirectionSelector');
         if (directionSelector) {
-            directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+            directionSelector.style.display = usesDirectionReview() ? 'block' : 'none';
         }
         
         // Show selected content
@@ -2656,19 +2737,17 @@ async function checkAndVerifyUsername() {
     // 从 localStorage 读取保存的用户名
     const savedUsername = localStorage.getItem('shizi_username');
     
-    if (savedUsername) {
-        // 自动验证保存的用户名
+        if (savedUsername) {
         const isValid = await verifyUsername(savedUsername);
         if (isValid) {
             username = savedUsername;
-            return; // 验证通过，继续
-        } else {
-            // 验证失败，清除保存的用户名
-            localStorage.removeItem('shizi_username');
-            showUsernameModal('该用户名已失效，请重新输入');
+            return;
         }
+        localStorage.removeItem('shizi_username');
+        document.getElementById('loadingContainer').classList.add('hidden');
+        showUsernameModal('该用户名已失效，请重新输入');
     } else {
-        // 没有保存的用户名，显示输入框
+        document.getElementById('loadingContainer').classList.add('hidden');
         showUsernameModal();
     }
 }
@@ -2756,10 +2835,11 @@ async function verifyAndSaveUsername() {
                 renderLessonCheckboxes();
                 document.getElementById('loadingContainer').classList.add('hidden');
                 document.getElementById('mainContent').classList.remove('hidden');
+                updateContentTabsForCourse(currentCourse);
                 updateDueInfoText();
                 const directionSelector = document.getElementById('reviewDirectionSelector');
                 if (directionSelector) {
-                    directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+                    directionSelector.style.display = usesDirectionReview() ? 'block' : 'none';
                 }
                 updateStats();
                 updateDeviceCodeDisplay();
@@ -2797,6 +2877,9 @@ async function verifyUsername(usernameToCheck) {
         return true; // 验证通过
     } catch (error) {
         console.error('验证用户名时出错:', error);
+        if (error?.code === 'permission-denied' || (error?.message && error.message.includes('permission'))) {
+            showMessage('無法驗證用戶名：Firebase 匿名登入可能失敗，請檢查 Authentication 是否已啟用「匿名」。', 'error');
+        }
         return false;
     }
 }
@@ -2920,10 +3003,11 @@ async function initializeAfterMigration() {
     renderLessonCheckboxes();
     document.getElementById('loadingContainer').classList.add('hidden');
     document.getElementById('mainContent').classList.remove('hidden');
+    updateContentTabsForCourse(currentCourse);
     updateDueInfoText();
     const directionSelector = document.getElementById('reviewDirectionSelector');
     if (directionSelector) {
-        directionSelector.style.display = currentTab === 'phrases' ? 'block' : 'none';
+        directionSelector.style.display = usesDirectionReview() ? 'block' : 'none';
     }
     updateStats();
     updateDeviceCodeDisplay();

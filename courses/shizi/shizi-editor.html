@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="courses-config.js"></script>
 
     <style>
         /* ==================== CSS Variables (對齊 studio.html) ==================== */
@@ -828,35 +829,15 @@
             📝 識字課程內容編輯器
         </div>
         <div class="editor-controls">
-            <!-- 课程选择 -->
+            <div class="control-group">
+                <select id="courseSelect">
+                    <option value="shizi">識字</option>
+                    <option value="hsk2">HSK 2</option>
+                </select>
+            </div>
             <div class="control-group">
                 <select id="lessonSelect">
                     <option value="">-- 請選擇課次 --</option>
-                    <option value="1">識字 1</option>
-                    <option value="2">識字 2</option>
-                    <option value="3">識字 3</option>
-                    <option value="4">識字 4</option>
-                    <option value="5">識字 5</option>
-                    <option value="6">識字 6</option>
-                    <option value="7">識字 7</option>
-                    <option value="8">識字 8</option>
-                    <option value="9">識字 9</option>
-                    <option value="10">識字 10</option>
-                    <option value="11">識字 11</option>
-                    <option value="12">識字 12</option>
-                    <option value="13">識字 13</option>
-                    <option value="14">識字 14</option>
-                    <option value="15">識字 15</option>
-                    <option value="16">識字 16</option>
-                    <option value="17">識字 17</option>
-                    <option value="18">識字 18</option>
-                    <option value="19">識字 19</option>
-                    <option value="20">識字 20</option>
-                    <option value="21">識字 21</option>
-                    <option value="22">識字 22</option>
-                    <option value="23">識字 23</option>
-                    <option value="24">識字 24</option>
-                    <option value="25">識字 25</option>
                 </select>
             </div>
             <!-- 类型切换 -->
@@ -933,6 +914,7 @@
         // ==================== 全局變數 ====================
         let currentData = [];
         let currentType = '';
+        let currentCourse = 'shizi';
         let currentLesson = '';
         let saveTimeout = null;
         let draggedElement = null;
@@ -959,6 +941,40 @@
         const resizer = document.getElementById('resizer');
 
         // ==================== 初始化 ====================
+        function updateEditorTabsForCourse(courseId) {
+            const config = COURSES_CONFIG[courseId];
+            const tabVocabulary = document.getElementById('tabVocabulary');
+            const showVocabulary = config.hasVocabulary !== false;
+            if (tabVocabulary) {
+                tabVocabulary.style.display = showVocabulary ? '' : 'none';
+            }
+            if (!showVocabulary && currentType === 'vocabulary') {
+                currentType = '';
+            }
+        }
+
+        function getDefaultEditorTab(courseId) {
+            const config = COURSES_CONFIG[courseId];
+            return config.hasVocabulary !== false ? 'vocabulary' : 'phrases';
+        }
+
+        function handleCourseChange() {
+            currentCourse = document.getElementById('courseSelect').value;
+            populateLessonSelect(lessonSelect, currentCourse);
+            updateEditorTabsForCourse(currentCourse);
+            currentLesson = '';
+            currentType = '';
+            currentData = [];
+            disableAllTabs();
+            btnSave.disabled = true;
+            lessonSelect.value = '';
+            renderEditPanel();
+            renderPreviewPanel();
+        }
+
+        populateLessonSelect(lessonSelect, currentCourse);
+        updateEditorTabsForCourse(currentCourse);
+        document.getElementById('courseSelect').addEventListener('change', handleCourseChange);
         lessonSelect.addEventListener('change', handleLessonChange);
         typeTabs.forEach(tab => {
             tab.addEventListener('click', () => {
@@ -1013,16 +1029,23 @@
             currentLesson = lesson;
             enableAllTabs();
             
-            // 如果還沒有選擇類型，默認選擇第一個
+            // 如果還沒有選擇類型，默認選擇第一個可用 tab
             if (!currentType) {
-                switchTypeTab('vocabulary');
+                switchTypeTab(getDefaultEditorTab(currentCourse));
             } else {
                 await loadData();
             }
         }
 
         function enableAllTabs() {
-            typeTabs.forEach(tab => tab.disabled = false);
+            const config = COURSES_CONFIG[currentCourse];
+            typeTabs.forEach(tab => {
+                if (tab.dataset.type === 'vocabulary' && config.hasVocabulary === false) {
+                    tab.disabled = true;
+                } else {
+                    tab.disabled = false;
+                }
+            });
         }
 
         function disableAllTabs() {
@@ -1060,8 +1083,7 @@
             }
 
             try {
-                const lessonId = `lesson${currentLesson}`;
-                const doc = await db.collection('lessons').doc(lessonId).get();
+                const doc = await db.collection('lessons').doc(currentLesson).get();
                 
                 if (doc.exists) {
                     const data = doc.data();
@@ -2234,10 +2256,9 @@
 
             try {
                 showMessage('💾 正在保存...', 'info');
-                const lessonId = `lesson${currentLesson}`;
                 const updateData = await getUpdateDataForType(currentData, currentType);
                 
-                await db.collection('lessons').doc(lessonId).set(updateData, { merge: true });
+                await db.collection('lessons').doc(currentLesson).set(updateData, { merge: true });
                 
                 showMessage('✅ 保存成功！', 'success');
             } catch (error) {
@@ -2247,8 +2268,7 @@
         }
 
         async function getUpdateDataForType(data, type) {
-            const lessonId = `lesson${currentLesson}`;
-            const doc = await db.collection('lessons').doc(lessonId).get();
+            const doc = await db.collection('lessons').doc(currentLesson).get();
             const existingData = doc.exists ? doc.data() : {};
             
             const updateData = {};

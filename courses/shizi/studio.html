@@ -16,6 +16,7 @@
 
     <!-- Cloudinary Upload Widget -->
     <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+    <script src="courses-config.js"></script>
 
     <style>
         /* ==================== CSS Variables (對齊 structure.md) ==================== */
@@ -1062,36 +1063,17 @@
             <span>🎓 識字課程管理 Studio</span>
         </div>
         <div class="studio-controls">
-            <!-- 课次选单在左侧 -->
+            <div class="control-group">
+                <label for="courseSelect">課程：</label>
+                <select id="courseSelect">
+                    <option value="shizi">識字</option>
+                    <option value="hsk2">HSK 2</option>
+                </select>
+            </div>
             <div class="control-group">
                 <label for="lessonSelect">課次：</label>
                 <select id="lessonSelect">
                     <option value="">-- 請選擇課次 --</option>
-                    <option value="lesson1">Lesson 1</option>
-                    <option value="lesson2">Lesson 2</option>
-                    <option value="lesson3">Lesson 3</option>
-                    <option value="lesson4">Lesson 4</option>
-                    <option value="lesson5">Lesson 5</option>
-                    <option value="lesson6">Lesson 6</option>
-                    <option value="lesson7">Lesson 7</option>
-                    <option value="lesson8">Lesson 8</option>
-                    <option value="lesson9">Lesson 9</option>
-                    <option value="lesson10">Lesson 10</option>
-                    <option value="lesson11">Lesson 11</option>
-                    <option value="lesson12">Lesson 12</option>
-                    <option value="lesson13">Lesson 13</option>
-                    <option value="lesson14">Lesson 14</option>
-                    <option value="lesson15">Lesson 15</option>
-                    <option value="lesson16">Lesson 16</option>
-                    <option value="lesson17">Lesson 17</option>
-                    <option value="lesson18">Lesson 18</option>
-                    <option value="lesson19">Lesson 19</option>
-                    <option value="lesson20">Lesson 20</option>
-                    <option value="lesson21">Lesson 21</option>
-                    <option value="lesson22">Lesson 22</option>
-                    <option value="lesson23">Lesson 23</option>
-                    <option value="lesson24">Lesson 24</option>
-                    <option value="lesson25">Lesson 25</option>
                 </select>
             </div>
             <!-- 类型Tab -->
@@ -1170,6 +1152,7 @@
         // ==================== 全局變數 ====================
         let currentData = [];
         let currentType = 'component';
+        let currentCourse = 'shizi';
         let currentLesson = '';
         let saveTimeout = null;
         let draggedElement = null;
@@ -1262,6 +1245,36 @@
             }, 1000);
         }
 
+        // ==================== 課程切換 ====================
+        function updateStudioTabsForCourse(courseId) {
+            const config = COURSES_CONFIG[courseId];
+            const tabComponent = document.getElementById('tabComponent');
+            if (config.hasComponents) {
+                tabComponent.style.display = '';
+            } else {
+                tabComponent.style.display = 'none';
+                if (currentType === 'component') {
+                    currentType = 'target';
+                    updateTabState('target');
+                }
+            }
+        }
+
+        function handleCourseChange() {
+            currentCourse = document.getElementById('courseSelect').value;
+            populateLessonSelect(document.getElementById('lessonSelect'), currentCourse);
+            updateStudioTabsForCourse(currentCourse);
+            currentLesson = '';
+            currentData = [];
+            currentType = 'component';
+            updateTabState('component');
+            document.getElementById('tabComponent').disabled = true;
+            document.getElementById('tabTarget').disabled = true;
+            document.getElementById('lessonSelect').value = '';
+            renderEditPanel();
+            renderPreviewPanel();
+        }
+
         // ==================== 載入資料 ====================
         async function loadData() {
             const lesson = document.getElementById('lessonSelect').value;
@@ -1270,7 +1283,6 @@
                 currentData = [];
                 currentPreviewIndex = -1;
                 currentLesson = '';
-                // 禁用Tab
                 document.getElementById('tabComponent').disabled = true;
                 document.getElementById('tabTarget').disabled = true;
                 renderEditPanel();
@@ -1278,19 +1290,16 @@
                 return;
             }
 
-            // 启用Tab
-            document.getElementById('tabComponent').disabled = false;
+            const config = COURSES_CONFIG[currentCourse];
+            document.getElementById('tabComponent').disabled = !config.hasComponents;
             document.getElementById('tabTarget').disabled = false;
 
-            // 如果没有选择类型，使用当前类型或默认类型
-            if (!currentType) {
-                currentType = 'component';
-                updateTabState('component');
+            if (!currentType || (currentType === 'component' && !config.hasComponents)) {
+                currentType = 'target';
+                updateTabState('target');
             }
 
             currentLesson = lesson;
-
-            // 加载当前类型的数据
             await loadDataForType(currentType);
         }
 
@@ -1807,7 +1816,7 @@
             const imageWidget = cloudinary.createUploadWidget({
                 cloudName: 'dxc8rcjuh',
                 uploadPreset: 'elisa_shizi',
-                folder: 'shizi-lessons',
+                folder: COURSES_CONFIG[currentCourse]?.cloudinaryFolder || 'shizi-lessons',
                 cropping: false,
                 multiple: false,
                 clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
@@ -1829,7 +1838,7 @@
             const displayImageWidget = cloudinary.createUploadWidget({
                 cloudName: 'dxc8rcjuh',
                 uploadPreset: 'elisa_shizi',
-                folder: 'shizi-lessons/display-images',
+                folder: COURSES_CONFIG[currentCourse]?.cloudinaryDisplayFolder || 'shizi-lessons/display-images',
                 cropping: false,
                 multiple: false,
                 clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
@@ -2385,6 +2394,9 @@
             });
         });
         
+        populateLessonSelect(document.getElementById('lessonSelect'), currentCourse);
+        updateStudioTabsForCourse(currentCourse);
+        document.getElementById('courseSelect').addEventListener('change', handleCourseChange);
         document.getElementById('lessonSelect').addEventListener('change', loadData);
         document.getElementById('btnAdd').addEventListener('click', addItem);
         document.getElementById('btnExpandAll').addEventListener('click', expandAllItems);
