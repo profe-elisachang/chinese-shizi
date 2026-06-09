@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>否则·完整自学课件 | 对外汉语H3级别</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef5e9;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Noto Sans', 'Helvetica Neue', sans-serif;
+            padding: 24px 20px;
+            color: #1a3a1e;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0, 20, 0, 0.12);
+            overflow: hidden;
+            padding: 30px 30px 55px 30px;
+        }
+
+        /* 标题区 */
+        .hero {
+            text-align: center;
+            border-bottom: 3px solid #3c8c40;
+            padding-bottom: 28px;
+            margin-bottom: 30px;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2a6b2f;
+            letter-spacing: -0.3px;
+        }
+        .hero .tagline {
+            font-size: 1.2rem;
+            color: #4a7c4f;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        .level-badge {
+            background: #e0f0df;
+            display: inline-block;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1f5427;
+            margin-top: 16px;
+        }
+
+        /* 全局卡片样式 */
+        .step-card {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 4px 14px rgba(0, 20, 0, 0.04);
+            margin-bottom: 32px;
+            border: 1px solid #ddebe0;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .step-title {
+            background: #fafdf7;
+            padding: 18px 28px;
+            border-bottom: 2px solid #cbe5cb;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #2a6b2a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .step-number {
+            background: #2c7a3e;
+            color: white;
+            border-radius: 60px;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .step-content {
+            padding: 20px 28px 24px 28px;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #1f3a23;
+        }
+        .example-box {
+            background: #f6faf3;
+            padding: 14px 20px;
+            border-radius: 24px;
+            margin: 15px 0;
+            border-left: 6px solid #6cae6d;
+            font-family: monospace;
+            font-size: 1rem;
+        }
+        .warning-box {
+            background: #fff6e5;
+            border-left: 6px solid #f4b942;
+            padding: 12px 20px;
+            border-radius: 20px;
+            margin: 16px 0;
+        }
+        .formula {
+            background: #e9f3e5;
+            padding: 12px 18px;
+            border-radius: 28px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.1rem;
+            margin: 12px 0;
+        }
+        .compare-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .compare-item {
+            flex: 1;
+            background: #f9fdf7;
+            border-radius: 20px;
+            padding: 12px 16px;
+            border: 1px solid #cde0cd;
+        }
+        hr {
+            margin: 18px 0;
+            border-color: #cbe2cb;
+        }
+        .btn-toggle {
+            background: none;
+            border: none;
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            margin-top: 8px;
+            transition: 0.2s;
+        }
+        .btn-toggle:hover {
+            color: #145c1f;
+            gap: 12px;
+        }
+        .fold-answer {
+            background: #f5fbf2;
+            padding: 14px 20px;
+            border-radius: 24px;
+            margin-top: 14px;
+            display: none;
+            border-left: 4px solid #4cae4c;
+            font-weight: 500;
+        }
+        .fold-answer.show {
+            display: block;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 12px 0 8px 0;
+        }
+        .opt {
+            background: #eef4ea;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+        @media (max-width: 700px) {
+            body { padding: 12px; }
+            .container { padding: 18px 16px 35px 16px; }
+            .step-content { padding: 16px 18px; }
+            .step-title { font-size: 1.2rem; padding: 14px 18px; }
+            .hero h1 { font-size: 1.8rem; }
+        }
+        @media (min-width: 1200px) {
+            .step-content { font-size: 1.1rem; }
+            .example-box { font-size: 1.05rem; }
+        }
+        footer {
+            text-align: center;
+            margin-top: 35px;
+            color: #7b9c6e;
+            font-size: 0.8rem;
+            border-top: 1px solid #cde0cd;
+            padding-top: 25px;
+        }
+        .model-sentence {
+            background: #eef2e6;
+            border-radius: 28px;
+            padding: 16px 22px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1>📖 否则 · fǒuzé</h1>
+        <div class="tagline">otherwise / if not (negative consequence)</div>
+        <div class="level-badge">🎯 H3 (中高级) · 基于450汉字</div>
+    </div>
+
+    <!-- ========================= STEP 1 ========================= -->
+    <div class="step-card">
+        <div class="step-title"><span class="step-number">1</span> What does “否则” mean?</div>
+        <div class="step-content">
+            <p><strong>否则 = if not · otherwise</strong><br>
+            It connects two parts:<br>
+            ➤ Part 1: a suggestion, duty, or rule<br>
+            ➤ Part 2: the <strong>bad result</strong> if you don't follow Part 1.</p>
+            <div class="model-sentence">
+                📍 From your sentence #15:<br>
+                <em>“收到客人送的礼物以后<strong>一般不打开看</strong>，<strong>否则</strong>会让人笑话和被人议论。”</em><br>
+                → Usually don't open the gift in front of the guest. <strong>If you open it</strong>, people will laugh and talk about you.
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================= STEP 2 ========================= -->
+  <div class="multilang-examples" style="background: #f8faf5; border-radius: 28px; padding: 16px 22px; margin: 20px 0; border: 1px solid #d4e2d4;">
+    <p style="font-weight: 700; margin-bottom: 14px; color: #2a6b2a;">🌐 例句 · Bilingual (英/西)</p>
+    
+    <div style="margin-bottom: 18px;">
+        <div style="font-weight: 600; font-size: 1.05rem;">✅ 快点儿，否则要迟到了。</div>
+        <div style="font-size: 0.92rem; color: #3a5a3a;">English: Hurry up, otherwise you'll be late.</div>
+        <div style="font-size: 0.92rem; color: #3a5a3a;">Español: Date prisa, si no llegarás tarde.</div>
+    </div>
+    
+    <div style="margin-bottom: 18px;">
+        <div style="font-weight: 600; font-size: 1.05rem;">✅ 天气冷了，多穿点儿，否则会生病。</div>
+        <div style="font-size: 0.92rem; color: #3a5a3a;">English: It's cold. Wear more clothes, otherwise you'll get sick.</div>
+        <div style="font-size: 0.92rem; color: #3a5a3a;">Español: Hace frío. Ponte más ropa, si no te enfermarás.</div>
+    </div>
+    
+    <div>
+        <div style="font-weight: 600; font-size: 1.05rem;">✅ 复习，否则考试不会好。</div>
+        <div style="font-size: 0.92rem; color: #3a5a3a;">English: Review your lessons, otherwise your exam results won't be good.</div>
+        <div style="font-size: 0.92rem; color: #3a5a3a;">Español: Repasa las lecciones, si no los resultados del examen no serán buenos.</div>
+    </div>
+</div>
+    <!-- ========================= STEP 3 ========================= -->
+   <div class="step3-translations" style="background: #fcfdf9; border-radius: 24px; padding: 12px 20px; margin: 18px 0 10px 0; border-left: 5px solid #6cae6d;">
+    <p style="font-weight: 700; margin-bottom: 14px; color: #2c6e2f;">🌍 STEP 3 例句 · 英/西翻译</p>
+    
+    <div style="margin-bottom: 20px;">
+        <div style="font-weight: 500;">📅 早上七点一刻要起床，否则会来不及骑车到教室。</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">English: You have to get up at 7:15, otherwise you won't have time to bike to the classroom.</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">Español: Tienes que levantarte a las 7:15, si no, no tendrás tiempo de ir en bicicleta al aula.</div>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <div style="font-weight: 500;">🍽️ 问服务员“您贵姓”要客气，否则人家会不高兴。</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">English: Be polite when asking a server "What's your surname?", otherwise they will be unhappy.</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">Español: Sé educado al preguntarle a un camarero "¿Cuál es su apellido?", si no, se enojarán.</div>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <div style="font-weight: 500;">📚 考试以前要好好复习数理化，否则成绩不会好。</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">English: You should review math and science well before the exam, otherwise your grades won't be good.</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">Español: Debes repasar bien matemáticas y ciencias antes del examen, si no, tus calificaciones no serán buenas.</div>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <div style="font-weight: 500;">🎁 收到礼物以后一般不打开看，否则会让人笑话。</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">English: Usually you don't open a gift after receiving it, otherwise people will laugh at you.</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">Español: Generalmente no se abre un regalo después de recibirlo, si no, la gente se reirá de ti.</div>
+    </div>
+    
+    <div>
+        <div style="font-weight: 500;">🗺️ 去“新世界”商店以前要看导游图，否则会找不到。</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">English: Check the tourist map before going to the "New World" store, otherwise you won't find it.</div>
+        <div style="font-size: 0.9rem; color: #3c5e3c;">Español: Mira el mapa turístico antes de ir a la tienda "Nuevo Mundo", si no, no la encontrarás.</div>
+    </div>
+</div>
+
+    <!-- ========================= STEP 4 ========================= -->
+    <div class="step-card">
+        <div class="step-title"><span class="step-number">4</span> Compare: “否则” vs “…的话”</div>
+        <div class="step-content">
+            <div class="compare-grid">
+                <div class="compare-item">
+                    <strong>📘 否则</strong> (more formal, written)<br>
+                    快起床，<span style="color:#2c7a3e;">否则</span>会迟到。
+                </div>
+                <div class="compare-item">
+                    <strong>🗣️ 不…的话</strong> (more spoken)<br>
+                    快起床，<span style="color:#b45f2b;">不起的话</span>会迟到。
+                </div>
+            </div>
+            <p>✅ Sentence #15 uses <strong>否则</strong> because it's about a traditional habit (formal/written style).</p>
+        </div>
+    </div>
+
+    <!-- ========================= STEP 5 ========================= -->
+    <div class="step-card">
+        <div class="step-title"><span class="step-number">5</span> ⚠️ Common Mistake</div>
+        <div class="step-content">
+            <div class="warning-box">
+                ❌ <strong>Wrong:</strong> 我否则不去上课。<br>
+                (Do NOT put “否则” before the subject “我”).
+            </div>
+            <div class="warning-box">
+                ✅ <strong>Correct:</strong> 你要去上课，<strong>否则老师会不高兴</strong>。<br>
+                (“否则” comes after the suggestion, before the bad result.)
+            </div>
+            <p>✨ Remember: “否则” must follow a complete clause (order/suggestion) + bad consequence.</p>
+        </div>
+    </div>
+
+    <!-- ========================= STEP 6 ========================= 练习 (完全限缩生词，折叠答案) -->
+    <div class="step-card">
+        <div class="step-title"><span class="step-number">6</span> Practice (No new words)</div>
+        <div class="step-content">
+            <p><strong>🔹 A. Complete the sentences.</strong> Choose from the box: <span style="background:#ddedd4; padding:2px 8px; border-radius:20px;">会来不及</span> <span style="background:#ddedd4; padding:2px 8px; border-radius:20px;">会不高兴</span> <span style="background:#ddedd4; padding:2px 8px; border-radius:20px;">会找不到</span> <span style="background:#ddedd4; padding:2px 8px; border-radius:20px;">会让人笑话</span></p>
+            
+            <!-- 填空1 -->
+            <div style="margin: 18px 0 12px 0; background:#fefdf7; border-radius: 24px; padding: 12px 18px;">
+                <p><strong>1.</strong> 每天早上七点一刻要起床，否则 ______ 。</p>
+                <button class="btn-toggle" data-target="ans1">🔽 查看答案</button>
+                <div id="ans1" class="fold-answer">✅ 会来不及</div>
+            </div>
+            <!-- 填空2 -->
+            <div style="margin: 18px 0 12px 0; background:#fefdf7; border-radius: 24px; padding: 12px 18px;">
+                <p><strong>2.</strong> 问服务员“您贵姓”要客气，否则 ______ 。</p>
+                <button class="btn-toggle" data-target="ans2">🔽 查看答案</button>
+                <div id="ans2" class="fold-answer">✅ 会不高兴</div>
+            </div>
+            <!-- 填空3 -->
+            <div style="margin: 18px 0 12px 0; background:#fefdf7; border-radius: 24px; padding: 12px 18px;">
+                <p><strong>3.</strong> 去“新世界”商店以前要看导游图，否则 ______ 。</p>
+                <button class="btn-toggle" data-target="ans3">🔽 查看答案</button>
+                <div id="ans3" class="fold-answer">✅ 会找不到</div>
+            </div>
+            <!-- 填空4 -->
+            <div style="margin: 18px 0 12px 0; background:#fefdf7; border-radius: 24px; padding: 12px 18px;">
+                <p><strong>4.</strong> 收到客人送的礼物以后一般不打开看，否则 ______ 。</p>
+                <button class="btn-toggle" data-target="ans4">🔽 查看答案</button>
+                <div id="ans4" class="fold-answer">✅ 会让人笑话</div>
+            </div>
+
+            <hr>
+            <p><strong>🔹 B. Choose the correct answer.</strong></p>
+            <!-- 选择题 B5 -->
+            <div style="margin: 20px 0 12px 0; background:#fefdf7; border-radius: 24px; padding: 12px 18px;">
+                <p><strong>5.</strong> 上课不要迟到，否则老师 ______ 。</p>
+                <div class="options">
+                    <span class="opt">A. 很漂亮</span>
+                    <span class="opt">B. 会不高兴</span>
+                    <span class="opt">C. 有经验</span>
+                </div>
+                <button class="btn-toggle" data-target="ans5">🔽 查看正确答案</button>
+                <div id="ans5" class="fold-answer">✅ B. 会不高兴 (迟到 → 否则老师不高兴)</div>
+            </div>
+            <!-- 选择题 B6 -->
+            <div style="margin: 18px 0 12px 0; background:#fefdf7; border-radius: 24px; padding: 12px 18px;">
+                <p><strong>6.</strong> 考试以前要复习，否则成绩 ______ 。</p>
+                <div class="options">
+                    <span class="opt">A. 不错</span>
+                    <span class="opt">B. 挺好</span>
+                    <span class="opt">C. 不会好</span>
+                </div>
+                <button class="btn-toggle" data-target="ans6">🔽 查看正确答案</button>
+                <div id="ans6" class="fold-answer">✅ C. 不会好 (不复习 → 否则成绩不会好)</div>
+            </div>
+            
+            <hr>
+            <p><strong>🔹 C. Rewrite the sentence using “否则”.</strong></p>
+            <div style="margin: 18px 0 12px 0; background:#fefdf7; border-radius: 24px; padding: 12px 18px;">
+                <p><strong>7.</strong> 中国人不怎么爱说“你好”。如果你说“你好”，人家会觉得奇怪。<br>
+                ➜ 改写：中国人不怎么爱说“你好”，<strong>____________</strong>。</p>
+                <button class="btn-toggle" data-target="ans7">🔽 查看答案</button>
+                <div id="ans7" class="fold-answer">✅ 中国人不怎么爱说“你好”，<strong>否则人家会觉得奇怪</strong>。</div>
+            </div>
+            <p style="font-size:0.85rem; background: #e8f0e3; padding: 8px 14px; border-radius: 28px;"></p>
+        </div>
+    </div>
+
+    <!-- ========================= STEP 7 ========================= 记忆句子 -->
+    <div class="step-card">
+        <div class="step-title"><span class="step-number">7</span> Remember this model sentence</div>
+        <div class="step-content">
+            <div class="model-sentence" style="background:#e3f0de; text-align:center; font-size:1.1rem;">
+                🎯 <strong>“收到客人送的礼物以后一般不打开看，否则会让人笑话和被人议论。”</strong>
+            </div>
+            <p style="margin-top: 18px;">⭐ If you memorize this sentence, you master the logical structure of <strong>否则</strong>:<br>
+            [Habit/Rule] + 否则 + [negative social consequence].</p>
+        </div>
+    </div>
+
+    <!-- ========================= STEP 8 ========================= 复习总结 -->
+    <div class="step-card">
+        <div class="step-title"><span class="step-number">8</span> Summary & Self-Check</div>
+        <div class="step-content">
+            <ul style="margin-left: 20px;">
+                <li>✔️ “否则” = otherwise / if not → bad result.</li>
+                <li>✔️ Structure: Suggestion/Order + 否则 + Bad thing.</li>
+                <li>✔️ Never put “否则” before the subject (❌ 我否则…).</li>
+                <li>✔️ Always state the negative consequence after “否则”.</li>
+                <li>✔️ “否则” is more formal; in spoken Chinese we sometimes use “要不”.</li>
+            </ul>
+            <div class="formula" style="margin-top: 18px;">
+                🔁 [Do this] ，否则 [bad result will happen]
+            </div>
+            <p>📖 All the characters above are from your 450-character reading list (sentences #1–#15). No extra vocabulary needed!</p>
+        </div>
+    </div>
+
+    <!-- 额外资源：词汇验证 -->
+<div class="vocab-verification-translated" style="background: #f0f4fa; border-radius: 32px; padding: 18px 24px; margin-top: 24px; border-left: 6px solid #3a7b9b;">
+    <p style="font-weight: 700; margin-bottom: 12px; color: #2c5a6e;">📚 词汇验证 · Vocabulary verification · Verificación de vocabulario</p>
+    <p style="font-size: 0.9rem; color: #2c4e6e; line-height: 1.5;">
+        <strong>中文：</strong> 会来不及 / 会不高兴 / 会找不到 / 会让人笑话 / 成绩不会好 / 人家会觉得奇怪 <br>
+        <strong style="color: #3a6b8f;">English:</strong> "will be too late" / "will be unhappy" / "will not find" / "will make people laugh" / "grades won't be good" / "people will find it strange" <br>
+        <strong style="color: #3a6b8f;">Español:</strong> "llegará tarde" / "se enojará" / "no encontrará" / "hará que la gente se ría" / "las calificaciones no serán buenas" / "la gente lo encontrará extraño"
+    </p>
+</div>
+
+    <footer>
+        🌟 识字15  | 否则 | HSK3
+    </footer>
+</div>
+
+<script>
+    // 实现所有折叠答案独立开关，预设全部折叠
+    const allToggleBtns = document.querySelectorAll('.btn-toggle');
+    function initFolds() {
+        const allAnswers = document.querySelectorAll('.fold-answer');
+        allAnswers.forEach(ans => {
+            ans.classList.remove('show');
+        });
+        allToggleBtns.forEach(btn => {
+            btn.innerHTML = '🔽 查看答案';
+            // 清除旧监听避免重复绑定
+            btn.replaceWith(btn.cloneNode(true));
+        });
+        // 重新获取绑定
+        const newBtns = document.querySelectorAll('.btn-toggle');
+        newBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // 获取目标 data-target
+                const targetId = this.getAttribute('data-target');
+                const targetDiv = document.getElementById(targetId);
+                if(targetDiv) {
+                    if(targetDiv.classList.contains('show')) {
+                        targetDiv.classList.remove('show');
+                        this.innerHTML = '🔽 查看答案';
+                    } else {
+                        targetDiv.classList.add('show');
+                        this.innerHTML = '🔼 收起答案';
+                    }
+                }
+            });
+        });
+    }
+    initFolds();
+    // 确保页面完全加载后再重置一次答案折叠 (安全)
+    window.addEventListener('DOMContentLoaded', () => {
+        const allAns = document.querySelectorAll('.fold-answer');
+        allAns.forEach(a => a.classList.remove('show'));
+        const allButtons = document.querySelectorAll('.btn-toggle');
+        allButtons.forEach(btn => {
+            btn.innerHTML = '🔽 查看答案';
+        });
+    });
+</script>
+</body>
+</html>
