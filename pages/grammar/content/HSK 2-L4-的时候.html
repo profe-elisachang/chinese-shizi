@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>的时候 · Self-Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+SC:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     全局设计语言 — 暗色高级版本
+     ============================================================ */
+  :root {
+    --bg: #12161F;
+    --surface: #1B212C;
+    --surface-alt: #232B38;
+    --line: #313B4B;
+    --ink: #F3EFE6;
+    --ink-muted: #9AA5B4;
+    --gold: #E3A548;
+    --gold-dim: #4A3A22;
+    --teal: #5FC9D6;
+    --teal-dim: #1F3A3E;
+    --coral: #E2695F;
+    --green: #6FBF8B;
+    --serif: 'Noto Serif SC', serif;
+    --sans: 'Noto Sans SC', sans-serif;
+    --en: 'Inter', sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.7;
+    font-size: clamp(16px, 1.1vw + 10px, 22px);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 4vw, 56px);
+  }
+  section {
+    padding: clamp(48px, 7vw, 110px) 0;
+  }
+  .eyebrow {
+    font-family: var(--en);
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    font-size: .62em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 2px;
+    background: var(--teal);
+    display: inline-block;
+  }
+  h1, h2, h3 {
+    font-family: var(--serif);
+    font-weight: 900;
+    letter-spacing: .01em;
+  }
+  p {
+    color: var(--ink-muted);
+  }
+  .en {
+    font-family: var(--en);
+  }
+  .pinyin {
+    font-family: var(--en);
+    font-size: .68em;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    min-height: min(92vh, 900px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% 15%, rgba(227, 165, 72, .10), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 85% 85%, rgba(95, 201, 214, .10), transparent 60%),
+      var(--bg);
+  }
+  .hero-title {
+    font-size: clamp(3.2rem, 11vw, 8rem);
+    line-height: .95;
+    background: linear-gradient(120deg, #F3EFE6 40%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero-sub {
+    font-family: var(--en);
+    font-weight: 500;
+    font-size: clamp(1.05rem, 2.4vw, 1.6rem);
+    color: var(--ink-muted);
+    margin-top: 18px;
+    max-width: 680px;
+  }
+  .hero-sub b {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  /* timeline visual */
+  .timeline-box {
+    margin-top: clamp(48px, 6vw, 80px);
+    position: relative;
+  }
+  .timeline-line {
+    position: relative;
+    height: 3px;
+    background: var(--line);
+    border-radius: 3px;
+    margin: 90px 0 60px 0;
+  }
+  .now-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 0 rgba(227, 165, 72, .6);
+    animation: pulse 2.2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(227, 165, 72, .55); }
+    70% { box-shadow: 0 0 0 22px rgba(227, 165, 72, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(227, 165, 72, 0); }
+  }
+  .now-label {
+    position: absolute;
+    left: 50%;
+    top: -34px;
+    transform: translateX(-50%);
+    font-family: var(--en);
+    font-size: .72em;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .pin {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .pin .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--gold);
+  }
+  .pin .tag {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: .78em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .pin.below {
+    top: calc(50% + 34px);
+  }
+  .pin.below .tag {
+    order: 2;
+  }
+  .pin.below .dot {
+    order: 1;
+  }
+  .pin.above .tag {
+    order: 1;
+  }
+  .pin.above .dot {
+    order: 2;
+  }
+  .pin.above {
+    top: calc(50% - 34px);
+    flex-direction: column-reverse;
+  }
+  .loop-group {
+    position: absolute;
+    top: -100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .loop-badge {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: .78em;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--teal-dim);
+    border: 1.5px dashed var(--teal);
+    color: var(--teal);
+    animation: float 3.4s ease-in-out infinite;
+  }
+  .loop-badge.b {
+    animation-delay: .6s;
+  }
+  .loop-badge.c {
+    animation-delay: 1.2s;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+  }
+  .drop-arrow {
+    font-family: var(--en);
+    font-size: .7em;
+    color: var(--ink-muted);
+  }
+
+  /* ---------- SECTION GENERIC ---------- */
+  .lead {
+    font-size: 1.05em;
+    max-width: 760px;
+    margin-top: 10px;
+  }
+  .lead b {
+    color: var(--ink);
+  }
+
+  /* two cards */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 40px;
+  }
+  @media (max-width: 760px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+  }
+  .card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: clamp(24px, 3vw, 36px);
+    border-top: 4px solid var(--gold);
+  }
+  .card.teal {
+    border-top-color: var(--teal);
+  }
+  .card h3 {
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    margin-bottom: 4px;
+  }
+  .card .tag-en {
+    font-family: var(--en);
+    font-weight: 700;
+    font-size: .66em;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--gold);
+  }
+  .card.teal .tag-en {
+    color: var(--teal);
+  }
+  .card p {
+    margin-top: 14px;
+    font-size: .92em;
+  }
+  .word-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .chip {
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-weight: 700;
+    font-size: .85em;
+    font-family: var(--sans);
+  }
+  .example {
+    margin-top: 20px;
+    background: var(--surface-alt);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: .92em;
+  }
+  .example .cn {
+    font-weight: 700;
+    font-size: 1.15em;
+  }
+  .example .en {
+    color: var(--ink-muted);
+    margin-top: 4px;
+    font-size: .85em;
+  }
+
+  /* rule box */
+  .rule-box {
+    background: linear-gradient(135deg, var(--surface), var(--surface-alt));
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: clamp(32px, 5vw, 56px);
+    margin-top: 36px;
+    text-align: center;
+  }
+  .rule-box .q {
+    font-family: var(--en);
+    font-weight: 800;
+    font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+    color: var(--ink);
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .rule-answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 32px;
+  }
+  @media (max-width: 700px) {
+    .rule-answers {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rule-ans {
+    border-radius: 14px;
+    padding: 20px;
+    text-align: left;
+  }
+  .rule-ans.yes {
+    background: var(--gold-dim);
+    border: 1px solid var(--gold);
+  }
+  .rule-ans.no {
+    background: var(--teal-dim);
+    border: 1px solid var(--teal);
+  }
+  .rule-ans .h {
+    font-family: var(--en);
+    font-weight: 800;
+    font-size: .95em;
+    margin-bottom: 6px;
+  }
+  .rule-ans.yes .h {
+    color: var(--gold);
+  }
+  .rule-ans.no .h {
+    color: var(--teal);
+  }
+  .rule-ans p {
+    color: var(--ink);
+    font-size: .88em;
+  }
+
+  /* table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 32px;
+    font-size: .92em;
+  }
+  th, td {
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    font-family: var(--en);
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    font-size: .72em;
+    letter-spacing: .06em;
+  }
+  td.cn {
+    font-weight: 700;
+    font-size: 1.05em;
+  }
+  td.en {
+    color: var(--ink-muted);
+    font-family: var(--en);
+  }
+  .note-box {
+    margin-top: 22px;
+    background: var(--surface);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    font-size: .86em;
+    color: var(--ink-muted);
+  }
+
+  /* spectrum */
+  .spectrum {
+    margin-top: 44px;
+  }
+  .spectrum-bar {
+    height: 10px;
+    border-radius: 6px;
+    margin-top: 56px;
+    position: relative;
+    background: linear-gradient(90deg, var(--gold), var(--surface-alt) 50%, var(--teal));
+  }
+  .spectrum-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--en);
+    font-size: .72em;
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .spectrum-chip {
+    position: absolute;
+    top: -46px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .spectrum-chip .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink);
+    margin-top: 4px;
+  }
+  .spectrum-chip .tag {
+    font-weight: 700;
+    font-size: .82em;
+    white-space: nowrap;
+    background: var(--surface);
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  /* ============================================================
+     练习部分 — 选择题风格（来自你之前的版本）
+     ============================================================ */
+  .practice-item {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-top: 16px;
+    border: 1px solid var(--line);
+  }
+  .practice-item .q {
+    font-weight: 700;
+    font-size: 1.15em;
+    margin-bottom: 6px;
+  }
+  .practice-item .q .num {
+    font-family: var(--en);
+    color: var(--gold);
+    font-weight: 800;
+    margin-right: 6px;
+  }
+  .practice-item .en-hint {
+    color: var(--ink-muted);
+    font-size: .82em;
+    font-family: var(--en);
+    margin-top: 2px;
+  }
+
+  /* 选项 — 用 radio 按钮 */
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
+    margin: 12px 0 8px 0;
+  }
+  .options label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    background: var(--surface-alt);
+    padding: 4px 16px 4px 10px;
+    border-radius: 40px;
+    border: 1px solid var(--line);
+    transition: background .2s, border-color .2s;
+    font-size: .92em;
+  }
+  .options label:hover {
+    background: var(--line);
+    border-color: var(--teal);
+  }
+  .options input[type="radio"] {
+    accent-color: var(--gold);
+    width: 1.1em;
+    height: 1.1em;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* 折叠答案按钮 + 内容 */
+  .collapse-wrap {
+    margin-top: 10px;
+  }
+  .collapse-btn {
+    background: transparent;
+    border: 2px dashed var(--line);
+    border-radius: 40px;
+    padding: 6px 18px;
+    font-size: .82em;
+    font-weight: 600;
+    font-family: var(--en);
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: .25s;
+    background: var(--surface-alt);
+  }
+  .collapse-btn:hover {
+    border-color: var(--teal);
+    color: var(--teal);
+    background: var(--teal-dim);
+  }
+  .answer-content {
+    margin-top: 12px;
+    padding: 14px 18px;
+    background: var(--surface-alt);
+    border-radius: 14px;
+    border-left: 4px solid var(--green);
+    display: none;
+    font-size: .92em;
+  }
+  .answer-content.show {
+    display: block;
+  }
+  .answer-content .verdict {
+    font-weight: 800;
+    color: var(--green);
+    font-family: var(--en);
+    text-transform: uppercase;
+    font-size: .78em;
+    letter-spacing: .05em;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .answer-content .exp {
+    color: var(--ink);
+  }
+  .answer-content .exp em {
+    color: var(--teal);
+    font-style: italic;
+  }
+
+  .quiz-block {
+    margin-top: 40px;
+  }
+  .quiz-block h3 {
+    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  }
+  .quiz-block .en-desc {
+    font-family: var(--en);
+    color: var(--ink-muted);
+    font-size: .85em;
+    margin-top: 6px;
+  }
+
+  footer {
+    background: var(--surface);
+    padding: clamp(40px, 6vw, 70px) 0;
+    margin-top: 40px;
+    border-top: 1px solid var(--line);
+  }
+  .recap {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: clamp(24px, 4vw, 40px);
+    text-align: center;
+  }
+  .recap .cn {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+  }
+  .recap .en {
+    font-family: var(--en);
+    color: var(--ink-muted);
+    margin-top: 10px;
+    font-size: .9em;
+  }
+
+  ::selection {
+    background: var(--gold);
+    color: var(--bg);
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow en">Chinese Grammar · Self-Study</div>
+    <h1 class="hero-title">的时候</h1>
+    <p class="hero-sub">One little phrase, one simple question:<br><b>do I need it, or not?</b></p>
+
+    <div class="timeline-box">
+      <div class="timeline-line">
+        <div class="now-dot"></div>
+        <div class="now-label">now</div>
+
+        <div class="pin above" style="left:28%;">
+          <div class="tag">昨天 <span class="pinyin">yesterday</span></div>
+          <div class="dot"></div>
+        </div>
+        <div class="pin below" style="left:40%;">
+          <div class="tag">今天 <span class="pinyin">today</span></div>
+          <div class="dot"></div>
+        </div>
+        <div class="pin above" style="left:66%;">
+          <div class="tag">明天 <span class="pinyin">tomorrow</span></div>
+          <div class="dot"></div>
+        </div>
+
+        <div class="loop-group" style="left:82%;">
+          <div class="loop-badge">秋天 🔁</div>
+          <div class="loop-badge b">圣诞节 🔁</div>
+          <div class="drop-arrow">↓ needs 的时候 to land here</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TWO KINDS ================= -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Part 1</div>
+    <h2 style="font-size:clamp(1.8rem,3.4vw,2.6rem);">Two Kinds of Time Words</h2>
+    <p class="lead">Some time words already know <b>exactly</b> when they mean. Other time words come back <b>again and again</b> — every year, every week, every day — so on their own, we don't know which one you're talking about. That second kind needs a little help. That help is <b>的时候</b>.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="tag-en">Type A · Only happens once</div>
+        <h3>定点词</h3>
+        <p>These words already point to <b style="color:var(--ink)">one exact moment</b>. Nothing else to add — just say it.</p>
+        <div class="word-chips">
+          <span class="chip">昨天 <span class="pinyin">yesterday</span></span>
+          <span class="chip">今天 <span class="pinyin">today</span></span>
+          <span class="chip">明天 <span class="pinyin">tomorrow</span></span>
+          <span class="chip">去年 <span class="pinyin">last year</span></span>
+          <span class="chip">今年 <span class="pinyin">this year</span></span>
+          <span class="chip">现在 <span class="pinyin">now</span></span>
+          <span class="chip">刚才 <span class="pinyin">just now</span></span>
+        </div>
+        <div class="example">
+          <div class="cn">昨天我去了北京。</div>
+          <div class="en">Yesterday I went to Beijing. — no marker needed.</div>
+        </div>
+      </div>
+
+      <div class="card teal">
+        <div class="tag-en">Type B · Happens every year / week / day</div>
+        <h3>循环词</h3>
+        <p>These words <b style="color:var(--ink)">repeat</b>. Said alone, we don't know which one you mean — so we usually add <b style="color:var(--ink)">的时候</b> to point at "this one time."</p>
+        <div class="word-chips">
+          <span class="chip">秋天 <span class="pinyin">autumn</span></span>
+          <span class="chip">圣诞节 <span class="pinyin">Christmas</span></span>
+          <span class="chip">8点 <span class="pinyin">8 o'clock</span></span>
+          <span class="chip">周二 <span class="pinyin">Tuesday</span></span>
+          <span class="chip">2020年 <span class="pinyin">the year 2020</span></span>
+        </div>
+        <div class="example">
+          <div class="cn">秋天<b style="color:var(--teal)">的时候</b>，我去了北京。</div>
+          <div class="en">One specific autumn — I went to Beijing then.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= THE RULE ================= -->
+<section style="padding-top:0;">
+  <div class="wrap">
+    <div class="eyebrow">Part 2</div>
+    <h2 style="font-size:clamp(1.8rem,3.4vw,2.6rem);">Ask Yourself One Question</h2>
+    <div class="rule-box">
+      <div class="q en">"If I say this word all by itself, does everyone instantly know which exact moment I mean?"</div>
+      <div class="rule-answers">
+        <div class="rule-ans yes">
+          <div class="h en">YES → say it plain</div>
+          <p>昨天 · 今天 · 明天 · 去年 · 今年 · 现在<br>No 的时候 needed.</p>
+        </div>
+        <div class="rule-ans no">
+          <div class="h en">NO, it happens again and again → add 的时候</div>
+          <p>秋天 · 圣诞节 · 8点 · 周二<br>的时候 anchors it to "this one time."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TABLE ================= -->
+<section style="padding-top:0;">
+  <div class="wrap">
+    <table>
+      <thead><tr><th>English</th><th>中文</th></tr></thead>
+      <tbody>
+        <tr><td class="en">yesterday, I went to Beijing</td><td class="cn">昨天我去了北京</td></tr>
+        <tr><td class="en">in autumn, I went to Beijing</td><td class="cn">秋天<b>的时候</b>，我去了北京</td></tr>
+        <tr><td class="en">at Christmas, I went to Beijing</td><td class="cn">圣诞节<b>的时候</b>，我去了北京</td></tr>
+        <tr><td class="en">at 8 o'clock, I went to Beijing</td><td class="cn">8点<b>的时候</b>，我去了北京</td></tr>
+        <tr><td class="en">on Tuesday, I went to Beijing</td><td class="cn">周二<b>的时候</b>，我去了北京</td></tr>
+        <tr><td class="en">this year, I went to Beijing</td><td class="cn">今年我去了北京</td></tr>
+      </tbody>
+    </table>
+    <div class="note-box">
+      <b style="color:var(--ink)">Small note:</b> 的时候 is a bit like the English words "in / at / on" — but it's not exactly the same job. In Chinese, time words can normally stand alone right before the verb, with nothing added at all (that's just how Chinese sentences work). 的时候 is an <i>extra</i> word we add on top, to say "this was that one specific moment" — more like storytelling flavor than a required grammar piece.
+    </div>
+  </div>
+</section>
+
+<!-- ================= SPECIAL CASE ================= -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Part 3 · Special Case</div>
+    <h2 style="font-size:clamp(1.8rem,3.4vw,2.6rem);">昨天下午 — Can Go Either Way</h2>
+    <p class="lead">What happens when you mix a Type A word with a Type B word? Like <b>昨天</b> (yesterday) + <b>下午</b> (afternoon)? The Type A part already locks down the exact day — so the whole phrase is safe. You can leave 的时候 out, or add it for a "telling a story" feeling.</p>
+
+    <div class="example" style="margin-top:24px;">
+      <div class="cn">昨天下午我去了北京。 <span class="pinyin">— plain, states a fact</span></div>
+      <div class="cn" style="margin-top:8px;">昨天下午<b style="color:var(--teal)">的时候</b>，我去了北京。 <span class="pinyin">— storytelling tone</span></div>
+    </div>
+
+    <div class="spectrum">
+      <div class="spectrum-bar">
+        <div class="spectrum-chip" style="left:6%;"><div class="tag">昨天</div><div class="dot"></div></div>
+        <div class="spectrum-chip" style="left:38%;"><div class="tag">昨天下午</div><div class="dot"></div></div>
+        <div class="spectrum-chip" style="left:58%;"><div class="tag">今年夏天</div><div class="dot"></div></div>
+        <div class="spectrum-chip" style="left:92%;"><div class="tag">圣诞节</div><div class="dot"></div></div>
+      </div>
+      <div class="spectrum-labels">
+        <span>always plain</span>
+        <span>your choice</span>
+        <span>usually needs 的时候</span>
+      </div>
+    </div>
+
+    <div class="note-box" style="margin-top:60px;">
+      Real life tip: you might sometimes hear <b style="color:var(--ink)">昨天的时候</b> in casual speech. It's not "textbook standard," but don't be confused if you hear it — spoken language is a little looser than the rule.
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRACTICE ================= -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Practice</div>
+    <h2 style="font-size:clamp(1.8rem,3.4vw,2.6rem);">✏️ Try It Yourself</h2>
+    <p class="lead en">👆 Pick an option, then tap <strong>"Show Answer"</strong> to check.</p>
+
+    <!-- 练习题 — 选择题风格 -->
+    <div class="quiz-block">
+
+      <!-- 第1题 -->
+      <div class="practice-item">
+        <div class="q"><span class="num">①</span> 昨天下午 ____ 我去超市了。</div>
+        <div class="options">
+          <label><input type="radio" name="q1" value="A"> A. （不加）</label>
+          <label><input type="radio" name="q1" value="B"> B. 的时候</label>
+          <label><input type="radio" name="q1" value="C"> C. 两个都对</label>
+        </div>
+        <div class="collapse-wrap">
+          <button class="collapse-btn" onclick="toggleAnswer(this)">📖 Show Answer</button>
+          <div class="answer-content">
+            <span class="verdict">✅ C. Both are correct</span>
+            <div class="exp">“昨天下午” = the date is already fixed. Adding 的时候 is optional.<br>
+            ➜ Without it: just stating the time. With it: feels more like <em>storytelling</em>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第2题 -->
+      <div class="practice-item">
+        <div class="q"><span class="num">②</span> 今天早上 ____ 我喝了咖啡。</div>
+        <div class="options">
+          <label><input type="radio" name="q2" value="A"> A. （不加）</label>
+          <label><input type="radio" name="q2" value="B"> B. 的时候</label>
+          <label><input type="radio" name="q2" value="C"> C. 两个都对</label>
+        </div>
+        <div class="collapse-wrap">
+          <button class="collapse-btn" onclick="toggleAnswer(this)">📖 Show Answer</button>
+          <div class="answer-content">
+            <span class="verdict">✅ C. Both are correct</span>
+            <div class="exp">Same as “昨天下午” — “今天早上” is <em>fixed date + time block</em>. Either way works.<br>
+            ➜ Adding 的时候 makes it sound more <em>spoken / narrative</em>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第3题 -->
+      <div class="practice-item">
+        <div class="q"><span class="num">③</span> 昨天 ____ 我很开心。</div>
+        <div class="options">
+          <label><input type="radio" name="q3" value="A"> A. （不加）更自然</label>
+          <label><input type="radio" name="q3" value="B"> B. 的时候更自然</label>
+          <label><input type="radio" name="q3" value="C"> C. 两个一样自然</label>
+        </div>
+        <div class="collapse-wrap">
+          <button class="collapse-btn" onclick="toggleAnswer(this)">📖 Show Answer</button>
+          <div class="answer-content">
+            <span class="verdict">✅ A. No marker — more natural</span>
+            <div class="exp">“昨天” is already a <em>fixed anchor</em>. Usually no 的时候 needed.<br>
+            ➜ You might hear it in casual speech, but in writing, plain is cleaner.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="practice-item">
+        <div class="q"><span class="num">④</span> 圣诞节 ____ 我们会交换礼物。</div>
+        <div class="options">
+          <label><input type="radio" name="q4" value="A"> A. （不加）更自然</label>
+          <label><input type="radio" name="q4" value="B"> B. 的时候更自然</label>
+          <label><input type="radio" name="q4" value="C"> C. 两个都可以</label>
+        </div>
+        <div class="collapse-wrap">
+          <button class="collapse-btn" onclick="toggleAnswer(this)">📖 Show Answer</button>
+          <div class="answer-content">
+            <span class="verdict">✅ B. 的时候 is more natural (but C is also acceptable)</span>
+            <div class="exp">“圣诞节” is a <em>festival time block</em>. Adding 的时候 emphasizes “during that Christmas period.”<br>
+            ➜ Without it is also fine, but with it feels more natural in Chinese.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第5题 -->
+      <div class="practice-item">
+        <div class="q"><span class="num">⑤</span> 上周三 ____ 我请了假。</div>
+        <div class="options">
+          <label><input type="radio" name="q5" value="A"> A. 必须不加</label>
+          <label><input type="radio" name="q5" value="B"> B. 必须加</label>
+          <label><input type="radio" name="q5" value="C"> C. 加不加都行</label>
+        </div>
+        <div class="collapse-wrap">
+          <button class="collapse-btn" onclick="toggleAnswer(this)">📖 Show Answer</button>
+          <div class="answer-content">
+            <span class="verdict">✅ C. Either way works</span>
+            <div class="exp">“上周三” = fixed week + day of week — already clearly located.<br>
+            ➜ Without it: neutral statement. With it: adds a bit of <em>narrative flavor</em> — “on that day.”</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /quiz-block -->
+  </div>
+</section>
+
+<!-- ================= FOOTER RECAP ================= -->
+<footer>
+  <div class="wrap">
+    <div class="recap">
+      <div class="cn">能马上知道是哪一次的，直接说；<br>需要靠"的时候"钉在故事里的，才加。</div>
+      <div class="en">If the word already tells you exactly which moment — just say it. If it repeats every year/week/day, use 的时候 to pin down this one time.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // 折叠切换函数
+  function toggleAnswer(btn) {
+    const content = btn.nextElementSibling;
+    if (content.classList.contains('show')) {
+      content.classList.remove('show');
+      btn.textContent = '📖 Show Answer';
+    } else {
+      content.classList.add('show');
+      btn.textContent = '🙈 Hide Answer';
+    }
+  }
+</script>
+
+</body>
+</html>

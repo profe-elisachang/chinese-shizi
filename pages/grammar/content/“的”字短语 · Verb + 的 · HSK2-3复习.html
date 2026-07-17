@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>“的”字短语 · Verb + 的 · HSK2-3复习</title>
+    <style>
+        /* ===== 全局重置 & 字体 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f7f3ee;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 30px 20px;
+            color: #1e2b3c;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 48px 48px 32px 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            padding: 40px 45px;
+            transition: padding 0.2s;
+        }
+
+        /* ===== 标题区 ===== */
+        .main-title {
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: #1e2b3c;
+            letter-spacing: 1px;
+            border-left: 8px solid #e67e5a;
+            padding-left: 20px;
+            margin-bottom: 6px;
+        }
+
+        .subhead {
+            font-size: 1.2rem;
+            color: #5b6f82;
+            margin-left: 28px;
+            margin-bottom: 30px;
+            font-weight: 400;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 24px;
+        }
+
+        .subhead span {
+            background: #ece6e0;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 1rem;
+            color: #3d4e5e;
+        }
+
+        /* ===== 通用卡片 ===== */
+        .card {
+            background: #fcfaf8;
+            border-radius: 28px;
+            padding: 24px 30px;
+            margin-bottom: 32px;
+            border: 1px solid #ebe3dc;
+            transition: box-shadow 0.15s;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e2b3c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .card-title .emoji-badge {
+            background: #e67e5a;
+            color: white;
+            font-size: 1rem;
+            border-radius: 40px;
+            padding: 0 14px;
+            line-height: 28px;
+            font-weight: 500;
+            margin-left: 6px;
+        }
+
+        .card-title .small-tag {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #6f7f8f;
+            margin-left: 10px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #ddd6ce;
+            margin: 18px 0 22px 0;
+        }
+
+        /* ===== 表格 ===== */
+        .example-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1rem;
+        }
+
+        .example-table td {
+            padding: 12px 10px 12px 0;
+            border-bottom: 1px solid #ece3db;
+        }
+
+        .example-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .example-table .cn {
+            font-weight: 500;
+            color: #1e2b3c;
+        }
+
+        .example-table .en {
+            color: #5b6f82;
+            font-size: 0.95rem;
+        }
+
+        .highlight {
+            background: #fce9df;
+            padding: 0 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #b85c3a;
+        }
+
+        .formula-box {
+            background: #eae3db;
+            padding: 14px 22px;
+            border-radius: 60px;
+            display: inline-block;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #1e2b3c;
+            letter-spacing: 0.5px;
+            margin: 4px 0 8px 0;
+        }
+
+        .formula-box-en {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #4d657a;
+            margin-top: 4px;
+        }
+
+        /* ===== 练习 ===== */
+        .exercise-block {
+            background: #f5f0eb;
+            border-radius: 24px;
+            padding: 22px 28px;
+            margin-top: 8px;
+        }
+
+        .exercise-item {
+            margin-bottom: 28px;
+        }
+
+        .exercise-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ex-question {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .ex-prompt {
+            font-size: 1.1rem;
+            background: #fffbf9;
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            border: 1px solid #d9cfc6;
+            margin: 6px 0 10px 0;
+            letter-spacing: 1px;
+        }
+
+        .ex-answer-line {
+            font-size: 1.1rem;
+            color: #3d4e5e;
+            margin: 6px 0 8px 0;
+            padding-left: 6px;
+        }
+
+        .ex-answer-line .blank {
+            display: inline-block;
+            min-width: 120px;
+            border-bottom: 3px dashed #b85c3a;
+            margin: 0 4px;
+            color: #b85c3a;
+            font-weight: 500;
+        }
+
+        /* ===== 折叠答案 ===== */
+        .ref-toggle {
+            background: none;
+            border: none;
+            color: #b85c3a;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px 16px;
+            border-radius: 30px;
+            background: #f3ede7;
+            transition: background 0.2s;
+            margin-top: 6px;
+            display: inline-block;
+        }
+
+        .ref-toggle:hover {
+            background: #e8dfd6;
+        }
+
+        .ref-answer {
+            background: #e7f0e6;
+            padding: 12px 20px;
+            border-radius: 20px;
+            margin-top: 8px;
+            color: #1e4a3b;
+            font-size: 1.05rem;
+            border-left: 5px solid #4f8a72;
+            display: none;
+        }
+
+        .ref-answer.open {
+            display: block;
+        }
+
+        .ref-answer .alt {
+            color: #3d6b58;
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+        .ref-answer strong {
+            font-weight: 600;
+        }
+
+        /* ===== 生词提示 ===== */
+        .word-hint {
+            font-size: 0.85rem;
+            color: #5b6f82;
+            background: #f3ede7;
+            padding: 1px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-left: 4px;
+            font-weight: 400;
+        }
+
+        .word-hint-sm {
+            font-size: 0.8rem;
+            color: #5b6f82;
+            background: #f3ede7;
+            padding: 1px 10px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-left: 3px;
+            font-weight: 400;
+        }
+
+        /* ===== 英文解释卡片 ===== */
+        .en-box {
+            background: #eef3f0;
+            border-radius: 16px;
+            padding: 16px 22px;
+            margin: 12px 0 6px 0;
+            border-left: 4px solid #4f8a72;
+            font-size: 0.98rem;
+            color: #1e3d33;
+        }
+
+        .en-box strong {
+            color: #1e4a3b;
+        }
+
+        .en-box .en-highlight {
+            background: #d4e3d8;
+            padding: 0 6px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #1a4d33;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 24px;
+            margin-top: 8px;
+        }
+
+        .compare-item {
+            background: #f5f8f5;
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid #dde8df;
+        }
+
+        .compare-item .cn {
+            font-weight: 500;
+            color: #1e2b3c;
+        }
+
+        .compare-item .en {
+            color: #3d6b58;
+            font-size: 0.92rem;
+        }
+
+        .compare-label {
+            font-weight: 600;
+            color: #4f6b5a;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .key-rule {
+            background: #f5f8f5;
+            padding: 10px 18px;
+            border-radius: 12px;
+            margin: 4px 0;
+            font-size: 1rem;
+        }
+
+        .key-rule .step {
+            color: #b85c3a;
+            font-weight: 600;
+        }
+
+        /* ===== 对话 ===== */
+        .dialogue-box {
+            background: #e7e0d9;
+            border-radius: 28px;
+            padding: 24px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 1.2rem;
+        }
+
+        .dialogue-line {
+            display: flex;
+            align-items: baseline;
+            gap: 6px 16px;
+            flex-wrap: wrap;
+        }
+
+        .dialogue-speaker {
+            font-weight: 600;
+            color: #3d4e5e;
+            min-width: 28px;
+        }
+
+        .dialogue-text {
+            color: #1e2b3c;
+        }
+
+        /* ===== 底部 ===== */
+        .footer-note {
+            text-align: center;
+            color: #8d9caa;
+            font-size: 0.9rem;
+            margin-top: 18px;
+            border-top: 1px solid #e2d9d1;
+            padding-top: 24px;
+            letter-spacing: 0.3px;
+        }
+
+        .footer-note strong {
+            color: #5b6f82;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 720px) {
+            body {
+                padding: 14px 10px;
+            }
+            .container {
+                padding: 22px 16px;
+                border-radius: 32px;
+            }
+            .main-title {
+                font-size: 1.9rem;
+                padding-left: 14px;
+            }
+            .subhead {
+                font-size: 1rem;
+                margin-left: 16px;
+            }
+            .card {
+                padding: 18px 16px;
+                border-radius: 20px;
+            }
+            .card-title {
+                font-size: 1.3rem;
+            }
+            .formula-box {
+                font-size: 1.1rem;
+                padding: 10px 16px;
+            }
+            .example-table {
+                font-size: 1rem;
+            }
+            .exercise-block {
+                padding: 16px 14px;
+            }
+            .ex-question {
+                font-size: 1.05rem;
+            }
+            .ex-prompt {
+                font-size: 1rem;
+                padding: 8px 14px;
+            }
+            .dialogue-box {
+                font-size: 1.05rem;
+                padding: 18px 16px;
+            }
+            .ref-answer {
+                font-size: 0.95rem;
+                padding: 10px 14px;
+            }
+            .word-hint {
+                font-size: 0.75rem;
+                padding: 1px 8px;
+            }
+            .compare-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .en-box {
+                font-size: 0.9rem;
+                padding: 12px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.6rem;
+            }
+            .container {
+                padding: 16px 10px;
+            }
+            .card {
+                padding: 14px 10px;
+            }
+            .example-table td {
+                padding: 10px 4px 10px 0;
+            }
+            .dialogue-box {
+                font-size: 0.95rem;
+            }
+            .formula-box {
+                font-size: 1rem;
+                padding: 6px 12px;
+            }
+        }
+
+        /* ===== 电视大屏优化 (65寸) ===== */
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 1300px;
+                padding: 50px 65px;
+            }
+            .main-title {
+                font-size: 3.2rem;
+            }
+            .card-title {
+                font-size: 1.9rem;
+            }
+            .example-table {
+                font-size: 1.4rem;
+            }
+            .formula-box {
+                font-size: 1.8rem;
+                padding: 18px 32px;
+            }
+            .dialogue-box {
+                font-size: 1.6rem;
+                padding: 30px 40px;
+            }
+            .ex-question {
+                font-size: 1.6rem;
+            }
+            .ex-prompt {
+                font-size: 1.5rem;
+            }
+            .ref-answer {
+                font-size: 1.4rem;
+                padding: 16px 28px;
+            }
+            .subhead {
+                font-size: 1.5rem;
+            }
+            .word-hint {
+                font-size: 1rem;
+                padding: 2px 16px;
+            }
+            .en-box {
+                font-size: 1.2rem;
+                padding: 20px 28px;
+            }
+            .compare-item {
+                font-size: 1.2rem;
+                padding: 14px 20px;
+            }
+            .key-rule {
+                font-size: 1.2rem;
+                padding: 14px 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ====== 标题 ====== -->
+    <h1 class="main-title">“的”字短语 · Verb + 的</h1>
+    <div class="subhead">
+        <span>📘 HSK 2–3 复习</span>
+        <span>✏️ 自学 · 投屏 · 手机</span>
+    </div>
+
+    <!-- ====== 1. 什么意思 ====== -->
+    <div class="card">
+        <div class="card-title">
+            📌 什么意思？
+            <span class="small-tag">What does it mean?</span>
+        </div>
+        <p style="font-size:1.25rem; margin-bottom:4px;">
+            <strong>Verb + 的</strong> = <strong>“the one that …”</strong>
+        </p>
+        <p style="color:#3d5a6c; font-size:1.1rem; margin-bottom:10px;">
+            👉 东西大家都知道，就不用再说出来了。
+        </p>
+
+        <div class="en-box">
+            <strong>📖 Meaning:</strong><br>
+            This pattern is used when we want to <strong>focus on the object</strong> (the thing),
+            not the person or the action.<br>
+            It's like saying in English:<br>
+            <em>“It is <span class="en-highlight">THIS thing</span> that I bought / he did / you want...”</em>
+        </div>
+    </div>
+
+    <!-- ====== 2. 怎么用 + Pattern ====== -->
+    <div class="card">
+        <div class="card-title">
+            📌 怎么用？
+            <span class="small-tag">How to use?</span>
+        </div>
+
+        <div style="margin-bottom:12px;">
+            <div class="formula-box">
+                Object + 是 + Subject + 动词 + 的
+            </div>
+            <div class="formula-box-en">
+                (It is <strong>Object</strong> that <strong>Subject</strong> did / wants...)
+            </div>
+        </div>
+
+        <table class="example-table">
+            <tr><td class="cn">我买的书</td><td class="en">→ 我<span class="highlight">买的</span> (the one I bought)</td></tr>
+            <tr><td class="cn">妈妈做的饭</td><td class="en">→ 妈妈<span class="highlight">做的</span> (the one Mom made)</td></tr>
+            <tr><td class="cn">昨天买的杯子</td><td class="en">→ 昨天<span class="highlight">买的</span> (the one bought yesterday)</td></tr>
+            <tr><td class="cn">写字的笔</td><td class="en">→ 写<span class="highlight">字的</span> (the one for writing)</td></tr>
+        </table>
+
+        <hr>
+
+        <div style="margin-top:6px;">
+            <div style="font-weight:600; font-size:1.1rem;">🧩 Pattern:</div>
+            <div style="background:#f3efe9; border-radius:16px; padding:10px 18px; margin:4px 0 6px 0; font-size:1.1rem;">
+                <strong>Object + 是 + Subject + 买的/做的/要的...</strong>
+                <span style="color:#4d657a; font-weight:400; margin-left:12px; font-size:0.95rem;">
+                    (It is <strong>Object</strong> that <strong>Subject</strong> did / wants...)
+                </span>
+            </div>
+        </div>
+
+        <!-- Compare: Normal vs Emphasized -->
+        <div style="margin-top:14px;">
+            <div style="font-weight:600; font-size:1.1rem; margin-bottom:6px;">🧠 Compare:</div>
+            <div class="compare-grid">
+                <div class="compare-item">
+                    <div class="compare-label">Normal sentence</div>
+                    <div class="cn">我买了一张票。</div>
+                    <div class="en">I bought a ticket.</div>
+                </div>
+                <div class="compare-item">
+                    <div class="compare-label">Emphasized (this pattern)</div>
+                    <div class="cn">这张票是我<span class="highlight">买的</span>。</div>
+                    <div class="en">It is <strong>THIS ticket</strong> that I bought.</div>
+                </div>
+                <div class="compare-item">
+                    <div class="compare-label">Normal sentence</div>
+                    <div class="cn">他要红苹果。</div>
+                    <div class="en">He wants red apples.</div>
+                </div>
+                <div class="compare-item">
+                    <div class="compare-label">Emphasized (this pattern)</div>
+                    <div class="cn">红苹果是他<span class="highlight">要的</span>。</div>
+                    <div class="en">It is <strong>RED APPLES</strong> that he wants.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Rules -->
+        <div style="margin-top:14px;">
+            <div style="font-weight:600; font-size:1.1rem; margin-bottom:4px;">✅ Key rules:</div>
+            <div class="key-rule">
+                <span class="step">1.</span> Put the <strong>object</strong> first.<br>
+                <span class="step">2.</span> Add <strong>是</strong> after the object.<br>
+                <span class="step">3.</span> Put the <strong>subject</strong> after 是.<br>
+                <span class="step">4.</span> End with <strong>的</strong> (and the verb if needed).
+            </div>
+        </div>
+
+        <!-- Question form -->
+        <div style="margin-top:12px; background:#f3efe9; border-radius:40px; padding:10px 22px;">
+            <span style="font-weight:500;">❓ Question form:</span><br>
+            <span style="font-size:1.05rem;">
+                Object + 是 + Subject + 动词 + 的 + 吗？
+            </span>
+            <span style="color:#4d657a; margin-left:10px; font-size:0.95rem;">
+                = Is it <strong>Object</strong> that you (did)...?
+            </span>
+            <div style="margin-top:4px; font-size:1.05rem;">
+                这张票是你<span class="highlight">买的</span>吗？
+                <span style="color:#4d657a; margin-left:10px; font-size:0.95rem;">
+                    = Is it <strong>this ticket</strong> that you bought?
+                </span>
+            </div>
+        </div>
+
+        <!-- Quick summary -->
+        <div style="margin-top:12px; background:#e7e0d9; border-radius:16px; padding:12px 20px;">
+            <span style="font-weight:600;">🎯 Quick summary:</span><br>
+            <span style="font-size:1.05rem;">
+                <strong>“Object + 是 + Subject + (Verb) + 的”</strong><br>
+                = <strong>“It is OBJECT that SUBJECT (did something with).”</strong><br>
+                <span style="color:#4d657a; font-size:0.95rem;">
+                    Use this when you want to <strong>stress WHAT thing</strong>, not WHO or WHEN.
+                </span>
+            </span>
+        </div>
+    </div>
+
+    <!-- ====== 3. 看例子 ====== -->
+    <div class="card">
+        <div class="card-title">
+            📌 看例子
+            <span class="small-tag">Examples</span>
+        </div>
+
+        <table class="example-table">
+            <tr>
+                <td class="cn">这本书是我<span class="highlight">买的</span>。</td>
+                <td class="en">It is <strong>this book</strong> that I bought.</td>
+            </tr>
+            <tr>
+                <td class="cn">这个杯子是昨天<span class="highlight">买的</span>。</td>
+                <td class="en">It is <strong>this cup</strong> that was bought yesterday.</td>
+            </tr>
+            <tr>
+                <td class="cn">这支笔是写<span class="highlight">字的</span>。</td>
+                <td class="en">It is <strong>this pen</strong> that is for writing.</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ====== 4. 练习一：填空 ====== -->
+    <div class="card">
+        <div class="card-title">
+            ✏️ 练习一 · 填空
+            <span class="small-tag">Fill in the blank</span>
+            <span class="emoji-badge">动词 + 的</span>
+        </div>
+
+        <div class="exercise-block">
+            <!-- 1 -->
+            <div class="exercise-item">
+                <div class="ex-question">1. 这本书是我（<span class="blank">______</span>）。（买）</div>
+                <button class="ref-toggle" onclick="toggleRef(this)">▶ 看答案</button>
+                <div class="ref-answer">
+                    ✅ <strong>买的</strong> &nbsp;— 这本书是我<span class="highlight">买的</span>。<br>
+                    <span class="alt">(= It is this book that I bought.)</span>
+                </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="exercise-item">
+                <div class="ex-question">
+                    2. 这杯咖啡 <span class="word-hint">kāfēi · coffee</span> 是妈妈（<span class="blank">______</span>）。（做）
+                </div>
+                <button class="ref-toggle" onclick="toggleRef(this)">▶ 看答案</button>
+                <div class="ref-answer">
+                    ✅ <strong>做的</strong> &nbsp;— 这杯咖啡是妈妈<span class="highlight">做的</span>。<br>
+                    <span class="alt">(= It is this cup of coffee that Mom made.)</span>
+                </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="exercise-item">
+                <div class="ex-question">3. 这个礼物是昨天（<span class="blank">______</span>）。（送）</div>
+                <button class="ref-toggle" onclick="toggleRef(this)">▶ 看答案</button>
+                <div class="ref-answer">
+                    ✅ <strong>送的</strong> &nbsp;— 这个礼物是昨天<span class="highlight">送的</span>。<br>
+                    <span class="alt">(= It is this gift that was given yesterday.)</span>
+                </div>
+            </div>
+
+            <!-- 4 -->
+            <div class="exercise-item">
+                <div class="ex-question">4. 这件衣服是姐姐（<span class="blank">______</span>）。（买）</div>
+                <button class="ref-toggle" onclick="toggleRef(this)">▶ 看答案</button>
+                <div class="ref-answer">
+                    ✅ <strong>买的</strong> &nbsp;— 这件衣服是姐姐<span class="highlight">买的</span>。<br>
+                    <span class="alt">(= It is this dress that my older sister bought.)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 5. 练习二：排句子 ====== -->
+    <div class="card">
+        <div class="card-title">
+            ✏️ 练习二 · 排句子
+            <span class="small-tag">Put the words in order</span>
+        </div>
+
+        <div class="exercise-block">
+
+            <!-- 第一题 -->
+            <div class="exercise-item">
+                <div class="ex-question">📝 第一题</div>
+                <div class="ex-prompt">本 / 书 / 你 / 借 / 中文</div>
+                <div class="ex-answer-line">你的答案：________________________</div>
+                <button class="ref-toggle" onclick="toggleRef(this)">▶ 看答案</button>
+                <div class="ref-answer">
+                    ✅ <strong>这本书是你借的中文书吗？</strong><br>
+                    <span class="alt">（或者：这本书是你借的。）</span><br>
+                    <span class="alt">(= Is it this Chinese book that you borrowed? / It is this book that you borrowed.)</span>
+                </div>
+            </div>
+
+            <!-- 第二题 -->
+            <div class="exercise-item">
+                <div class="ex-question">📝 第二题</div>
+                <div class="ex-prompt">
+                    些 / 练习 / 他 / 做 / 翻译
+                    <span class="word-hint">fānyì · 翻译</span>
+                </div>
+                <div class="ex-answer-line">你的答案：________________________</div>
+                <button class="ref-toggle" onclick="toggleRef(this)">▶ 看答案</button>
+                <div class="ref-answer">
+                    ✅ <strong>这些练习是他做的翻译练习吗？</strong><br>
+                    <span class="alt">（或者：这些练习是他做的。）</span><br>
+                    <span class="alt">(= Is it these translation exercises that he did? / It is these exercises that he did.)</span>
+                </div>
+            </div>
+
+            <!-- 第三题 -->
+            <div class="exercise-item">
+                <div class="ex-question">📝 第三题</div>
+                <div class="ex-prompt">
+                    些 / 苹果 / 你 / 要 / 红
+                    <span class="word-hint">píngguǒ · 苹果</span>
+                    <span class="word-hint">hóng · 红</span>
+                </div>
+                <div class="ex-answer-line">你的答案：________________________</div>
+                <button class="ref-toggle" onclick="toggleRef(this)">▶ 看答案</button>
+                <div class="ref-answer">
+                    ✅ <strong>这些苹果是你要的红苹果吗？</strong><br>
+                    <span class="alt">（或者：这些苹果是你要的。）</span><br>
+                    <span class="alt">(= Is it these red apples that you want? / It is these apples that you want.)</span>
+                </div>
+            </div>
+
+            <!-- 第四题 -->
+            <div class="exercise-item">
+                <div class="ex-question">📝 第四题</div>
+                <div class="ex-prompt">
+                    个 / 包裹 / 他 / 取 / 海运
+                    <span class="word-hint">bāoguǒ · 包裹</span>
+                    <span class="word-hint">hǎiyùn · 海运</span>
+                    <span class="word-hint">qǔ · 取</span>
+                </div>
+                <div class="ex-answer-line">你的答案：________________________</div>
+                <button class="ref-toggle" onclick="toggleRef(this)">▶ 看答案</button>
+                <div class="ref-answer">
+                    ✅ <strong>这个包裹是他取的海运包裹吗？</strong><br>
+                    <span class="alt">（或者：这个包裹是他取的。）</span><br>
+                    <span class="alt">(= Is it this sea-freight package that he picked up? / It is this package that he picked up.)</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ====== 6. 日常对话 ====== -->
+    <div class="card">
+        <div class="card-title">
+            💬 日常对话
+            <span class="small-tag">Everyday conversation</span>
+        </div>
+
+        <div class="dialogue-box">
+            <div class="dialogue-line">
+                <span class="dialogue-speaker">A:</span>
+                <span class="dialogue-text">这张票是不是你<span class="highlight">买的</span>？</span>
+                <span style="color:#4d657a; font-size:0.9rem;">(= Is it this ticket that you bought?)</span>
+            </div>
+            <div class="dialogue-line">
+                <span class="dialogue-speaker">B:</span>
+                <span class="dialogue-text">这张票不是我<span class="highlight">买的</span>。我<span class="highlight">买的</span>是下星期二的。</span>
+                <span style="color:#4d657a; font-size:0.9rem;">(= It's not this ticket that I bought. It's next Tuesday's that I bought.)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== 底部 ====== -->
+    <div class="footer-note">
+        ⚡ <strong>Verb + 的</strong> = “the one that …” &nbsp;·&nbsp; 东西大家都知道，就不用说出来了。
+    </div>
+
+</div>
+
+<script>
+    function toggleRef(btn) {
+        const answerDiv = btn.nextElementSibling;
+        if (answerDiv.classList.contains('open')) {
+            answerDiv.classList.remove('open');
+            btn.textContent = '▶ 看答案';
+        } else {
+            answerDiv.classList.add('open');
+            btn.textContent = '▼ 收起答案';
+        }
+    }
+</script>
+
+</body>
+</html>

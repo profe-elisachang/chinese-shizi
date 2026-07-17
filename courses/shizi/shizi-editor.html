@@ -1194,7 +1194,7 @@
             }
             
             btnAdd.style.display = 'block';
-            if (btnBatchExamples) btnBatchExamples.style.display = (currentType === 'phrases') ? 'inline-block' : 'none';
+            if (btnBatchExamples) btnBatchExamples.style.display = (currentType === 'phrases' && currentData.length > 0) ? 'inline-block' : 'none';
             
             editPanelTitle.textContent = `${typeNames[currentType]} (${currentData.length} 項)`;
 
@@ -2003,7 +2003,7 @@
         // ==================== 批次貼上例句 ====================
         function showBatchExamplesModal() {
             if (currentType !== 'phrases' || !currentData.length) {
-                alert('請先選擇詞組並確保有詞組數據');
+                alert('請先選擇詞組類型並確保本課已有詞組內容，才能批次貼上例句。');
                 return;
             }
             const modal = document.createElement('div');
