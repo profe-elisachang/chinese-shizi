@@ -1404,7 +1404,12 @@
         <div class="nav-content">
             <a href="../../index.html" class="nav-link">Home</a>
             <span class="nav-separator">|</span>
-            <a href="../bct/lessons/lesson.html" class="nav-link">Lessons</a>
+            <div class="nav-dropdown" data-nav-dropdown>
+                <button type="button" class="nav-link nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Courses</button>
+                <div class="nav-dropdown-menu" role="menu">
+                    <a href="../road-to-success/index.html" class="nav-dropdown-item" role="menuitem">成功之路 · 进步篇</a>
+                </div>
+            </div>
             <span class="nav-separator">|</span>
             <div class="nav-dropdown" id="literacyDropdown">
                 <button class="nav-link nav-dropdown-toggle active" id="literacyDropdownToggle" onclick="toggleLiteracyMenu(event)">Literacy</button>
@@ -1448,7 +1453,7 @@
                 <span class="icon">📚</span>
                 <span>Courses</span>
             </div>
-            <a href="../bct/lessons/lesson.html" class="mobile-menu-item">Lessons</a>
+            <a href="../road-to-success/index.html" class="mobile-menu-item">成功之路 · 进步篇</a>
             <a href="#" class="mobile-menu-item mobile-course-item" data-course="shizi" onclick="switchCourse('shizi'); return false;">识字</a>
             <a href="#" class="mobile-menu-item mobile-course-item" data-course="hsk2" onclick="switchCourse('hsk2'); return false;">HSK2</a>
             <a href="review.html" class="mobile-menu-item">Review Lit.</a>

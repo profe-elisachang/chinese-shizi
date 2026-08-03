@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>第一课 · 安妮的日记</title>
+<link rel="stylesheet" href="../../../assets/css/nav-global.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:#FAF3E6;
+    --paper-2:#F2E9D8;
+    --card:#FFFDF8;
+    --ink:#2B2420;
+    --ink-soft:#5C5347;
+    --seal:#B23A2E;
+    --seal-dark:#8C2C22;
+    --gold-bg:#F3DE9E;
+    --gold-bg-active:#E9C568;
+    --jade:#3E7C74;
+    --jade-bg:#D9EAE7;
+    --rule:#DCCFB0;
+    --step: 1;
+    --fs-base: calc(16px + (var(--step) - 1) * 3px);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Noto Serif SC','Songti SC','STSong',serif;
+    font-size:var(--fs-base); line-height:1.05; -webkit-font-smoothing:antialiased;
+  }
+  .ui{ font-family:'Noto Sans SC','PingFang SC',system-ui,sans-serif; }
+
+  /* ===== Header ===== */
+  header.book-head{
+    background:linear-gradient(135deg, var(--seal) 0%, var(--seal-dark) 100%);
+    color:#FBEFE6; padding:1.4rem 1.2rem 1.6rem; position:relative; overflow:hidden;
+  }
+  header.book-head::after{
+    content:""; position:absolute; right:-40px; top:-40px; width:220px; height:220px;
+    border-radius:50%; background:rgba(255,255,255,0.06);
+  }
+  .stamp{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:2.6rem; height:2.6rem; border:2px solid #FBEFE6; border-radius:6px;
+    font-weight:700; font-size:1.4rem; font-family:'Noto Sans SC',sans-serif; margin-bottom:0.6rem;
+  }
+  .book-head h1{ margin:0.2rem 0 0.15rem; font-size:clamp(1.6rem,4vw + 0.5rem,2.6rem); font-weight:700; letter-spacing:0.04em; }
+  .book-head .meta{ font-family:'Noto Sans SC',sans-serif; font-size:0.85rem; opacity:0.85; }
+  .book-head .prompt{
+    margin-top:0.9rem; font-family:'Noto Sans SC',sans-serif; font-size:0.82rem;
+    background:rgba(255,255,255,0.12); display:inline-block; padding:0.35rem 0.7rem; border-radius:999px;
+  }
+
+  /* ===== Tabs ===== */
+  .tab-nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; gap:0.4rem; background:rgba(250,243,230,0.96); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule); padding:0.6rem 1rem 0; overflow-x:auto;
+  }
+  .tab-btn{
+    font-family:'Noto Sans SC',sans-serif; font-weight:700; font-size:0.88rem;
+    background:transparent; border:none; color:var(--ink-soft);
+    padding:0.65rem 1.1rem; border-radius:10px 10px 0 0; cursor:pointer; white-space:nowrap;
+    border-bottom:3px solid transparent; transition:.15s;
+  }
+  .tab-btn:hover{ background:var(--paper-2); color:var(--ink); }
+  .tab-btn.active{ color:var(--seal-dark); border-bottom-color:var(--seal); background:var(--card); }
+  .toolbar{
+    display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;
+    padding:0.55rem 1rem; background:var(--card); border-bottom:1px solid var(--rule);
+  }
+  .toolbar .grp{ display:flex; align-items:center; gap:0.35rem; }
+  .toolbar .label{ font-family:'Noto Sans SC',sans-serif; font-size:0.72rem; color:var(--ink-soft); margin-right:0.1rem;}
+  .toolbar button{
+    font-family:'Noto Sans SC',sans-serif; font-size:0.8rem; border:1px solid var(--rule);
+    background:#fff; color:var(--ink); padding:0.4rem 0.65rem; border-radius:8px; cursor:pointer;
+    line-height:1; transition:.15s;
+  }
+  .toolbar button:hover{ background:var(--paper-2); }
+  .toolbar button:active{ transform:scale(0.96); }
+  .toolbar button[aria-pressed="true"]{ background:var(--ink); color:#FBEFE6; border-color:var(--ink); }
+  .toolbar .sep{ width:1px; align-self:stretch; background:var(--rule); margin:0 0.1rem; }
+  .toolbar .spacer{ flex:1; }
+  button:focus-visible, .vocab:focus-visible, .gram:focus-visible, summary:focus-visible{
+    outline:3px solid var(--jade); outline-offset:2px;
+  }
+
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  /* ===== Layout ===== */
+  .layout{ display:grid; grid-template-columns:1fr; max-width:1280px; margin:0 auto; }
+  @media (min-width:900px){ .layout{ grid-template-columns:minmax(0,1fr) 320px; align-items:start; } }
+  main.article{ padding:1.2rem 1.1rem 3rem; min-width:0; }
+  .page-block{ margin-bottom:2.2rem; }
+  .page-block h2{
+    font-size:0.9rem; font-family:'Noto Sans SC',sans-serif; color:var(--seal);
+    letter-spacing:0.08em; margin:0 0 0.7rem; display:flex; align-items:center; gap:0.5rem;
+  }
+  .page-block h2::before{ content:""; width:1.4rem; height:2px; background:var(--seal); display:inline-block; }
+  .dateline{ font-family:'Noto Sans SC',sans-serif; color:var(--ink-soft); font-size:0.85rem; margin-bottom:0.9rem; }
+
+  .para-wrap{ margin-bottom:0.6rem; }
+  p.para{
+    font-size:calc(var(--fs-base) * 1.18); line-height:2.15; letter-spacing:0.02em;
+    margin:0; text-align:justify; display:inline;
+  }
+  .play-para{
+    font-family:'Noto Sans SC',sans-serif; font-size:0.72rem; color:var(--jade);
+    background:var(--jade-bg); border:none; border-radius:999px; padding:0.15rem 0.55rem;
+    cursor:pointer; vertical-align:middle; margin-right:0.4rem;
+  }
+  .play-para:hover{ background:#c7e2dd; }
+
+  details.translation{ margin:0.5rem 0 1.5rem 0; }
+  details.translation summary{
+    font-family:'Noto Sans SC',sans-serif; font-size:0.75rem; color:var(--ink-soft);
+    cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:0.3rem;
+    padding:0.2rem 0.6rem; border:1px dashed var(--rule); border-radius:999px; width:fit-content;
+  }
+  details.translation summary::-webkit-details-marker{ display:none; }
+  details.translation summary::before{ content:"译"; font-family:'Noto Serif SC',serif; font-weight:700; color:var(--seal); }
+  details.translation summary::after{ content:"展开"; }
+  details.translation[open] summary::after{ content:"收起"; }
+  details.translation .t-body{
+    margin-top:0.5rem; padding:0.6rem 0.9rem; border-left:3px solid var(--rule);
+    background:var(--paper-2); border-radius:0 8px 8px 0; font-family:'Noto Sans SC',sans-serif;
+  }
+  details.translation .t-en, details.translation .t-es{ font-size:0.85rem; margin-bottom:0.3rem; color:var(--ink-soft); }
+  details.translation .t-en::before{ content:"EN　"; color:var(--jade); font-weight:700; }
+  details.translation .t-es::before{ content:"ES　"; color:var(--seal); font-weight:700; }
+
+  .lead-in{
+    font-family:'Noto Sans SC',sans-serif; background:var(--paper-2); border-left:3px solid var(--seal);
+    padding:0.7rem 0.9rem; font-size:0.85rem; color:var(--ink-soft); margin-bottom:1.4rem; border-radius:0 6px 6px 0;
+  }
+  .think{
+    font-family:'Noto Sans SC',sans-serif; margin-top:1.6rem; font-size:0.9rem;
+    background:var(--jade-bg); padding:0.8rem 1rem; border-radius:8px; color:#1F4A44;
+  }
+  .think b{ color:var(--jade); }
+
+  /* ===== Vocab & Grammar inline marks ===== */
+  .vocab, .gram{ cursor:pointer; position:relative; border-radius:3px; padding:0 1px; transition:background .15s; }
+  body.show-vocab .vocab{ background:var(--gold-bg); }
+  body.show-vocab .vocab:hover, body.show-vocab .vocab.active{ background:var(--gold-bg-active); }
+  body.show-gram .gram{
+    background-image:radial-gradient(circle, var(--seal) 1.1px, transparent 1.4px);
+    background-position:bottom 1px center; background-repeat:repeat-x; background-size:6px 6px; padding-bottom:3px;
+  }
+  body.show-gram .gram:hover, body.show-gram .gram.active{ color:var(--seal-dark); font-weight:600; }
+  body:not(.show-vocab) .vocab{ background:none; }
+  body:not(.show-gram) .gram{ background-image:none; }
+
+  #tooltip{
+    position:fixed; z-index:200; max-width:250px; background:var(--ink); color:#FBEFE6;
+    font-family:'Noto Sans SC',sans-serif; font-size:0.8rem; line-height:1.45; padding:0.55rem 0.75rem;
+    border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.25); pointer-events:none;
+    opacity:0; transform:translateY(4px); transition:opacity .12s, transform .12s;
+  }
+  #tooltip.show{ opacity:1; transform:translateY(0); }
+  #tooltip .py{ color:#F3DE9E; font-weight:600; display:block; margin-bottom:0.15rem; }
+  #tooltip .tag{ display:inline-block; font-size:0.65rem; letter-spacing:0.05em; text-transform:uppercase; opacity:0.7; margin-bottom:0.25rem; }
+
+  /* ===== Glossary panel ===== */
+  aside.glossary{ background:var(--paper-2); border-left:1px solid var(--rule); padding:1.1rem 1rem 3rem; font-family:'Noto Sans SC',sans-serif; }
+  aside.glossary h3{ font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 0.8rem; }
+  .gloss-item{ display:flex; gap:0.5rem; align-items:flex-start; padding:0.5rem 0.3rem; border-bottom:1px solid var(--rule); font-size:0.85rem; border-radius:6px; }
+  .gloss-item:hover{ background:rgba(178,58,46,0.06); }
+  .gloss-main{ flex:1; cursor:pointer; }
+  .gloss-num{ color:var(--ink-soft); font-size:0.72rem; width:1.4rem; flex:none; padding-top:0.2rem;}
+  .gloss-zh{ font-family:'Noto Serif SC',serif; font-weight:600; font-size:1rem; }
+  .gloss-py{ color:var(--seal); font-size:0.78rem; }
+  .gloss-en{ color:var(--ink-soft); font-size:0.78rem; }
+  .gloss-pos{ color:var(--jade); font-size:0.72rem; }
+  .speak-btn{
+    flex:none; border:none; background:var(--jade-bg); color:var(--jade); border-radius:50%;
+    width:1.8rem; height:1.8rem; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; justify-content:center;
+  }
+  .speak-btn:hover{ background:#c7e2dd; }
+  .speak-btn:active{ transform:scale(0.92); }
+
+  .grammar-list{ margin-top:1.4rem; }
+  .grammar-list .gram-item{ font-size:0.85rem; padding:0.55rem 0.3rem; border-bottom:1px dashed var(--rule); cursor:pointer; }
+  .grammar-list .g-zh{ font-family:'Noto Serif SC',serif; color:var(--seal-dark); font-weight:700; }
+  .grammar-list .g-en{ color:var(--ink-soft); display:block; margin-top:0.15rem; }
+
+  details.mobile-glossary{ display:none; }
+  @media (max-width:899.9px){
+    aside.glossary.desktop-only{ display:none; }
+    details.mobile-glossary{ display:block; margin:0 1.1rem 2rem; background:var(--paper-2); border-radius:10px; border:1px solid var(--rule); }
+    details.mobile-glossary summary{
+      font-family:'Noto Sans SC',sans-serif; font-weight:700; padding:0.8rem 1rem; cursor:pointer;
+      color:var(--seal-dark); list-style:none; display:flex; justify-content:space-between; align-items:center;
+    }
+    details.mobile-glossary summary::-webkit-details-marker{ display:none; }
+    details.mobile-glossary summary::after{ content:"▾"; transition:transform .15s; }
+    details.mobile-glossary[open] summary::after{ transform:rotate(180deg); }
+    details.mobile-glossary .inner{ padding:0 1rem 1rem; }
+  }
+
+  /* ===== 词语扩展 tab ===== */
+  .ext-wrap{ max-width:820px; margin:0 auto; padding:1.4rem 1.1rem 3rem; }
+  details.ext-entry{
+    background:var(--card); border:1px solid var(--rule); border-radius:12px; margin-bottom:1rem; overflow:hidden;
+  }
+  details.ext-entry summary{
+    cursor:pointer; list-style:none; padding:0.9rem 1.1rem; display:flex; align-items:center; gap:0.6rem;
+    font-family:'Noto Sans SC',sans-serif;
+  }
+  details.ext-entry summary::-webkit-details-marker{ display:none; }
+  details.ext-entry summary .ext-num{
+    flex:none; width:1.8rem; height:1.8rem; border-radius:50%; background:var(--seal); color:#FBEFE6;
+    display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700;
+  }
+  details.ext-entry summary .ext-title{ font-family:'Noto Serif SC',serif; font-size:1.15rem; font-weight:700; color:var(--seal-dark); flex:1; }
+  details.ext-entry summary .ext-py{ color:var(--jade); font-size:0.82rem; }
+  details.ext-entry summary::after{ content:"▾"; color:var(--ink-soft); transition:transform .15s; margin-left:0.4rem; }
+  details.ext-entry[open] summary::after{ transform:rotate(180deg); }
+  .ext-body{ padding:0 1.1rem 1.1rem; }
+  .ext-structure{
+    font-family:'Noto Sans SC',sans-serif; background:var(--paper-2); border-radius:8px; padding:0.5rem 0.8rem;
+    font-size:0.85rem; color:var(--ink); margin-bottom:0.6rem;
+  }
+  .ext-explain{ font-family:'Noto Sans SC',sans-serif; font-size:0.85rem; color:var(--ink-soft); margin-bottom:0.7rem; }
+  .ext-example{ border-left:3px solid var(--gold-bg-active); padding:0.3rem 0 0.3rem 0.8rem; margin-bottom:0.5rem; display:flex; gap:0.4rem; align-items:baseline; flex-wrap:wrap; }
+  .ext-example .zh{ font-size:1.02rem; }
+  .ext-example .mini-speak{
+    border:none; background:none; color:var(--jade); cursor:pointer; font-size:0.9rem; flex:none;
+  }
+  .ext-note{
+    font-family:'Noto Sans SC',sans-serif; background:#F7EFE0; border-radius:8px; padding:0.6rem 0.9rem;
+    font-size:0.8rem; color:var(--seal-dark); margin-top:0.5rem;
+  }
+
+  /* ===== 语言点提示 tab ===== */
+  .gramtips-wrap{ max-width:760px; margin:0 auto; padding:1.4rem 1.1rem 3rem; }
+  .gramtips-wrap > p.intro{ font-family:'Noto Sans SC',sans-serif; color:var(--ink-soft); font-size:0.88rem; margin-bottom:1rem; }
+  .gtip{
+    background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:0.85rem 1rem; margin-bottom:0.7rem;
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:0.3rem 0.9rem;
+  }
+  .gtip .g-name{ font-family:'Noto Serif SC',serif; font-weight:700; color:var(--seal-dark); font-size:1.05rem; }
+  .gtip .g-ex{ font-family:'Noto Sans SC',sans-serif; color:var(--ink-soft); font-size:0.85rem; }
+  .gtip .g-en{ font-family:'Noto Sans SC',sans-serif; color:var(--jade); font-size:0.8rem; flex-basis:100%; }
+  .check-box{
+    font-family:'Noto Sans SC',sans-serif; background:var(--jade-bg); color:#1F4A44; text-align:center;
+    padding:0.9rem 1rem; border-radius:10px; margin-top:1.2rem; font-size:0.95rem;
+  }
+
+  /* ===== TV mode ===== */
+  body.tv .toolbar :not(.tv-visible){ display:none !important; }
+  body.tv .toolbar{ justify-content:flex-end; padding:0.4rem 1rem; }
+  body.tv main.article{ max-width:1500px; margin:0 auto; padding:2rem 3rem 5rem; }
+  body.tv p.para{ font-size:calc(var(--fs-base) * 1.55); line-height:2.3; }
+  body.tv .book-head{ padding:1rem 1.2rem; }
+  body.tv .book-head h1{ font-size:1.8rem; }
+  body.tv .book-head .prompt, body.tv .book-head .meta{ display:none; }
+
+  footer.credit{ text-align:center; font-family:'Noto Sans SC',sans-serif; color:var(--ink-soft); font-size:0.72rem; padding:1.4rem 1rem 2rem; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body class="show-vocab show-gram">
+
+<nav class="top-nav ui">
+  <div class="nav-content">
+    <a href="../../../index.html" class="nav-link">Home</a>
+    <span class="nav-separator">|</span>
+    <div class="nav-dropdown" data-nav-dropdown>
+      <button type="button" class="nav-link nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true">Courses</button>
+      <div class="nav-dropdown-menu" role="menu">
+        <a href="../index.html" class="nav-dropdown-item" role="menuitem">成功之路 · 进步篇</a>
+      </div>
+    </div>
+    <span class="nav-separator">|</span>
+    <a href="../../shizi/lesson.html" class="nav-link">Literacy</a>
+    <span class="nav-separator">|</span>
+    <a href="../../shizi/review.html" class="nav-link">Review Lit.</a>
+    <span class="nav-separator group-separator">•</span>
+    <a href="../../../pages/grammar.html" class="nav-link">Grammar</a>
+    <span class="nav-separator">|</span>
+    <a href="../../../pages/extras.html" class="nav-link">Extras</a>
+    <span class="nav-separator">|</span>
+    <a href="../../../pages/mini-story.html" class="nav-link">Mini Story</a>
+    <span class="nav-separator">|</span>
+    <a href="../../../pages/music.html" class="nav-link">Music</a>
+    <span class="nav-separator group-separator">•</span>
+    <a href="../../../pages/timeline.html" class="nav-link">Timeline</a>
+  </div>
+  <div class="mobile-nav">
+    <button class="hamburger-btn" aria-label="Open menu">☰</button>
+    <span class="site-title">Chinese with Elisa</span>
+  </div>
+</nav>
+<div class="mobile-sidebar ui">
+  <button class="close-sidebar" aria-label="Close menu">✕</button>
+  <a href="../../../index.html" class="mobile-menu-single"><span class="icon">🏠</span><span>Home</span></a>
+  <div class="mobile-menu-group">
+    <div class="mobile-menu-title"><span class="icon">📚</span><span>Courses</span></div>
+    <a href="../index.html" class="mobile-menu-item">成功之路 · 进步篇</a>
+    <a href="../../shizi/lesson.html" class="mobile-menu-item">Literacy</a>
+    <a href="../../shizi/review.html" class="mobile-menu-item">Review Lit.</a>
+  </div>
+  <div class="mobile-menu-group">
+    <div class="mobile-menu-title"><span class="icon">📖</span><span>Resources</span></div>
+    <a href="../../../pages/grammar.html" class="mobile-menu-item">Grammar</a>
+    <a href="../../../pages/extras.html" class="mobile-menu-item">Extras</a>
+    <a href="../../../pages/mini-story.html" class="mobile-menu-item">Mini Story</a>
+    <a href="../../../pages/music.html" class="mobile-menu-item">Music</a>
+  </div>
+  <a href="../../../pages/timeline.html" class="mobile-menu-single"><span class="icon">📅</span><span>Timeline</span></a>
+</div>
+<div class="sidebar-overlay"></div>
+
+<header class="book-head">
+  <span class="stamp ui">1</span>
+  <h1>安妮的日记</h1>
+  <div class="meta ui">Ānnī de rìjì · Annie's Diary · 第一课 课文</div>
+  <div class="prompt ui">你写日记吗？你用汉语写过日记吗？</div>
+</header>
+
+<nav class="tab-nav ui">
+  <button class="tab-btn active" data-tab="reading">📖 阅读</button>
+  <button class="tab-btn" data-tab="ext">📝 词语扩展</button>
+  <button class="tab-btn" data-tab="gramtips">📌 语言点提示</button>
+</nav>
+
+<div class="toolbar ui" role="toolbar" aria-label="课件控制">
+  <div class="grp"><span class="label">生词</span><button id="btnVocab" aria-pressed="true">高亮 ON</button></div>
+  <div class="grp"><span class="label">语法点</span><button id="btnGram" aria-pressed="true">高亮 ON</button></div>
+  <div class="sep"></div>
+  <div class="grp"><span class="label">字号</span><button id="btnMinus" aria-label="缩小字体">A−</button><button id="btnPlus" aria-label="放大字体">A+</button></div>
+  <div class="sep"></div>
+  <div class="grp tv-visible"><button id="btnTV">📺 大屏投影模式</button></div>
+  <div class="spacer"></div>
+</div>
+
+<!-- ===================== TAB 1: 阅读 ===================== -->
+<section class="tab-panel active" id="panel-reading">
+  <div class="layout">
+    <main class="article">
+
+      <div class="page-block">
+        <h2>课文 · 第 1 页</h2>
+        <div class="dateline">3月10日　星期六　晴</div>
+
+        <div class="para-wrap">
+          <button class="play-para ui ptrigger" data-ptext="前几天天气一直不好，今天终于晴了，天气也暖和多了。瑞贝卡问我中午吃什么，我也没想好。我们去找大卫商量，他出了一个主意。他说中午带我们去一个又干净又安静的地方，可以一边吃饭一边聊天儿。">🔊 朗读</button>
+          <p class="para">前几天天气一直不好，今天<span class="vocab" data-id="zhongyu">终于</span>晴了，天气也暖和多了。瑞贝卡问我中午吃什么，我也没想好。我们去找大卫商量，他出了一个主意。他说中午带我们去一个<span class="gram" data-id="you-you">又</span>干净<span class="gram" data-id="you-you">又</span>安静的地方，可以<span class="gram" data-id="yibian-yibian">一边</span>吃饭<span class="gram" data-id="yibian-yibian">一边</span>聊天儿。</p>
+          <details class="translation ui"><summary>EN / ES</summary>
+            <div class="t-body">
+              <div class="t-en">A few days ago the weather had been bad, but today it finally cleared up and it's much warmer. Rebecca asked me what to eat for lunch, and I hadn't decided yet. We went to discuss it with David, and he came up with an idea — a clean, quiet place where we could eat and chat at the same time.</div>
+              <div class="t-es">Los últimos días el clima había estado malo, pero hoy finalmente despejó y hace más calor. Rebecca me preguntó qué comeríamos al mediodía, y yo aún no lo había decidido. Fuimos a consultarlo con David, quien tuvo una idea: un lugar limpio y tranquilo donde podríamos comer y charlar al mismo tiempo.</div>
+            </div>
+          </details>
+        </div>
+
+        <div class="para-wrap">
+          <button class="play-para ui ptrigger" data-ptext="中午的时候，大卫带我们来到了学校附近的一家中餐馆。这家餐馆虽然不太大，但是里边的环境很好，餐具看上去都很干净，饭馆里也没有人大声说话。一进门，我就喜欢上了这里。服务员都很热情，服务也很周到。我们刚坐下来，一个服务员就给我们沏上了一壶菊花茶，还给我们送来了热毛巾让我们擦手。">🔊 朗读</button>
+          <p class="para">中午的时候，大卫带我们来到了学校附近的一家<span class="vocab" data-id="zhongcanguan">中餐馆</span>。这家餐馆<span class="gram" data-id="suiran-danshi">虽然</span>不太大，<span class="gram" data-id="suiran-danshi">但是</span>里边的环境很好，<span class="vocab" data-id="canju">餐具</span><span class="gram" data-id="kanshangqu">看上去</span>都很干净，饭馆里也没有人<span class="vocab" data-id="dasheng">大声</span>说话。一进门，我就喜欢<span class="gram" data-id="v-shang">上</span>了这里。<span class="vocab" data-id="fuwu">服务</span>员都很热情，<span class="vocab" data-id="fuwu">服务</span>也很<span class="vocab" data-id="zhoudao">周到</span>。我们刚坐下来，一个服务员就给我们<span class="vocab" data-id="qi">沏</span>上了一<span class="vocab" data-id="hu">壶</span><span class="vocab" data-id="juhua">菊花</span>茶，还给我们送来了热<span class="vocab" data-id="maojin">毛巾</span>让我们擦<span class="vocab" data-id="shou">手</span>。</p>
+          <details class="translation ui"><summary>EN / ES</summary>
+            <div class="t-body">
+              <div class="t-en">At noon David took us to a Chinese restaurant near school. Though not very big, it had a nice atmosphere — the tableware looked clean and no one spoke loudly. I liked it the moment I walked in. The staff were warm and attentive; as soon as we sat down, a waitress poured us a pot of chrysanthemum tea and brought hot towels to wipe our hands.</div>
+              <div class="t-es">Al mediodía David nos llevó a un restaurante chino cerca de la escuela. Aunque no era muy grande, el ambiente era agradable: la vajilla se veía limpia y nadie hablaba en voz alta. Me gustó en cuanto entré. El personal era cálido y atento; en cuanto nos sentamos, una camarera nos sirvió una tetera de té de crisantemo y trajo toallas calientes para las manos.</div>
+            </div>
+          </details>
+        </div>
+
+        <div class="lead-in">生词 · 录音01 ／ 课文 · 录音02（原书右侧栏位内容已整合为右侧生词表，点击 🔊 可听发音）</div>
+      </div>
+
+      <div class="page-block">
+        <h2>课文 · 第 2 页</h2>
+
+        <div class="para-wrap">
+          <button class="play-para ui ptrigger" data-ptext="对我们这些刚到中国的留学生来说，吃中餐，点菜是一件很复杂的事，因为菜单上的很多汉字我们还没学过。虽然有的汉字认识，但也不明白是什么意思，更不知道那个菜是什么味道、好吃不好吃。现在我只记住了几个家常菜的名字，比如鱼香肉丝、辣子鸡丁等。要是想换换口味，就得想办法了。同学们常用的办法是：要么请对中餐比较熟悉的朋友跟我们一起去吃饭，要么跟认识的中国学生一起去。吃饭时让他们点菜，碰上好吃的菜，就把那个菜的名字记在本子上，这样就可以记住了。">🔊 朗读</button>
+          <p class="para">对我们这些刚到中国的留学生来说，吃<span class="vocab" data-id="zhongcan">中餐</span>，点菜是一件很<span class="vocab" data-id="fuza">复杂</span>的事，<span class="gram" data-id="yinwei-suoyi">因为</span>菜单上的很多汉字我们还没学过。<span class="gram" data-id="suiran-danshi">虽然</span>有的汉字认识，<span class="gram" data-id="suiran-danshi">但</span>也不明白是什么意思，更不知道那个菜是什么味道、好吃不好吃。现在我只<span class="vocab" data-id="jizhu">记住</span>了几个<span class="vocab" data-id="jiachangcai">家常菜</span>的名字，<span class="vocab" data-id="biru">比如</span>鱼香肉<span class="vocab" data-id="si">丝</span>、辣子鸡<span class="vocab" data-id="ding">丁</span><span class="vocab" data-id="deng">等</span>。<span class="gram" data-id="yaoshi-jiu">要是</span>想换换<span class="vocab" data-id="kouwei">口味</span>，<span class="gram" data-id="yaoshi-jiu">就</span>得想办法了。同学们常用的办法是：<span class="vocab" data-id="yaome">要么</span>请对中餐比较熟悉的朋友跟我们一起去吃饭，<span class="vocab" data-id="yaome">要么</span>跟认识的中国学生一起去。吃饭时让他们点菜，<span class="vocab" data-id="pengshang">碰上</span>好吃的菜，就把那个菜的名字<span class="vocab" data-id="ji">记</span>在本子上，这样就可以记住了。</p>
+          <details class="translation ui"><summary>EN / ES</summary>
+            <div class="t-body">
+              <div class="t-en">For us international students who just arrived in China, ordering food is complicated — many characters on the menu we haven't learned yet. Even recognized characters don't tell us what a dish tastes like. So far I only remember a few home-style dish names, like Yuxiang shredded pork or spicy diced chicken. To change things up, classmates either invite a friend familiar with Chinese food, or go with a Chinese student, letting them order — noting down any dish we like so we'll remember it.</div>
+              <div class="t-es">Para nosotros, estudiantes recién llegados a China, pedir comida es complicado: hay muchos caracteres en el menú que aún no hemos aprendido. Aunque reconozcamos algunos, no sabemos a qué sabe el plato. Por ahora solo recuerdo unos pocos platos caseros, como el cerdo con salsa Yuxiang o el pollo picante en dados. Para variar, los compañeros invitan a un amigo que conozca la comida china, o van con un estudiante chino que pida por ellos, anotando los platos que les gustan para recordarlos.</div>
+            </div>
+          </details>
+        </div>
+
+        <div class="para-wrap">
+          <button class="play-para ui ptrigger" data-ptext="不过今天点菜没有遇到问题。因为大卫来这儿吃过好几次了，所以菜很快就点好了。今天大卫点的大家都很喜欢吃，我最喜欢的是白菜馅儿的饺子。">🔊 朗读</button>
+          <p class="para">不过今天点菜没有遇到问题。<span class="gram" data-id="yinwei-suoyi">因为</span>大卫来这儿吃过<span class="vocab" data-id="hao">好</span>几次了，<span class="gram" data-id="yinwei-suoyi">所以</span>菜很快就点好了。今天大卫点的大家都很喜欢吃，我最喜欢的是<span class="vocab" data-id="baicai">白菜</span><span class="vocab" data-id="xianr">馅儿</span>的饺子。</p>
+          <details class="translation ui"><summary>EN / ES</summary>
+            <div class="t-body">
+              <div class="t-en">But today there was no trouble ordering — David has eaten here quite a few times, so it went quickly. Everyone loved what he chose; my favorite was the cabbage dumplings.</div>
+              <div class="t-es">Pero hoy no hubo problema al pedir: David ha comido aquí varias veces, así que fue rápido. A todos les encantó lo que eligió; mi favorito fueron los dumplings de col.</div>
+            </div>
+          </details>
+        </div>
+
+        <div class="para-wrap">
+          <button class="play-para ui ptrigger" data-ptext="桌子上的饭菜很快就被吃得一干二净。这真是一顿又可口又有营养的午餐！">🔊 朗读</button>
+          <p class="para">桌子上的饭菜很快就被吃得<span class="vocab" data-id="yiganerjing">一干二净</span>。这真是一顿<span class="gram" data-id="you-you">又</span><span class="vocab" data-id="kekou">可口</span><span class="gram" data-id="you-you">又</span>有<span class="vocab" data-id="yingyang">营养</span>的<span class="vocab" data-id="wucan">午餐</span>！</p>
+          <details class="translation ui"><summary>EN / ES</summary>
+            <div class="t-body">
+              <div class="t-en">The food on the table was cleared up in no time. It really was a tasty, nutritious lunch!</div>
+              <div class="t-es">La comida de la mesa desapareció en un instante. ¡Fue realmente un almuerzo sabroso y nutritivo!</div>
+            </div>
+          </details>
+        </div>
+
+        <div class="think"><b>想一想 · 说一说</b>　你喜欢吃中餐吗？你最喜欢吃什么菜？</div>
+      </div>
+    </main>
+
+    <aside class="glossary desktop-only" id="glossaryDesktop"></aside>
+  </div>
+
+  <details class="mobile-glossary">
+    <summary>📖 生词表 · 语法点（点击展开）</summary>
+    <div class="inner" id="glossaryMobile"></div>
+  </details>
+</section>
+
+<!-- ===================== TAB 2: 词语扩展 ===================== -->
+<section class="tab-panel" id="panel-ext">
+  <div class="ext-wrap" id="extWrap"></div>
+</section>
+
+<!-- ===================== TAB 3: 语言点提示 ===================== -->
+<section class="tab-panel" id="panel-gramtips">
+  <div class="gramtips-wrap">
+    <p class="intro ui">本课出现的句型结构，点击 🔊 可听例句发音。</p>
+    <div id="gtipList"></div>
+    <div class="check-box">❓ 这些语法点，你会用了吗？</div>
+  </div>
+</section>
+
+<footer class="credit ui">安妮的日记 · 第一课 课文 — 互动课件 · 点击或悬停生词／语法点查看拼音与释义</footer>
+
+<div id="tooltip" role="tooltip"></div>
+
+<script>
+// ===================== DATA =====================
+const VOCAB = [
+  {id:"rijì0", num:1, zh:"日记", py:"rìjì", pos:"名", en:"diary"},
+  {id:"zhongyu", num:2, zh:"终于", py:"zhōngyú", pos:"副", en:"at last; finally"},
+  {id:"zhongcanguan", num:3, zh:"中餐馆", py:"zhōngcānguǎn(r)", pos:"名", en:"Chinese food restaurant"},
+  {id:"zhongcan", num:3, zh:"中餐", py:"zhōngcān", pos:"名", en:"Chinese food"},
+  {id:"canguan", num:4, zh:"餐馆", py:"cānguǎn(r)", pos:"名", en:"restaurant"},
+  {id:"canju", num:5, zh:"餐具", py:"cānjù", pos:"名", en:"tableware"},
+  {id:"dasheng", num:6, zh:"大声", py:"dà shēng", pos:"", en:"in a loud voice"},
+  {id:"fuwu", num:7, zh:"服务", py:"fúwù", pos:"名／动", en:"service; to give service to"},
+  {id:"zhoudao", num:8, zh:"周到", py:"zhōudào", pos:"形", en:"attentive and satisfactory"},
+  {id:"qi", num:9, zh:"沏", py:"qī", pos:"动", en:"to infuse (tea)"},
+  {id:"hu", num:10, zh:"壶", py:"hú", pos:"名", en:"kettle; pot"},
+  {id:"juhua", num:11, zh:"菊花", py:"júhuā", pos:"名", en:"chrysanthemum"},
+  {id:"maojin", num:12, zh:"毛巾", py:"máojīn", pos:"名", en:"towel"},
+  {id:"shou", num:13, zh:"手", py:"shǒu", pos:"名", en:"hand"},
+  {id:"fuza", num:14, zh:"复杂", py:"fùzá", pos:"形", en:"complicated; complex"},
+  {id:"jizhu", num:15, zh:"记住", py:"jìzhù", pos:"", en:"to remember; bear in mind"},
+  {id:"jiachangcai", num:16, zh:"家常菜", py:"jiāchángcài", pos:"名", en:"homely food; a common meal"},
+  {id:"biru", num:17, zh:"比如", py:"bǐrú", pos:"连", en:"for example; such as"},
+  {id:"si", num:18, zh:"丝", py:"sī", pos:"名", en:"a threadlike thing (shreds)"},
+  {id:"ding", num:19, zh:"丁", py:"dīng(r)", pos:"", en:"small cubes of meat or vegetable"},
+  {id:"deng", num:20, zh:"等", py:"děng(děng)", pos:"助", en:"etc."},
+  {id:"kouwei", num:21, zh:"口味", py:"kǒuwèi", pos:"名", en:"a person's taste"},
+  {id:"yaome", num:22, zh:"要么", py:"yàome", pos:"连", en:"either... or..."},
+  {id:"pengshang", num:23, zh:"碰上", py:"pèngshang", pos:"", en:"to meet; come across"},
+  {id:"ji", num:24, zh:"记", py:"jì", pos:"动", en:"to write down; record"},
+  {id:"hao", num:25, zh:"好", py:"hǎo", pos:"副", en:"very; quite (好几次 = quite a few times)"},
+  {id:"baicai", num:26, zh:"白菜", py:"báicài", pos:"名", en:"Chinese cabbage"},
+  {id:"xianr", num:27, zh:"馅儿", py:"xiànr", pos:"名", en:"filling; stuffing"},
+  {id:"yiganerjing", num:28, zh:"一干二净", py:"yì gān èr jìng", pos:"", en:"cleared up without remainder"},
+  {id:"kekou", num:29, zh:"可口", py:"kěkǒu", pos:"形", en:"good to eat; tasty"},
+  {id:"yingyang", num:30, zh:"营养", py:"yíngyǎng", pos:"名", en:"nutrition"},
+  {id:"wucan", num:31, zh:"午餐", py:"wǔcān", pos:"名", en:"lunch"},
+];
+
+const GRAMMAR = [
+  {id:"you-you", zh:"又……又……", en:"both...and... — two qualities/actions at once", ex:"又干净又安静　·　又可口又有营养"},
+  {id:"yibian-yibian", zh:"一边……一边……", en:"to do two things at the same time", ex:"一边吃饭一边聊天儿"},
+  {id:"suiran-danshi", zh:"虽然……但是（但）……", en:"although...but... — concession", ex:"虽然不太大，但是环境很好"},
+  {id:"kanshangqu", zh:"看上去", en:"looks like; appears to be", ex:"餐具看上去都很干净"},
+  {id:"v-shang", zh:"动词 + 上", en:"resultative complement — start/attain a state", ex:"喜欢上了这里"},
+  {id:"yinwei-suoyi", zh:"因为……所以……", en:"because...so...", ex:"因为吃过好几次，所以点得很快"},
+  {id:"yaoshi-jiu", zh:"要是……就……", en:"if...then...", ex:"要是想换换口味，就得想办法了"},
+  {id:"yaome-yaome", zh:"要么……要么……", en:"either...or...", ex:"要么请朋友，要么跟中国学生一起去"},
+];
+
+// 词语扩展：精选值得深入讲解的词，每词给出用法结构、说明、例句（附 EN/ES）
+const EXT = [
+  {
+    zh:"终于", py:"zhōngyú", en:"finally",
+    structure:"终于 + 动词／形容词（期待已久的结果）",
+    explain:"表示经过一段时间或努力后，期待的结果终于出现。只能用于「盼望中的」结果，不能用于坏结果。",
+    examples:[
+      {zh:"前几天天气一直不好，今天终于晴了。", en:"The weather had been bad for days, but today it finally cleared up.", es:"El clima había estado malo, pero hoy finalmente despejó."},
+      {zh:"这个问题老师给她讲了好几遍，她终于懂了。", en:"The teacher explained this several times, and she finally understood.", es:"La profesora se lo explicó varias veces, y ella finalmente entendió."},
+      {zh:"我找了半天钥匙，终于找到了。", en:"I looked for my keys for a long time and finally found them.", es:"Busqué mis llaves por mucho tiempo y finalmente las encontré."}
+    ],
+    note:"✅ 她病了两星期，现在终于好了。　❌ 她病了两星期，现在终于更严重了。（不能用于坏结果）"
+  },
+  {
+    zh:"比如", py:"bǐrú", en:"for example",
+    structure:"比如 + 名词／短语 (+ 等)",
+    explain:"用于举例，常与「等」搭配，表示「等等」。",
+    examples:[
+      {zh:"现在我只记住了几个家常菜的名字，比如鱼香肉丝、辣子鸡丁等。", en:"I only remember a few dish names, such as Yuxiang shredded pork, spicy diced chicken, etc.", es:"Solo recuerdo algunos platos, como cerdo con salsa Yuxiang, pollo picante en dados, etc."},
+      {zh:"安妮喜欢吃水果，比如葡萄、菠萝、芒果等。", en:"Annie likes fruit, such as grapes, pineapple, mango, etc.", es:"A Annie le gusta la fruta, como uvas, piña, mango, etc."},
+      {zh:"我已经去了很多地方，比如北海、故宫、颐和园等。", en:"I've already visited many places, like Beihai Park, the Forbidden City, the Summer Palace.", es:"Ya visité muchos lugares, como el Parque Beihai, la Ciudad Prohibida, el Palacio de Verano."}
+    ]
+  },
+  {
+    zh:"记", py:"jì", en:"to write down / record",
+    structure:"把 + 宾语 + 记 + 在 + 地点",
+    explain:"表示把某事物写下来。跟「记得」（remember）「记住」（memorize）意思不同。",
+    examples:[
+      {zh:"碰上好吃的菜，就把那个菜的名字记在本子上。", en:"When we find a tasty dish, we write its name down in a notebook.", es:"Cuando encontramos un plato sabroso, anotamos su nombre en el cuaderno."},
+      {zh:"我把她的电话号码记在纸上了，可是找不着了。", en:"I wrote her number on paper, but now I can't find it.", es:"Anoté su número en un papel, pero ahora no lo encuentro."},
+      {zh:"安妮把今天看到的都记在日记里了。", en:"Annie wrote down everything she saw today in her diary.", es:"Annie anotó todo lo que vio hoy en su diario."}
+    ],
+    note:"「记」= 写下来；「记得」= 记忆里还有；「记住」= 把它变成永久记忆。"
+  },
+  {
+    zh:"好", py:"hǎo", en:"quite / very (程度副词)",
+    structure:"好 + 形容词　／　好 + 数量／时间词",
+    explain:"作为程度副词，可修饰形容词（很）或数量、时间词（相当多／相当久）。",
+    examples:[
+      {zh:"大卫来这儿吃过好几次了，所以菜很快就点好了。", en:"David has eaten here quite a few times, so ordering went fast.", es:"David ha comido aquí varias veces, así que pedir fue rápido."},
+      {zh:"马丁在这儿等了你好一会儿。", en:"Martin waited here for you for quite a while.", es:"Martín te esperó aquí un buen rato."},
+      {zh:"食堂里有好多人。", en:"There are quite a lot of people in the cafeteria.", es:"Hay bastante gente en la cafetería."}
+    ],
+    note:"这里的「好」是程度副词，不是形容词「好坏」的「好」，口语中很常用。"
+  },
+  {
+    zh:"一干二净", py:"yì gān èr jìng", en:"completely, without remainder",
+    structure:"动词 + 得 + 一干二净",
+    explain:"固定短语，表示彻底、一点不剩。常搭配「吃、喝、花、忘、擦、洗」等动词，不能用于「读、写」。",
+    examples:[
+      {zh:"桌子上的饭菜很快就被吃得一干二净。", en:"The food on the table was quickly eaten up completely.", es:"La comida de la mesa fue devorada por completo."},
+      {zh:"他一个人就能把五瓶啤酒喝得一干二净。", en:"He alone can finish five bottles of beer completely.", es:"Él solo puede terminar cinco cervezas por completo."},
+      {zh:"你怎么能把这么重要的事忘得一干二净？", en:"How could you completely forget something so important?", es:"¿Cómo pudiste olvidar algo tan importante por completo?"}
+    ]
+  }
+];
+
+// ===================== SPEECH =====================
+function speak(text){
+  if(!('speechSynthesis' in window)){ alert('您的浏览器不支持语音播放，请使用 Chrome 或 Edge。'); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN'; u.rate = 0.92;
+  window.speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = ()=>window.speechSynthesis.getVoices();
+}
+document.addEventListener('click', (e)=>{
+  const p = e.target.closest('.ptrigger');
+  if(p){ speak(p.dataset.ptext); }
+});
+
+// ===================== RENDER GLOSSARY =====================
+function renderGlossary(container){
+  let html = '<h3>生词 Vocabulary</h3>';
+  VOCAB.forEach(v=>{
+    html += `<div class="gloss-item">
+      <div class="gloss-main" data-jump="${v.id}">
+        <div class="gloss-num">${v.num}</div>
+        <div class="gloss-zh">${v.zh} <span class="gloss-pos">${v.pos}</span></div>
+        <div class="gloss-py">${v.py}</div>
+        <div class="gloss-en">${v.en}</div>
+      </div>
+      <button class="speak-btn" data-speak="${v.zh}" aria-label="播放 ${v.zh}">🔊</button>
+    </div>`;
+  });
+  html += '<h3 style="margin-top:1.3rem;">语法点 Grammar Points</h3><div class="grammar-list">';
+  GRAMMAR.forEach(g=>{
+    html += `<div class="gram-item" data-jump-gram="${g.id}">
+      <span class="g-zh">${g.zh}</span>
+      <span class="g-en">${g.en}</span>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+renderGlossary(document.getElementById('glossaryDesktop'));
+renderGlossary(document.getElementById('glossaryMobile'));
+
+// ===================== RENDER EXT TAB =====================
+function renderExt(){
+  const wrap = document.getElementById('extWrap');
+  let html = '';
+  EXT.forEach((e,i)=>{
+    html += `<details class="ext-entry" ${i===0?'open':''}>
+      <summary>
+        <span class="ext-num">${i+1}</span>
+        <span class="ext-title">${e.zh}</span>
+        <span class="ext-py ui">${e.py} · ${e.en}</span>
+      </summary>
+      <div class="ext-body ui">
+        <div class="ext-structure">结构 Structure：${e.structure}</div>
+        <div class="ext-explain">${e.explain}</div>`;
+    e.examples.forEach(ex=>{
+      html += `<div class="ext-example">
+          <button class="mini-speak" data-speak="${ex.zh}" aria-label="播放例句">🔊</button>
+          <span class="zh">${ex.zh}</span>
+        </div>
+        <details class="translation" style="margin-left:1.6rem;"><summary>EN / ES</summary>
+          <div class="t-body"><div class="t-en">${ex.en}</div><div class="t-es">${ex.es}</div></div>
+        </details>`;
+    });
+    if(e.note) html += `<div class="ext-note">${e.note}</div>`;
+    html += `</div></details>`;
+  });
+  wrap.innerHTML = html;
+}
+renderExt();
+
+// ===================== RENDER GRAMMAR TIPS TAB =====================
+function renderGramTips(){
+  const wrap = document.getElementById('gtipList');
+  let html = '';
+  GRAMMAR.forEach(g=>{
+    html += `<div class="gtip ui">
+      <span class="g-name">${g.zh}</span>
+      <button class="mini-speak" data-speak="${g.ex.replace(/　·　.*/,'')}" aria-label="播放例句">🔊</button>
+      <span class="g-ex">${g.ex}</span>
+      <span class="g-en">${g.en}</span>
+    </div>`;
+  });
+  wrap.innerHTML = html;
+}
+renderGramTips();
+
+document.addEventListener('click', (e)=>{
+  const s = e.target.closest('.speak-btn, .mini-speak');
+  if(s){ e.stopPropagation(); speak(s.dataset.speak); }
+});
+
+// ===================== TOOLTIP LOGIC =====================
+const tooltip = document.getElementById('tooltip');
+const vocabById = Object.fromEntries(VOCAB.map(v=>[v.id,v]));
+const gramById = Object.fromEntries(GRAMMAR.map(g=>[g.id,g]));
+
+function showTooltip(el, data, isGram){
+  document.querySelectorAll('.vocab.active, .gram.active').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  tooltip.innerHTML = isGram
+    ? `<span class="tag">语法点 Grammar</span><span class="py">${data.zh}</span>${data.en}`
+    : `<span class="tag">生词 Vocabulary</span><span class="py">${data.py}</span>${data.en}`;
+  const r = el.getBoundingClientRect();
+  tooltip.classList.add('show');
+  const tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+  let left = r.left + r.width/2 - tw/2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  let top = r.top - th - 10;
+  if(top < 8) top = r.bottom + 10;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+function hideTooltip(){
+  tooltip.classList.remove('show');
+  document.querySelectorAll('.vocab.active, .gram.active').forEach(e=>e.classList.remove('active'));
+}
+document.querySelectorAll('.vocab').forEach(el=>{
+  el.setAttribute('tabindex','0');
+  const data = vocabById[el.dataset.id];
+  if(!data) return;
+  el.setAttribute('aria-label', `${data.zh} ${data.py}: ${data.en}`);
+  el.addEventListener('mouseenter', ()=>showTooltip(el, data, false));
+  el.addEventListener('focus', ()=>showTooltip(el, data, false));
+  el.addEventListener('mouseleave', hideTooltip);
+  el.addEventListener('blur', hideTooltip);
+  el.addEventListener('click', (e)=>{ e.stopPropagation(); showTooltip(el, data, false); });
+});
+document.querySelectorAll('.gram').forEach(el=>{
+  el.setAttribute('tabindex','0');
+  const data = gramById[el.dataset.id];
+  if(!data) return;
+  el.setAttribute('aria-label', `语法点 ${data.zh}: ${data.en}`);
+  el.addEventListener('mouseenter', ()=>showTooltip(el, data, true));
+  el.addEventListener('focus', ()=>showTooltip(el, data, true));
+  el.addEventListener('mouseleave', hideTooltip);
+  el.addEventListener('blur', hideTooltip);
+  el.addEventListener('click', (e)=>{ e.stopPropagation(); showTooltip(el, data, true); });
+});
+document.body.addEventListener('click', hideTooltip);
+document.addEventListener('scroll', hideTooltip, {passive:true});
+
+function jumpTo(id, isGram){
+  const sel = isGram ? `.gram[data-id="${id}"]` : `.vocab[data-id="${id}"]`;
+  const el = document.querySelector(sel);
+  if(el){
+    document.querySelector('.tab-btn[data-tab="reading"]').click();
+    setTimeout(()=>{
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(()=>showTooltip(el, isGram ? gramById[id] : vocabById[id], isGram), 350);
+    }, 50);
+  }
+}
+document.addEventListener('click', (e)=>{
+  const j = e.target.closest('[data-jump]');
+  if(j){ jumpTo(j.dataset.jump, false); }
+  const jg = e.target.closest('[data-jump-gram]');
+  if(jg){ jumpTo(jg.dataset.jumpGram, true); }
+});
+
+// ===================== TABS =====================
+const tabBtns = document.querySelectorAll('.tab-btn');
+const panels = { reading:document.getElementById('panel-reading'), ext:document.getElementById('panel-ext'), gramtips:document.getElementById('panel-gramtips') };
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    tabBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    Object.values(panels).forEach(p=>p.classList.remove('active'));
+    panels[btn.dataset.tab].classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+// ===================== TOOLBAR CONTROLS =====================
+const body = document.body;
+const btnVocab = document.getElementById('btnVocab');
+const btnGram = document.getElementById('btnGram');
+btnVocab.addEventListener('click', ()=>{
+  const on = body.classList.toggle('show-vocab');
+  btnVocab.setAttribute('aria-pressed', on);
+  btnVocab.textContent = '高亮 ' + (on ? 'ON' : 'OFF');
+});
+btnGram.addEventListener('click', ()=>{
+  const on = body.classList.toggle('show-gram');
+  btnGram.setAttribute('aria-pressed', on);
+  btnGram.textContent = '高亮 ' + (on ? 'ON' : 'OFF');
+});
+let step = 1;
+const root = document.documentElement;
+document.getElementById('btnPlus').addEventListener('click', ()=>{ step=Math.min(step+1,6); root.style.setProperty('--step', step); });
+document.getElementById('btnMinus').addEventListener('click', ()=>{ step=Math.max(step-1,-2); root.style.setProperty('--step', step); });
+const btnTV = document.getElementById('btnTV');
+btnTV.addEventListener('click', ()=>{
+  const on = body.classList.toggle('tv');
+  btnTV.textContent = on ? '↩ 退出投影模式' : '📺 大屏投影模式';
+});
+</script>
+<script src="../../../assets/js/nav-global.js"></script>
+</body>
+</html>

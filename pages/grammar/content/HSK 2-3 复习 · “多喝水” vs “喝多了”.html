@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+<title>多喝水 vs 喝多了 · Advice vs. Result</title>
+<style>
+  :root{
+    --paper:#F4F7F0;
+    --card:#FFFFFF;
+    --ink:#1C2B22;
+    --ink-soft:#4B5D51;
+    --jade:#2F7A55;
+    --jade-soft:#E3F1E7;
+    --jade-line:#BEDCC7;
+    --rust:#B54B2E;
+    --rust-soft:#FBE8E1;
+    --rust-line:#EBC3B2;
+    --gold:#B98A2E;
+    --line:#DEE7DC;
+    --serif:"Iowan Old Style","Songti SC","Noto Serif SC",Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,"PingFang SC","Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+    padding:clamp(14px,3vw,32px);
+  }
+  .page{
+    max-width:980px;
+    margin:0 auto;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:14px;
+    padding-bottom:20px;
+    border-bottom:3px solid var(--line);
+    margin-bottom:clamp(20px,4vw,34px);
+  }
+  .title-zh{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:clamp(1.9rem,4.4vw,3.1rem);
+    letter-spacing:0.5px;
+    line-height:1.1;
+  }
+  .title-zh .vs{
+    color:var(--ink-soft);
+    font-weight:400;
+    font-size:0.55em;
+    margin:0 6px;
+  }
+  .title-en{
+    font-size:clamp(0.95rem,1.6vw,1.15rem);
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .level-badge{
+    font-family:var(--sans);
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--jade);
+    background:var(--jade-soft);
+    border:1px solid var(--jade-line);
+    padding:6px 16px;
+    border-radius:40px;
+    white-space:nowrap;
+  }
+
+  /* ---------- Signature: two cups ---------- */
+  .cups{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:clamp(10px,3vw,28px);
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:28px;
+    padding:clamp(18px,3vw,30px) clamp(14px,3vw,26px);
+    margin-bottom:24px;
+  }
+  .cup-panel{text-align:center;}
+  .cup-panel svg{width:min(150px,80%);height:auto;}
+  .cup-caption{margin-top:10px;}
+  .cup-caption .zh-big{
+    font-family:var(--serif);
+    font-size:clamp(1.3rem,2.6vw,1.7rem);
+    font-weight:700;
+  }
+  .cup-caption .en-tag{
+    display:inline-block;
+    font-size:0.82rem;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    padding:3px 12px;
+    border-radius:20px;
+    margin-top:6px;
+  }
+  .cup-panel.advice .en-tag{color:var(--jade);background:var(--jade-soft);}
+  .cup-panel.result .en-tag{color:var(--rust);background:var(--rust-soft);}
+  .cup-panel .en-sub{font-size:0.88rem;color:var(--ink-soft);margin-top:4px;}
+  .cups-divider{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    color:var(--ink-soft);
+    font-size:1.6rem;
+  }
+  .cups-divider span{font-size:0.72rem;color:var(--ink-soft);text-align:center;max-width:70px;}
+
+  /* ---------- Rule formula cards ---------- */
+  .rules{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:22px;
+  }
+  .rule-card{
+    background:var(--card);
+    border-radius:22px;
+    padding:20px 20px 22px;
+    border:1px solid var(--line);
+    border-top:6px solid var(--jade);
+  }
+  .rule-card.result{border-top-color:var(--rust);}
+  .formula{
+    font-family:var(--serif);
+    font-size:clamp(1.35rem,3vw,1.7rem);
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .rule-card .when{
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+  }
+  .rule-card .meaning{
+    margin-top:12px;
+    font-size:1.02rem;
+  }
+  .rule-card .ex{
+    margin-top:12px;
+    font-family:var(--serif);
+    font-size:1.25rem;
+    background:var(--paper);
+    border:1px dashed var(--line);
+    border-radius:14px;
+    padding:8px 12px;
+  }
+
+  /* ---------- Memory tip ---------- */
+  .tip{
+    background:linear-gradient(90deg,var(--jade-soft),var(--rust-soft));
+    border-radius:60px;
+    padding:14px 22px;
+    text-align:center;
+    font-size:clamp(0.95rem,1.8vw,1.1rem);
+    margin-bottom:30px;
+    border:1px solid var(--line);
+  }
+  .tip strong{color:var(--jade);}
+  .tip strong.r{color:var(--rust);}
+
+  /* ---------- Examples strip ---------- */
+  .examples{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:14px;
+    margin-bottom:32px;
+  }
+  .ex-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:14px 16px;
+  }
+  .ex-card .tag{
+    font-size:0.75rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    padding:2px 10px;
+    border-radius:20px;
+    display:inline-block;
+  }
+  .ex-card.advice .tag{color:var(--jade);background:var(--jade-soft);}
+  .ex-card.result .tag{color:var(--rust);background:var(--rust-soft);}
+  .ex-card .zh{
+    font-family:var(--serif);
+    font-size:1.3rem;
+    font-weight:700;
+    margin-top:8px;
+  }
+  .ex-card .en{
+    font-size:0.92rem;
+    color:var(--ink-soft);
+    margin-top:3px;
+  }
+
+  /* ---------- Quiz ---------- */
+  .quiz-head{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    border-top:3px solid var(--line);
+    padding-top:26px;
+    margin-bottom:10px;
+  }
+  .quiz-head h2{
+    font-family:var(--serif);
+    font-size:clamp(1.5rem,3vw,2rem);
+  }
+  .quiz-head p{color:var(--ink-soft);font-size:0.95rem;margin-top:4px;}
+  #toggle-all{
+    font-family:var(--sans);
+    font-size:0.9rem;
+    font-weight:600;
+    color:var(--jade);
+    background:var(--jade-soft);
+    border:1px solid var(--jade-line);
+    padding:9px 18px;
+    border-radius:30px;
+    cursor:pointer;
+  }
+  #toggle-all:hover{background:#d3ecdb;}
+
+  .question{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:18px 20px;
+    margin-top:16px;
+  }
+  .question .stem{
+    font-size:clamp(1.05rem,2.2vw,1.2rem);
+    font-weight:600;
+    margin-bottom:12px;
+  }
+  .question .qnum{color:var(--gold);margin-right:4px;}
+  .options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 16px;
+    margin-bottom:8px;
+  }
+  .options label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:var(--serif);
+    font-size:1.15rem;
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:7px 18px 7px 14px;
+    border-radius:40px;
+    cursor:pointer;
+  }
+  .options label:hover{border-color:var(--jade-line);}
+  input[type="radio"]{width:17px;height:17px;accent-color:var(--jade);}
+
+  details.answer-toggle summary{
+    list-style:none;
+    display:inline-block;
+    cursor:pointer;
+    font-size:0.88rem;
+    font-weight:600;
+    color:var(--ink-soft);
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:6px 16px;
+    border-radius:30px;
+    margin-top:4px;
+  }
+  details.answer-toggle summary::-webkit-details-marker{display:none;}
+  details.answer-toggle[open] summary{color:var(--jade);border-color:var(--jade-line);background:var(--jade-soft);}
+  .answer-box{
+    margin-top:12px;
+    padding:14px 16px;
+    border-radius:16px;
+    background:var(--jade-soft);
+    border-left:5px solid var(--jade);
+    font-size:0.96rem;
+  }
+  .answer-box .correct-line{font-weight:700;color:var(--jade);font-family:var(--serif);font-size:1.1rem;}
+  .answer-box .translation{margin-top:8px;color:var(--ink-soft);font-style:italic;}
+  .answer-box .rule-note{margin-top:8px;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:34px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:18px 22px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 24px;
+    justify-content:space-between;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width:640px){
+    .rules{grid-template-columns:1fr;}
+    .cups{grid-template-columns:1fr;}
+    .cups-divider{flex-direction:row;justify-content:center;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div>
+      <div class="title-zh">多喝水 <span class="vs">vs</span> 喝多了</div>
+      <div class="title-en">Two small words, opposite timing — a HSK 2&ndash;3 grammar comparison</div>
+    </div>
+    <span class="level-badge">HSK 2&ndash;3 · Grammar Review</span>
+  </header>
+
+  <!-- Signature: two cups -->
+  <div class="cups">
+    <div class="cup-panel advice">
+      <svg viewBox="0 0 120 130" fill="none">
+        <path d="M20 30 H100 L92 100 Q60 118 28 100 Z" stroke="#2F7A55" stroke-width="4" stroke-dasharray="7 6"/>
+        <path d="M32 62 Q60 78 88 62 L92 100 Q60 118 28 100 Z" fill="#BEDCC7" opacity="0.55"/>
+        <path d="M100 40 Q118 40 118 58 Q118 76 98 74" stroke="#2F7A55" stroke-width="4" fill="none"/>
+        <line x1="60" y1="10" x2="60" y2="26" stroke="#2F7A55" stroke-width="4" stroke-linecap="round"/>
+        <path d="M52 18 L60 8 L68 18" stroke="#2F7A55" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="cup-caption">
+        <div class="zh-big">多喝水</div>
+        <div class="en-tag">Advice</div>
+        <div class="en-sub">Cup still filling — hasn't happened yet</div>
+      </div>
+    </div>
+
+    <div class="cups-divider">
+      <span>→</span>
+      <span>前 = 建议<br>before verb = advice</span>
+    </div>
+
+    <div class="cup-panel result">
+      <svg viewBox="0 0 120 130" fill="none">
+        <path d="M20 30 H100 L92 100 Q60 118 28 100 Z" stroke="#B54B2E" stroke-width="4"/>
+        <path d="M24 46 Q60 64 96 46 L92 100 Q60 118 28 100 Z" fill="#EBC3B2" opacity="0.6"/>
+        <path d="M100 40 Q118 40 118 58 Q118 76 98 74" stroke="#B54B2E" stroke-width="4" fill="none"/>
+        <path d="M24 46 Q14 40 10 50" stroke="#B54B2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="4" cy="58" r="3.5" fill="#B54B2E"/>
+        <path d="M96 46 Q106 40 110 50" stroke="#B54B2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="114" cy="58" r="3.5" fill="#B54B2E"/>
+      </svg>
+      <div class="cup-caption">
+        <div class="zh-big">喝多了</div>
+        <div class="en-tag">Result</div>
+        <div class="en-sub">Cup overflowed — already too much</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rule formula cards -->
+  <div class="rules">
+    <div class="rule-card advice">
+      <div class="when">Not done yet · a plan</div>
+      <div class="formula">多 + Verb</div>
+      <div class="meaning">Means <strong>"do more of it"</strong> — it's advice or a suggestion about the future. Nothing has happened yet.</div>
+      <div class="ex">多喝水 &nbsp;·&nbsp; 多运动 &nbsp;·&nbsp; 多吃水果</div>
+    </div>
+    <div class="rule-card result">
+      <div class="when">Already happened · too much</div>
+      <div class="formula">Verb + 多了</div>
+      <div class="meaning">Means <strong>"did too much of it"</strong> — it's a finished action with a result, usually not a good one.</div>
+      <div class="ex">喝多了 &nbsp;·&nbsp; 吃多了 &nbsp;·&nbsp; 跑多了</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>多</strong> before the verb = advice for later &nbsp;&middot;&nbsp; <strong class="r">多</strong> after the verb (as 多了) = it already happened, and it was too much.
+  </div>
+
+  <!-- Examples strip -->
+  <div class="examples">
+    <div class="ex-card advice">
+      <span class="tag">Advice</span>
+      <div class="zh">多喝水</div>
+      <div class="en">"Drink more water" — good for your health, do this from now on</div>
+    </div>
+    <div class="ex-card result">
+      <span class="tag">Result</span>
+      <div class="zh">水喝多了</div>
+      <div class="en">"(I) drank too much water" — already done, stomach feels full</div>
+    </div>
+    <div class="ex-card advice">
+      <span class="tag">Advice</span>
+      <div class="zh">少抽烟</div>
+      <div class="en">"Smoke less" — 少 (less) works the same way as 多, placed before the verb</div>
+    </div>
+    <div class="ex-card result">
+      <span class="tag">Result</span>
+      <div class="zh">烟抽多了</div>
+      <div class="en">"(He) smoked too much" — already happened, now he's coughing</div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-head">
+    <div>
+      <h2>Practice · 10 Questions</h2>
+      <p>Choose <strong>多 + Verb</strong> (advice) or <strong>Verb + 多了</strong> (result). Tap a question's answer button to check.</p>
+    </div>
+    <button id="toggle-all" type="button">Show all answers</button>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <footer>
+    <span>📺 Project this page for the class — it looks the same on a phone, so students can follow along or review it later on their own.</span>
+    <span>多 + V &nbsp;vs&nbsp; V + 多了</span>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const questions = [
+    {
+      stem: '医生对病人说：______，对身体好。',
+      gloss: 'The doctor tells the patient: "______, it\\'s good for your health."',
+      options: ['多喝水','水喝多了'],
+      correct: 0,
+      translation: 'Doctor: "Drink more water — it\\'s good for your health."',
+      rule: 'This is advice for the future, so it uses 多 + Verb.'
+    },
+    {
+      stem: '他肚子不舒服，因为昨天______。',
+      gloss: 'His stomach hurts, because yesterday he ______.',
+      options: ['多喝咖啡','咖啡喝多了'],
+      correct: 1,
+      translation: 'He drank too much coffee yesterday, so now his stomach hurts.',
+      rule: 'This already happened and caused a problem, so it uses Verb + 多了.'
+    },
+    {
+      stem: '明天要考试，今晚别______咖啡。',
+      gloss: 'There\\'s an exam tomorrow, so don\\'t ______ coffee tonight.',
+      options: ['多喝','喝多了'],
+      correct: 0,
+      translation: 'Don\\'t drink too much coffee tonight — you have an exam tomorrow.',
+      rule: '别 + 多 + Verb is still advice about what to do (or not do) later.'
+    },
+    {
+      stem: '他头疼，因为酒______。',
+      gloss: 'He has a headache, because he ______.',
+      options: ['多喝','喝多了'],
+      correct: 1,
+      translation: 'He has a headache because he drank too much alcohol.',
+      rule: 'The headache is the result of something already finished, so it uses Verb + 多了.'
+    },
+    {
+      stem: '为了健康，我们应该______。',
+      gloss: 'For our health, we should ______.',
+      options: ['多运动','运动多了'],
+      correct: 0,
+      translation: 'For our health, we should exercise more.',
+      rule: '应该 + 多 + Verb is a suggestion, so it uses 多 before the verb.'
+    },
+    {
+      stem: '昨天跑步______，今天腿很疼。',
+      gloss: 'Yesterday he ran ______, and today his legs hurt.',
+      options: ['多跑','跑多了'],
+      correct: 1,
+      translation: 'He ran too much yesterday, so today his legs hurt.',
+      rule: 'The sore legs are the result of yesterday\\'s action, so it uses Verb + 多了.'
+    },
+    {
+      stem: '吃水果______对身体有好处。',
+      gloss: 'Eating fruit ______ is good for your health.',
+      options: ['多吃','吃多了'],
+      correct: 0,
+      translation: 'Eating more fruit is good for your health.',
+      rule: 'This is a general healthy habit, i.e. advice, so it uses 多 + Verb.'
+    },
+    {
+      stem: '他最近胖了，因为肉______。',
+      gloss: 'He has gained weight recently because he ______ meat.',
+      options: ['多吃','吃多了'],
+      correct: 1,
+      translation: 'He\\'s gained weight because he has been eating too much meat.',
+      rule: 'The weight gain is a result of something already done, so it uses Verb + 多了.'
+    },
+    {
+      stem: '妈妈常说：______对眼睛好。',
+      gloss: 'Mom always says: "______ is good for your eyes."',
+      options: ['少看手机','手机看少了'],
+      correct: 0,
+      translation: 'Mom always says: "Look at your phone less — it\\'s good for your eyes."',
+      rule: '少 + Verb behaves just like 多 + Verb — it\\'s advice, placed before the verb.'
+    },
+    {
+      stem: '手机______对眼睛不好。',
+      gloss: 'Looking at your phone ______ is bad for your eyes.',
+      options: ['多看','看多了'],
+      correct: 1,
+      translation: 'Looking at your phone too much is bad for your eyes.',
+      rule: '看多了 means the looking has already been excessive — a finished result, so it uses Verb + 多了.'
+    }
+  ];
+
+  const container = document.getElementById('quiz-container');
+
+  function render(){
+    let html = '';
+    questions.forEach((q, i) => {
+      const n = i + 1;
+      html += `
+        <div class="question">
+          <p class="stem"><span class="qnum">${n}.</span>${q.stem}</p>
+          <p style="color:var(--ink-soft);font-size:0.88rem;margin-bottom:10px;">${q.gloss}</p>
+          <div class="options">
+            <label><input type="radio" name="q${n}" value="0"> ${q.options[0]}</label>
+            <label><input type="radio" name="q${n}" value="1"> ${q.options[1]}</label>
+          </div>
+          <details class="answer-toggle">
+            <summary>Check answer</summary>
+            <div class="answer-box">
+              <div class="correct-line">✓ ${q.options[q.correct]}</div>
+              <div class="translation">${q.translation}</div>
+              <div class="rule-note">${q.rule}</div>
+            </div>
+          </details>
+        </div>`;
+    });
+    container.innerHTML = html;
+  }
+  render();
+
+  const toggleBtn = document.getElementById('toggle-all');
+  let allOpen = false;
+  toggleBtn.addEventListener('click', () => {
+    allOpen = !allOpen;
+    document.querySelectorAll('.answer-toggle').forEach(d => d.open = allOpen);
+    toggleBtn.textContent = allOpen ? 'Hide all answers' : 'Show all answers';
+  });
+})();
+</script>
+</body>
+</html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>HSK 2-3 复习 · “多喝水” vs “喝多了”</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: #f5f9fc;
+            color: #1e2b3a;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            padding: 28px 24px 40px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+        h1 {
+            font-size: 2.0rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            color: #0b2b3d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #e6f0f5;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .badge {
+            background: #d4e6f0;
+            color: #1a4b5e;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-weight: 500;
+            margin-left: 6px;
+        }
+        .rule-grid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: #f0f6fa;
+            border-radius: 28px;
+            padding: 24px 20px;
+            margin: 20px 0 28px;
+            justify-content: center;
+        }
+        .rule-card {
+            flex: 1 1 200px;
+            background: white;
+            border-radius: 20px;
+            padding: 18px 18px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            border: 1px solid #e2edf3;
+            transition: 0.1s;
+        }
+        .rule-card.highlight-future {
+            border-left: 8px solid #2b7a8a;
+        }
+        .rule-card.highlight-past {
+            border-left: 8px solid #c05a4a;
+        }
+        .rule-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .rule-card .sub {
+            font-size: 0.95rem;
+            color: #2e4b5c;
+            background: #e9f1f6;
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 30px;
+            margin-bottom: 10px;
+        }
+        .rule-card .example {
+            font-size: 1.2rem;
+            font-weight: 500;
+            background: #f7fafc;
+            padding: 10px 12px;
+            border-radius: 16px;
+            margin: 12px 0 4px;
+            border: 1px dashed #b8cfdb;
+        }
+        .arrow-tip {
+            font-size: 1.2rem;
+            font-weight: 500;
+            background: #d7e6ef;
+            padding: 14px 18px;
+            border-radius: 60px;
+            text-align: center;
+            margin: 16px 0 6px;
+            color: #004466;
+        }
+        .arrow-tip span {
+            background: #1a4b5e;
+            color: white;
+            padding: 3px 18px;
+            border-radius: 60px;
+            font-weight: 600;
+            margin: 0 4px;
+        }
+        .comparison-table {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 20px;
+            background: #eef5f9;
+            border-radius: 24px;
+            padding: 18px 16px;
+            margin: 24px 0 20px;
+        }
+        .comp-item {
+            flex: 1 1 180px;
+            background: white;
+            padding: 12px 14px;
+            border-radius: 18px;
+            border: 1px solid #d2e2eb;
+        }
+        .comp-item .label {
+            font-weight: 600;
+            color: #1a4a5a;
+        }
+        .comp-item .zh {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+        .quiz-section {
+            margin-top: 36px;
+            border-top: 2px solid #e0edf5;
+            padding-top: 26px;
+        }
+        .quiz-section h2 {
+            font-size: 1.8rem;
+            font-weight: 550;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .question {
+            background: #fafdff;
+            border-radius: 24px;
+            padding: 18px 20px 14px;
+            margin: 18px 0 12px;
+            border: 1px solid #dce9f0;
+            transition: 0.1s;
+        }
+        .question p {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            padding: 8px 0 6px;
+        }
+        .options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1.1rem;
+            background: #ecf3f8;
+            padding: 6px 18px 6px 14px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.08s;
+            border: 1px solid transparent;
+        }
+        .options label:hover {
+            background: #dce9f2;
+            border-color: #9bbdd0;
+        }
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1e6f86;
+        }
+        .answer-toggle {
+            margin: 12px 0 4px;
+        }
+        .answer-toggle summary {
+            font-weight: 500;
+            color: #1a5b6e;
+            background: #e5f0f6;
+            padding: 8px 18px;
+            border-radius: 60px;
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+            font-size: 1.0rem;
+        }
+        .answer-toggle summary:hover {
+            background: #cfe0ea;
+        }
+        .answer-box {
+            background: #ebf6fa;
+            border-radius: 20px;
+            padding: 14px 18px;
+            margin-top: 12px;
+            border-left: 6px solid #24758b;
+            font-size: 1.1rem;
+        }
+        .answer-box .correct {
+            font-weight: 600;
+            color: #1b6d4a;
+        }
+        .footnote {
+            margin-top: 30px;
+            background: #eef3f7;
+            border-radius: 28px;
+            padding: 20px 22px;
+            color: #1e3b49;
+            font-size: 1.0rem;
+            border: 1px solid #cbdde8;
+        }
+        .footnote strong {
+            color: #003153;
+        }
+        .mobile-sync {
+            background: #d9e7f0;
+            border-radius: 60px;
+            padding: 6px 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        hr {
+            border: 0;
+            border-top: 2px dotted #c7dae6;
+            margin: 30px 0 10px;
+        }
+        @media (max-width: 500px) {
+            .container { padding: 16px; }
+            .rule-grid { flex-direction: column; }
+            .options label { font-size: 1.0rem; padding: 6px 14px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+
+    <h1>
+        <span>☕ 多喝水 · 喝多了</span>
+        <span class="badge">HSK 2-3 复习</span>
+        <span style="font-size:0.9rem; margin-left:auto; background:#e5f0f6; padding:4px 14px; border-radius:40px;">📱 手机同步</span>
+    </h1>
+
+    <!-- 核心规则：建议 vs 后果 -->
+    <div class="rule-grid">
+        <div class="rule-card highlight-future">
+            <h3>📌 建议 / 计划</h3>
+            <div class="sub">还没做 · 未来</div>
+            <div style="font-size:1.6rem; font-weight:600;">多 + V</div>
+            <div class="example">多喝水 · 多运动</div>
+            <div style="margin-top:6px; color:#1b5f72;">✅ “应该这样做”</div>
+        </div>
+        <div class="rule-card highlight-past">
+            <h3>⚠️ 结果 / 后果</h3>
+            <div class="sub">已经发生 · 过量</div>
+            <div style="font-size:1.6rem; font-weight:600;">V + 多了</div>
+            <div class="example">喝多了 · 吃多了</div>
+            <div style="margin-top:6px; color:#a34633;">⚠️ “做得太多了”</div>
+        </div>
+    </div>
+
+    <!-- 口诀 + 时间箭头 -->
+    <div class="arrow-tip">
+        <span>⬅️ 前面是建议</span> &nbsp;&nbsp; <span>后面是后悔 ➡️</span>
+        <div style="font-weight:400; font-size:1.0rem; margin-top:8px; background:#fff; border-radius:60px; padding:6px 12px; display:inline-block;">
+            ⏳ 建议 (未来) &nbsp;→→→&nbsp; 后果 (过去/现在)
+        </div>
+    </div>
+
+    <!-- 快速对比 + 对身体结构 -->
+    <div class="comparison-table">
+        <div class="comp-item"><span class="label">✅ 建议</span><br><span class="zh">多喝咖啡？</span><br><span style="color:#1b6f5e;">→ 对身体不好</span></div>
+        <div class="comp-item"><span class="label">⚠️ 后果</span><br><span class="zh">咖啡喝多了</span><br><span style="color:#b34a3a;">→ 对身体不好</span></div>
+        <div class="comp-item"><span class="label">🧃 健康建议</span><br><span class="zh">多喝水</span><br><span style="color:#1b6f5e;">对身体好</span></div>
+        <div class="comp-item"><span class="label">🍷 过量后果</span><br><span class="zh">酒喝多了</span><br><span style="color:#b34a3a;">对身体不好</span></div>
+    </div>
+
+    <!-- 小解释：英文简单说明 -->
+    <div style="background:#f0f7fb; padding:14px 20px; border-radius:24px; margin:16px 0 10px; border:1px solid #caddf0;">
+        <p style="font-size:1.05rem;"><strong>📖 Quick rule (English)</strong><br>
+        <span style="background:#fff; padding:2px 12px; border-radius:30px; display:inline-block; margin-top:6px;">🔹 <strong>多 + V</strong> = <em>“do more (advice)”</em> &nbsp; (future / suggestion)</span><br>
+        <span style="background:#fff; padding:2px 12px; border-radius:30px; display:inline-block; margin-top:6px;">🔹 <strong>V + 多了</strong> = <em>“did too much (result)”</em> &nbsp; (already happened / overdone)</span><br>
+        <span style="background:#fff; padding:2px 12px; border-radius:30px; display:inline-block; margin-top:6px;">💡 <strong>对……不好</strong> = <em>“bad for …”</em> (review)</span>
+        </p>
+    </div>
+
+    <!-- 10道题 -->
+    <div class="quiz-section">
+        <h2>📝 10 道选择题</h2>
+        <p style="color:#2a4a5a; margin-bottom:4px;">选 <strong>“多+V”</strong> (建议) 或 <strong>“V+多了”</strong> (后果) 。点 <span style="background:#e0eef7; padding:0 10px; border-radius:30px;">▼ 答案</span> 查看解释。</p>
+
+        <!-- 题目由 JS 动态生成，便于维护 -->
+        <div id="quiz-container"></div>
+    </div>
+
+    <!-- 额外复习提示 -->
+    <div class="footnote">
+        <strong>🧠 记忆口诀：</strong> “多”在前面是建议， “多”在后面是后悔。<br>
+        <span style="display:inline-block; margin-top:8px;">✅ <strong>多喝水</strong> (医生建议) &nbsp;|&nbsp; ⚠️ <strong>水喝多了</strong> (肚子胀) <br>
+        🚭 <strong>少抽烟</strong> (建议) &nbsp;|&nbsp; ⚠️ <strong>烟抽多了</strong> (咳嗽)</span>
+        <br><br>
+        <span style="background:#d9eaf3; padding:4px 18px; border-radius:60px;">📌 复习： “对 + 身体/健康 + 好/不好”</span>
+    </div>
+    <hr>
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; font-size:0.9rem; color:#3b6377;">
+        <span>👩‍🏫 课堂投屏 · 学生手机同步</span>
+        <span>HSK 2-3 · 语法对比</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const questions = [
+            {
+                id: 1,
+                stem: '医生对病人说： ______ ，对身体好。',
+                options: ['多喝水', '水喝多了'],
+                correct: 0,
+                explanation: '✅ 医生建议 (未来) → 用 “多喝水”。'
+            },
+            {
+                id: 2,
+                stem: '他肚子不舒服，因为昨天 ______ 。',
+                options: ['多喝咖啡', '咖啡喝多了'],
+                correct: 1,
+                explanation: '⚠️ 已经发生，过量 → “咖啡喝多了”。'
+            },
+            {
+                id: 3,
+                stem: '明天要考试，今晚别 ______ 咖啡。',
+                options: ['多喝', '喝多了'],
+                correct: 0,
+                explanation: '✅ 别 + 多喝 (建议/计划) → “别多喝”。'
+            },
+            {
+                id: 4,
+                stem: '他头疼，因为酒 ______ 。',
+                options: ['多喝', '喝多了'],
+                correct: 1,
+                explanation: '⚠️ 结果 (已经喝了太多) → “酒喝多了”。'
+            },
+            {
+                id: 5,
+                stem: '为了健康，我们应该 ______ 。',
+                options: ['多运动', '运动多了'],
+                correct: 0,
+                explanation: '✅ 建议/应该 + 多运动。'
+            },
+            {
+                id: 6,
+                stem: '昨天跑步 ______ ，今天腿很疼。',
+                options: ['多跑', '跑多了'],
+                correct: 1,
+                explanation: '⚠️ 过量后果 → “跑多了”。'
+            },
+            {
+                id: 7,
+                stem: '吃水果 ______ 对身体有好处。',
+                options: ['多吃', '吃多了'],
+                correct: 0,
+                explanation: '✅ 建议 (多吃) ，健康习惯。'
+            },
+            {
+                id: 8,
+                stem: '他最近胖了，因为肉 ______ 。',
+                options: ['多吃', '吃多了'],
+                correct: 1,
+                explanation: '⚠️ 已经吃太多 → “肉吃多了”。'
+            },
+            {
+                id: 9,
+                stem: '妈妈常说： ______ 对眼睛好。',
+                options: ['少看手机', '手机看少了'],
+                correct: 0,
+                explanation: '✅ “少看” 是建议 (少 + V) 。'
+            },
+            {
+                id: 10,
+                stem: '手机 ______ 对眼睛不好。',
+                options: ['多看', '看多了'],
+                correct: 1,
+                explanation: '⚠️ “看多了” 表示已经过度使用，结果对眼睛不好。'
+            }
+        ];
+
+        const container = document.getElementById('quiz-container');
+        if (!container) return;
+
+        function renderQuestions() {
+            let html = '';
+            questions.forEach((q, index) => {
+                const qNum = index + 1;
+                const optA = q.options[0] || 'A';
+                const optB = q.options[1] || 'B';
+                html += `
+                    <div class="question" data-qid="${q.id}">
+                        <p><strong>${qNum}.</strong> ${q.stem}</p>
+                        <div class="options">
+                            <label>
+                                <input type="radio" name="q${q.id}" value="0"> ${optA}
+                            </label>
+                            <label>
+                                <input type="radio" name="q${q.id}" value="1"> ${optB}
+                            </label>
+                        </div>
+                        <div class="answer-toggle">
+                            <details>
+                                <summary>🔽 查看答案 & 解释</summary>
+                                <div class="answer-box">
+                                    <span class="correct">✅ 正确答案：${q.options[q.correct]}</span><br>
+                                    <span style="display:inline-block; margin-top:6px;">${q.explanation}</span>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        renderQuestions();
+
+        // 可选：点击radio时自动展开对应题目的details？ 保持轻量，不强制展开。
+        // 但我们添加一个辅助: 如果选中radio, 可自动展开答案？ 但会干扰“先思考”的体验，故保留手动折叠。
+        // 但为了提升体验，点击选项后自动显示答案？ 由教师决定，本例保留折叠。
+    })();
+</script>
+
+<!-- 附加说明：缺席学生可自行查看 -->
+</body>
+</html>

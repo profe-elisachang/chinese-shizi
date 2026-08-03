@@ -82,6 +82,73 @@
 }
 
 /* ========================================
+   Desktop Navigation Dropdown
+   ======================================== */
+
+.nav-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-dropdown-toggle {
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-family: inherit !important;
+}
+
+.nav-dropdown-toggle::after {
+    content: ' ▾';
+    font-size: 0.75rem;
+    opacity: 0.75;
+}
+
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 220px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 1001;
+    overflow: hidden;
+    padding: 4px 0;
+}
+
+.nav-dropdown.open .nav-dropdown-menu,
+.nav-dropdown:hover .nav-dropdown-menu {
+    display: block;
+}
+
+.nav-dropdown-item {
+    display: block;
+    padding: 10px 16px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+}
+
+.nav-dropdown-item:hover,
+.nav-dropdown-item.active {
+    background: rgba(8, 145, 178, 0.08);
+    color: var(--primary);
+}
+
+.nav-dropdown.open .nav-dropdown-toggle,
+.nav-dropdown .nav-dropdown-toggle.active {
+    color: var(--primary) !important;
+    border-bottom-color: var(--primary) !important;
+}
+
+/* ========================================
    Mobile Navigation - Hamburger Menu
    ======================================== */
 

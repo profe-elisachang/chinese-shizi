@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成功之路 · 进步篇 | Road to Success</title>
+    <link rel="stylesheet" href="../../assets/css/nav-global.css">
+    <style>
+        :root {
+            --seal: #B23A2E;
+            --seal-dark: #8C2C22;
+            --paper: #FAF3E6;
+            --ink: #2B2420;
+            --ink-soft: #5C5347;
+            --rule: #DCCFB0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #faf3e6 0%, #f2e9d8 100%);
+            min-height: 100vh;
+            color: var(--ink);
+        }
+        .container {
+            max-width: 820px;
+            margin: 24px auto 48px;
+            padding: 0 20px;
+        }
+        .page-head {
+            background: linear-gradient(135deg, var(--seal) 0%, var(--seal-dark) 100%);
+            color: #FBEFE6;
+            border-radius: 16px;
+            padding: 28px 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 24px rgba(140, 44, 34, 0.2);
+        }
+        .page-head h1 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .page-head .sub {
+            font-size: 0.9rem;
+            opacity: 0.88;
+        }
+        .book-section {
+            background: #fff;
+            border: 1px solid var(--rule);
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        .book-section h2 {
+            font-size: 1.05rem;
+            color: var(--seal-dark);
+            margin-bottom: 4px;
+        }
+        .book-section .range {
+            font-size: 0.82rem;
+            color: var(--ink-soft);
+            margin-bottom: 14px;
+        }
+        .lesson-list {
+            list-style: none;
+        }
+        .lesson-list li {
+            border-bottom: 1px solid #f0ebe0;
+            padding: 10px 0;
+        }
+        .lesson-list li:last-child { border-bottom: none; }
+        .lesson-list a {
+            color: var(--ink);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .lesson-list a:hover { color: var(--seal); }
+        .lesson-num {
+            color: var(--seal);
+            font-size: 0.85rem;
+            font-weight: 700;
+            min-width: 3.5rem;
+        }
+        .lesson-tag {
+            font-size: 0.75rem;
+            color: var(--ink-soft);
+            background: var(--paper);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+        .placeholder {
+            color: var(--ink-soft);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        .weekly-note {
+            font-size: 0.82rem;
+            color: var(--ink-soft);
+            text-align: center;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-content">
+            <a href="../../index.html" class="nav-link">Home</a>
+            <span class="nav-separator">|</span>
+            <div class="nav-dropdown" data-nav-dropdown>
+                <button type="button" class="nav-link nav-dropdown-toggle active" aria-expanded="false" aria-haspopup="true">Courses</button>
+                <div class="nav-dropdown-menu" role="menu">
+                    <a href="index.html" class="nav-dropdown-item active" role="menuitem">成功之路 · 进步篇</a>
+                </div>
+            </div>
+            <span class="nav-separator">|</span>
+            <a href="../shizi/lesson.html" class="nav-link">Literacy</a>
+            <span class="nav-separator">|</span>
+            <a href="../shizi/review.html" class="nav-link">Review Lit.</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="../../pages/grammar.html" class="nav-link">Grammar</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/extras.html" class="nav-link">Extras</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/mini-story.html" class="nav-link">Mini Story</a>
+            <span class="nav-separator">|</span>
+            <a href="../../pages/music.html" class="nav-link">Music</a>
+            <span class="nav-separator group-separator">•</span>
+            <a href="../../pages/timeline.html" class="nav-link">Timeline</a>
+        </div>
+        <div class="mobile-nav">
+            <button class="hamburger-btn" aria-label="Open menu">☰</button>
+            <span class="site-title">Chinese with Elisa</span>
+        </div>
+    </nav>
+
+    <div class="mobile-sidebar">
+        <button class="close-sidebar" aria-label="Close menu">✕</button>
+        <a href="../../index.html" class="mobile-menu-single"><span class="icon">🏠</span><span>Home</span></a>
+        <div class="mobile-menu-group">
+            <div class="mobile-menu-title"><span class="icon">📚</span><span>Courses</span></div>
+            <a href="index.html" class="mobile-menu-item active">成功之路 · 进步篇</a>
+            <a href="../shizi/lesson.html" class="mobile-menu-item">Literacy</a>
+            <a href="../shizi/review.html" class="mobile-menu-item">Review Lit.</a>
+        </div>
+        <div class="mobile-menu-group">
+            <div class="mobile-menu-title"><span class="icon">📖</span><span>Resources</span></div>
+            <a href="../../pages/grammar.html" class="mobile-menu-item">Grammar</a>
+            <a href="../../pages/extras.html" class="mobile-menu-item">Extras</a>
+            <a href="../../pages/mini-story.html" class="mobile-menu-item">Mini Story</a>
+            <a href="../../pages/music.html" class="mobile-menu-item">Music</a>
+        </div>
+        <a href="../../pages/timeline.html" class="mobile-menu-single"><span class="icon">📅</span><span>Timeline</span></a>
+    </div>
+    <div class="sidebar-overlay"></div>
+
+    <div class="container">
+        <header class="page-head">
+            <h1>成功之路 · 进步篇</h1>
+            <p class="sub">Road to Success · Elementary Progressive · 共 36 课</p>
+        </header>
+
+        <section class="book-section" id="book1">
+            <h2>进步篇 一</h2>
+            <p class="range">第 1 – 12 课</p>
+            <ul class="lesson-list">
+                <li>
+                    <a href="lessons/lesson-01.html">
+                        <span class="lesson-num">第 1 课</span>
+                        <span>安妮的日记</span>
+                        <span class="lesson-tag">课文 · 词语扩展 · 语言点</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <section class="book-section" id="book2">
+            <h2>进步篇 二</h2>
+            <p class="range">第 13 – 24 课</p>
+            <p class="placeholder">尚未发布</p>
+        </section>
+
+        <section class="book-section" id="book3">
+            <h2>进步篇 三</h2>
+            <p class="range">第 25 – 36 课</p>
+            <p class="placeholder">尚未发布</p>
+        </section>
+
+        <p class="weekly-note">每周新增一课时，在本页对应册别下添加链接即可。</p>
+    </div>
+
+    <script src="../../assets/js/nav-global.js"></script>
+</body>
+</html>

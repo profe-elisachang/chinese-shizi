@@ -1,20 +1,17 @@
 /* ========================================
    Global Navigation JavaScript
-   Handles mobile menu and active states
+   Handles mobile menu, dropdowns, and active states
    ======================================== */
 
 (function() {
     'use strict';
 
-    // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', function() {
         initMobileMenu();
+        initNavDropdowns();
         setActiveNavLink();
     });
 
-    /**
-     * Initialize mobile hamburger menu
-     */
     function initMobileMenu() {
         const hamburgerBtn = document.querySelector('.hamburger-btn');
         const sidebar = document.querySelector('.mobile-sidebar');
@@ -24,14 +21,12 @@
 
         if (!hamburgerBtn || !sidebar || !overlay) return;
 
-        // Open sidebar
         hamburgerBtn.addEventListener('click', function() {
             sidebar.classList.add('open');
             overlay.classList.add('active');
             body.classList.add('sidebar-open');
         });
 
-        // Close sidebar
         function closeSidebar() {
             sidebar.classList.remove('open');
             overlay.classList.remove('active');
@@ -42,16 +37,13 @@
             closeBtn.addEventListener('click', closeSidebar);
         }
 
-        // Close when clicking overlay
         overlay.addEventListener('click', closeSidebar);
 
-        // Close when clicking a menu item
         const menuItems = sidebar.querySelectorAll('.mobile-menu-item, .mobile-menu-single');
         menuItems.forEach(function(item) {
             item.addEventListener('click', closeSidebar);
         });
 
-        // Close on escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && sidebar.classList.contains('open')) {
                 closeSidebar();
@@ -59,38 +51,85 @@
         });
     }
 
-    /**
-     * Set active navigation link based on current page
-     */
+    function initNavDropdowns() {
+        const dropdowns = document.querySelectorAll('[data-nav-dropdown]');
+        if (!dropdowns.length) return;
+
+        dropdowns.forEach(function(dropdown) {
+            const toggle = dropdown.querySelector('.nav-dropdown-toggle');
+            if (!toggle) return;
+
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = dropdown.classList.contains('open');
+
+                closeAllDropdowns();
+
+                if (!isOpen) {
+                    dropdown.classList.add('open');
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        document.addEventListener('click', function() {
+            closeAllDropdowns();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAllDropdowns();
+            }
+        });
+    }
+
+    function closeAllDropdowns() {
+        document.querySelectorAll('[data-nav-dropdown].open').forEach(function(dropdown) {
+            dropdown.classList.remove('open');
+            const toggle = dropdown.querySelector('.nav-dropdown-toggle');
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
     function setActiveNavLink() {
         const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('.nav-link, .mobile-menu-item, .mobile-menu-single');
+        const normalizedCurrent = normalizePath(currentPath);
+        const isRoadToSuccess = normalizedCurrent.includes('/road-to-success');
+
+        const navLinks = document.querySelectorAll('.nav-link, .mobile-menu-item, .mobile-menu-single, .nav-dropdown-item');
 
         navLinks.forEach(function(link) {
             const linkPath = new URL(link.href, window.location.origin).pathname;
-
-            // Normalize paths for comparison
-            const normalizedCurrent = normalizePath(currentPath);
             const normalizedLink = normalizePath(linkPath);
 
-            // Check if paths match
             if (normalizedCurrent === normalizedLink) {
                 link.classList.add('active');
             } else {
                 link.classList.remove('active');
             }
         });
+
+        if (isRoadToSuccess) {
+            document.querySelectorAll('[data-nav-dropdown]').forEach(function(menu) {
+                const hasRoadLink = Array.from(menu.querySelectorAll('.nav-dropdown-item')).some(function(item) {
+                    return item.href && item.href.indexOf('road-to-success') !== -1;
+                });
+                if (!hasRoadLink) return;
+
+                const toggle = menu.querySelector('.nav-dropdown-toggle');
+                if (toggle) {
+                    toggle.classList.add('active');
+                }
+            });
+        }
     }
 
-    /**
-     * Normalize path for comparison
-     */
     function normalizePath(path) {
-        // Remove trailing slashes and handle index.html
         path = path.replace(/\/$/, '');
         path = path.replace(/\/index\.html$/, '');
 
-        // If path is empty or just /, it's the home page
         if (path === '' || path === '/') {
             return '/';
         }
