@@ -1,0 +1,33 @@
+name: Sync content list.json
+
+on:
+  push:
+    paths:
+      - 'courses/road-to-success/lessons/**'
+      - 'pages/grammar/content/**'
+      - 'pages/extras/content/**'
+      - 'pages/mini-story/content/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync list.json files
+        run: node scripts/sync-content-lists.js
+
+      - name: Commit updated list.json
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: sync content list.json'
+          file_pattern: |
+            courses/road-to-success/list.json
+            pages/grammar/list.json
+            pages/extras/list.json
+            pages/mini-story/list.json

@@ -1,0 +1,18 @@
+[
+  {
+    "title": "安妮的日记",
+    "path": "lessons/lesson-01.html",
+    "lessonNum": 1,
+    "book": "jinbu-1",
+    "published": true,
+    "tags": "课文 · 词语扩展 · 语言点"
+  },
+  {
+    "title": "马丁看中医",
+    "path": "lessons/lesson-02.html",
+    "lessonNum": 2,
+    "book": "jinbu-1",
+    "published": true,
+    "tags": "课文 · 词语扩展 · 语言点"
+  }
+]
