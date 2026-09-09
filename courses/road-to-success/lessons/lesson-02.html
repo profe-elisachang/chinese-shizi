@@ -401,6 +401,169 @@ tags: "课文 · 词语扩展 · 语言点"
             }
         }
 
+        /* ===== 生词卡 Tab ===== */
+        .flash-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .flash-search {
+            border: 1px solid #e0d6c8;
+            background: #fcf9f6;
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: #1e2b2c;
+            width: 160px;
+        }
+        .flash-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .cat-chip {
+            border: 1.5px solid #e0d6c8;
+            background: white;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #4e5b5c;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cat-chip .dot {
+            width: 0.7em;
+            height: 0.7em;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .cat-chip.active {
+            color: white;
+            border-color: transparent;
+        }
+        .flash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        .flash-card {
+            perspective: 1200px;
+            height: 168px;
+            cursor: pointer;
+        }
+        .flash-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(.2,.9,.3,1);
+            transform-style: preserve-3d;
+        }
+        .flash-card.flipped .flash-inner {
+            transform: rotateY(180deg);
+        }
+        .flash-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 12px 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e8e0d6;
+            background: #fcf9f6;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+        .flash-face.front {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-top: 5px solid var(--fc, #a6523a);
+        }
+        .flash-face.front .fh {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: #1e2b2c;
+        }
+        .flash-face.front .fp {
+            margin-top: 4px;
+            font-size: 0.85rem;
+            color: #6b5f4e;
+        }
+        .flash-face.front .fc-tag {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--fc, #a6523a);
+            opacity: 0.85;
+        }
+        .flash-face.back {
+            transform: rotateY(180deg);
+            background: var(--fc-tint, #f2ede6);
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+        .flash-face.back .fh-sm {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--fc, #a6523a);
+            margin-bottom: 2px;
+        }
+        .flash-face.back .fen {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #3d5a5c;
+        }
+        .flash-face.back .fes {
+            font-size: 0.74rem;
+            font-style: italic;
+            color: #6b5f4e;
+            margin-bottom: 6px;
+        }
+        .flash-face.back .fex {
+            font-size: 0.72rem;
+            color: #4e5b5c;
+            border-top: 1px dashed #ddd2c5;
+            padding-top: 4px;
+            margin-top: 2px;
+        }
+        .flash-face.back .fex div {
+            margin-bottom: 3px;
+        }
+        .flash-speak {
+            position: absolute;
+            bottom: 6px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: var(--fc, #a6523a);
+            color: #fff;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flash-hint {
+            font-size: 0.78rem;
+            color: #7f6b5a;
+            text-align: center;
+            background: #f7f4ef;
+            border-radius: 30px;
+            padding: 6px 12px;
+            margin-bottom: 14px;
+        }
+
         /* ===== 辅助 ===== */
         .footnote {
             margin-top: 28px;
@@ -431,6 +594,7 @@ tags: "课文 · 词语扩展 · 语言点"
         <button class="tab-btn active" data-tab="tab-reading">📖 课文</button>
         <button class="tab-btn" data-tab="tab-vocab-ext">📝 词语扩展</button>
         <button class="tab-btn" data-tab="tab-grammar">📌 语言点注释</button>
+        <button class="tab-btn" data-tab="tab-flashcards">🗂️ 生词卡</button>
     </div>
 
     <!-- ========================================================= -->
@@ -742,7 +906,7 @@ tags: "课文 · 词语扩展 · 语言点"
             </div>
         </div>
 
-        <!-- 2. 结构助词“地” -->
+        <!-- 2. 结构助词"地" -->
         <div class="grammar-entry">
             <div class="grammar-title">2. 地 — the "how" marker</div>
             <div class="grammar-explain">
@@ -894,6 +1058,18 @@ tags: "课文 · 词语扩展 · 语言点"
         </div>
     </div>
 
+    <!-- ========================================================= -->
+    <!-- TAB 4: 生词卡 -->
+    <!-- ========================================================= -->
+    <div id="tab-flashcards" class="tab-content">
+        <div class="flash-hint">💡 点卡片翻面看英文/西班牙文和例句 · Tap a card to flip it · Toca la tarjeta para voltearla</div>
+        <div class="flash-toolbar">
+            <div class="flash-legend" id="flashLegend"></div>
+            <input class="flash-search" id="flashSearch" type="search" placeholder="搜索生词…">
+        </div>
+        <div class="flash-grid" id="flashGrid"></div>
+    </div>
+
     <!-- ===== 底部 ===== -->
     <div class="footnote">
         <span>⚡ 鼠标悬停高亮词看拼音+翻译</span>
@@ -908,24 +1084,14 @@ tags: "课文 · 词语扩展 · 语言点"
     (function() {
         // -------- 1. Tab 切换 --------
         const tabs = document.querySelectorAll('.tab-btn');
-        const contents = {
-            reading: document.getElementById('tab-reading'),
-            ext: document.getElementById('tab-vocab-ext'),
-            grammar: document.getElementById('tab-grammar')
-        };
+        const allContents = document.querySelectorAll('.tab-content');
 
         tabs.forEach(btn => {
             btn.addEventListener('click', function() {
                 tabs.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-
                 const target = this.dataset.tab;
-                Object.keys(contents).forEach(key => {
-                    contents[key].classList.remove('active');
-                });
-                if (target === 'tab-reading') contents.reading.classList.add('active');
-                else if (target === 'tab-vocab-ext') contents.ext.classList.add('active');
-                else if (target === 'tab-grammar') contents.grammar.classList.add('active');
+                allContents.forEach(c => c.classList.toggle('active', c.id === target));
             });
         });
 
@@ -941,8 +1107,177 @@ tags: "课文 · 词语扩展 · 语言点"
             }
         };
 
-        // -------- 3. 预加载语音（如有需要，但本版本无语音按钮，保留备用） --------
-        // 无语音功能，仅做占位
+        // -------- 3. 生词卡 --------
+        const CATS = {
+            A: { label: '医疗用语', color: '#a6523a', tint: '#fbeee8' },
+            B: { label: '慢性病与治疗', color: '#3d5a5c', tint: '#ebf0ee' },
+            C: { label: '看诊情景', color: '#b5653e', tint: '#f7f0eb' },
+            D: { label: '重点语言点', color: '#6b4f36', tint: '#f2ede4' }
+        };
+
+        const VOCAB = [
+            { h:'名', p:'míng', cat:'A', en:'measure word for people (formal/polite)', es:'clasificador formal para personas',
+              ex:['一名学生／工人／中医 — a student / worker / TCM doctor'] },
+            { h:'中医', p:'zhōngyī', cat:'A', en:'Traditional Chinese Medicine; TCM doctor', es:'medicina tradicional china; médico de MTC',
+              ex:['老中医／中医大夫／看中医','马丁看中医 — Martin visits a TCM doctor'] },
+            { h:'中药', p:'zhōngyào', cat:'A', en:'Chinese herbal medicine', es:'medicina herbal china',
+              ex:['吃中药／拿中药 — take / pick up Chinese medicine'] },
+            { h:'服', p:'fù', cat:'A', en:'measure word for a dose of medicine', es:'clasificador para una dosis de medicina',
+              ex:['一服中药 — one dose of Chinese medicine'] },
+            { h:'西医', p:'xīyī', cat:'A', en:'Western medicine; Western doctor', es:'medicina occidental; médico occidental',
+              ex:['西医大夫／看西医 — Western doctor / see a Western doctor'] },
+            { h:'药方', p:'yàofāng', cat:'A', en:'prescription', es:'receta médica',
+              ex:['开药方 — to write a prescription'] },
+            { h:'医学', p:'yīxué', cat:'A', en:'medicine (as a field of study)', es:'medicina (como ciencia)',
+              ex:['中医学／西医学／中国传统医学'] },
+
+            { h:'慢性病', p:'mànxìngbìng', cat:'B', en:'chronic illness', es:'enfermedad crónica',
+              ex:['有慢性病','头疼是一种慢性病 — a headache is a type of chronic illness'] },
+            { h:'腰', p:'yāo', cat:'B', en:'waist, lower back', es:'cintura, espalda baja',
+              ex:['腰疼／腰腿疼','腰腿疼是一种慢性病'] },
+            { h:'失眠', p:'shīmián', cat:'B', en:'insomnia', es:'insomnio',
+              ex:['昨天晚上我失眠了','失眠也是一种慢性病'] },
+            { h:'痛苦', p:'tòngkǔ', cat:'B', en:'painful; suffering', es:'doloroso; sufrimiento',
+              ex:['很痛苦','慢性病让人很痛苦'] },
+            { h:'治疗', p:'zhìliáo', cat:'B', en:'to treat; treatment', es:'tratar; tratamiento',
+              ex:['治疗慢性病／治疗效果','有病应该治疗'] },
+            { h:'挂号', p:'guàhào', cat:'B', en:'to register (at a clinic)', es:'registrarse (en una clínica)',
+              ex:['挂一个号','看病要先挂号 — you must register before seeing a doctor'] },
+            { h:'专家', p:'zhuānjiā', cat:'B', en:'expert, specialist', es:'experto, especialista',
+              ex:['英语专家／点菜专家','挂专家号 — register for a specialist'] },
+
+            { h:'慈祥', p:'cíxiáng', cat:'C', en:'kind and gentle (esp. of an elder)', es:'bondadoso y amable (de una persona mayor)',
+              ex:['慈祥的老中医','慈祥的奶奶'] },
+            { h:'花镜', p:'huājìng', cat:'C', en:'reading glasses', es:'gafas de lectura',
+              ex:['戴上花镜 — put on reading glasses'] },
+            { h:'面前', p:'miànqián', cat:'C', en:'in front of', es:'delante de',
+              ex:['老中医的面前','朋友的面前'] },
+            { h:'脸色', p:'liǎnsè', cat:'C', en:"complexion, look on one's face", es:'color de cara, semblante',
+              ex:['看脸色','脸色很好／脸色很白'] },
+            { h:'舌头', p:'shétou', cat:'C', en:'tongue', es:'lengua',
+              ex:['看舌头 — examine the tongue'] },
+            { h:'张嘴', p:'zhāngzuǐ', cat:'C', en:"to open one's mouth", es:'abrir la boca',
+              ex:['张开嘴看看你的舌头','张开嘴说「啊」'] },
+            { h:'诊室', p:'zhěnshì', cat:'C', en:'consultation room', es:'consultorio',
+              ex:['中医诊室','走进诊室 — walk into the consultation room'] },
+            { h:'伸', p:'shēn', cat:'C', en:'to stretch out, extend', es:'estirar, extender',
+              ex:['伸出手 — hold out one\u2019s hand'] },
+            { h:'手指', p:'shǒuzhǐ', cat:'C', en:'finger', es:'dedo (de la mano)',
+              ex:['伸出手指 — extend a finger'] },
+            { h:'手腕', p:'shǒuwàn', cat:'C', en:'wrist', es:'muñeca',
+              ex:['把手指放在他的手腕上 — place fingers on his wrist'] },
+            { h:'号脉', p:'hàomài', cat:'C', en:"to take someone's pulse (TCM diagnosis)", es:'tomar el pulso (diagnóstico de MTC)',
+              ex:['中医号脉','老中医给他号脉'] },
+            { h:'压力', p:'yālì', cat:'C', en:'pressure, stress', es:'presión, estrés',
+              ex:['工作压力很大','学生的考试压力很大'] },
+
+            { h:'老', p:'lǎo', cat:'D', en:'always, constantly (habitual, often undesirable)', es:'siempre, constantemente (hábito)',
+              ex:['老失眠／老头疼／老说错／老不来上课','马丁最近老头疼。'] },
+            { h:'摘', p:'zhāi', cat:'D', en:'to pick (fruit); to take off (glasses/hat)', es:'recoger (fruta); quitarse (gafas/sombrero)',
+              ex:['摘苹果／摘葡萄／摘帽子／摘眼镜','摘下来：他把眼镜摘了下来。','老中医摘下花镜'] },
+            { h:'紧张', p:'jǐnzhāng', cat:'D', en:'nervous, tense; (of time) tight', es:'nervioso, tenso; (de tiempo) apretado',
+              ex:['考试的时候紧张／时间紧张／学习紧张','刚开学，你们学习紧张吗？'] },
+            { h:'半信半疑', p:'bànxìnbànyí', cat:'D', en:'half-believing, half-doubting; skeptical', es:'con dudas, medio incrédulo',
+              ex:['他说的话让我半信半疑。','马丁拿着药半信半疑地回到了学校。'] },
+            { h:'了不起', p:'liǎobùqǐ', cat:'D', en:'amazing, terrific, extraordinary', es:'extraordinario, impresionante',
+              ex:['了不起的人／了不起的事','中医能治疗一些慢性病，你觉得中医了不起吗？'] },
+            { h:'产生', p:'chǎnshēng', cat:'D', en:'to produce, to give rise to (feelings)', es:'producir, generar (sentimientos)',
+              ex:['对……产生兴趣','对中医产生兴趣／对京剧产生兴趣'] },
+            { h:'接着', p:'jiēzhe', cat:'D', en:'next, then, following that', es:'a continuación, luego',
+              ex:['你先说，我接着说。','老中医看了脸色，接着又看了舌头。'] }
+        ];
+
+        const flashGrid = document.getElementById('flashGrid');
+        const flashLegend = document.getElementById('flashLegend');
+        let activeCat = 'ALL';
+        let flashQuery = '';
+
+        function speakZh(text) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            const voices = window.speechSynthesis.getVoices();
+            const v = voices.find(v => v.lang === 'zh-CN') || voices.find(v => v.lang && v.lang.startsWith('zh'));
+            if (v) u.voice = v;
+            u.lang = (v && v.lang) || 'zh-CN';
+            u.rate = 0.85;
+            window.speechSynthesis.speak(u);
+        }
+
+        function buildLegend() {
+            const all = document.createElement('button');
+            all.className = 'cat-chip active';
+            all.textContent = '全部';
+            all.dataset.cat = 'ALL';
+            all.style.background = '#1e2b2c';
+            flashLegend.appendChild(all);
+            Object.keys(CATS).forEach(k => {
+                const c = CATS[k];
+                const b = document.createElement('button');
+                b.className = 'cat-chip';
+                b.dataset.cat = k;
+                b.innerHTML = '<span class="dot" style="background:' + c.color + '"></span>' + c.label;
+                flashLegend.appendChild(b);
+            });
+            flashLegend.addEventListener('click', e => {
+                const btn = e.target.closest('.cat-chip');
+                if (!btn) return;
+                activeCat = btn.dataset.cat;
+                [...flashLegend.children].forEach(ch => {
+                    ch.classList.toggle('active', ch === btn);
+                    ch.style.background = ch === btn ? (ch.dataset.cat === 'ALL' ? '#1e2b2c' : CATS[ch.dataset.cat].color) : '';
+                });
+                renderFlashGrid();
+            });
+        }
+
+        function renderFlashGrid() {
+            flashGrid.innerHTML = '';
+            const q = flashQuery.trim().toLowerCase();
+            VOCAB.filter(v => {
+                const matchCat = activeCat === 'ALL' || v.cat === activeCat;
+                const matchQ = !q || v.h.includes(q) || v.p.toLowerCase().includes(q) ||
+                    v.en.toLowerCase().includes(q) || v.es.toLowerCase().includes(q);
+                return matchCat && matchQ;
+            }).forEach(v => {
+                const c = CATS[v.cat];
+                const card = document.createElement('div');
+                card.className = 'flash-card';
+                card.innerHTML =
+                    '<div class="flash-inner">' +
+                        '<div class="flash-face front" style="--fc:' + c.color + '">' +
+                            '<span class="fc-tag">' + c.label + '</span>' +
+                            '<div class="fh">' + v.h + '</div>' +
+                            '<div class="fp">' + v.p + '</div>' +
+                        '</div>' +
+                        '<div class="flash-face back" style="--fc:' + c.color + '; --fc-tint:' + c.tint + '">' +
+                            '<div class="fh-sm">' + v.h + ' · ' + v.p + '</div>' +
+                            '<div class="fen">' + v.en + '</div>' +
+                            '<div class="fes">' + v.es + '</div>' +
+                            '<div class="fex">' + v.ex.map(e => '<div>• ' + e + '</div>').join('') + '</div>' +
+                            '<button class="flash-speak" title="朗读">🔊</button>' +
+                        '</div>' +
+                    '</div>';
+                card.addEventListener('click', e => {
+                    if (e.target.closest('.flash-speak')) {
+                        e.stopPropagation();
+                        speakZh(v.h);
+                        return;
+                    }
+                    card.classList.toggle('flipped');
+                });
+                flashGrid.appendChild(card);
+            });
+        }
+
+        document.getElementById('flashSearch').addEventListener('input', e => {
+            flashQuery = e.target.value;
+            renderFlashGrid();
+        });
+
+        buildLegend();
+        renderFlashGrid();
+        if ('speechSynthesis' in window) { window.speechSynthesis.onvoiceschanged = () => {}; }
     })();
 </script>
 
