@@ -1123,6 +1123,95 @@
         border-bottom: 1px solid var(--border-light);
     }
 
+    .character-search {
+        background: var(--bg-card);
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+    }
+
+    .character-search-label {
+        display: block;
+        margin-bottom: var(--spacing-sm);
+        color: var(--text-secondary);
+        font-weight: var(--font-semibold);
+    }
+
+    .character-search-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-medium);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font: inherit;
+        font-size: var(--text-lg);
+    }
+
+    .character-search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.12);
+    }
+
+    .character-search-status {
+        margin-top: var(--spacing-sm);
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .character-search-results {
+        display: grid;
+        gap: var(--spacing-sm);
+        margin-top: var(--spacing-md);
+    }
+
+    .character-search-result {
+        width: 100%;
+        padding: var(--spacing-md);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        background: var(--bg-page);
+        color: var(--text-primary);
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+    }
+
+    .character-search-result:hover,
+    .character-search-result:focus {
+        border-color: var(--primary-color);
+        background: var(--bg-hover);
+        outline: none;
+    }
+
+    .search-result-heading {
+        display: flex;
+        align-items: baseline;
+        gap: var(--spacing-sm);
+        flex-wrap: wrap;
+    }
+
+    .search-result-character {
+        font-size: var(--text-2xl);
+        font-weight: var(--font-bold);
+        color: var(--character-color);
+    }
+
+    .search-result-meta {
+        color: var(--primary-dark);
+        font-weight: var(--font-semibold);
+    }
+
+    .search-result-story {
+        margin-top: var(--spacing-xs);
+        color: var(--text-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .lesson-nav-header {
         display: flex;
         justify-content: space-between;
@@ -1481,6 +1570,19 @@
 
     <!-- Lesson Navigation Bar (BBC Style) -->
     <div class="container" style="margin-top: 20px;">
+        <div class="character-search">
+            <label class="character-search-label" for="characterSearchInput">搜寻汉字</label>
+            <input
+                id="characterSearchInput"
+                class="character-search-input"
+                type="search"
+                maxlength="10"
+                placeholder="输入一個字，例如：刚"
+                autocomplete="off">
+            <div id="characterSearchStatus" class="character-search-status"></div>
+            <div id="characterSearchResults" class="character-search-results" hidden></div>
+        </div>
+
         <!-- Lesson Navigation (Always visible at top) -->
         <div class="lesson-navigation">
             <div class="lesson-nav-header">
@@ -1666,6 +1768,9 @@
         
         // ==================== Global Variables ====================
         let currentLessonData = null;
+        const characterSearchIndex = new Map();
+        let characterSearchLoadPromise = null;
+        let pendingSearchResult = null;
 
         const LESSON_COURSES = {
             shizi: {
@@ -1775,6 +1880,165 @@
             loadLesson();
         }
 
+        function getSearchCourseIds() {
+            return Object.keys(LESSON_COURSES);
+        }
+
+        function getCharacterArrays(data) {
+            return [
+                { type: '部件', items: data.components || [] },
+                { type: '目标字', items: data.target_characters || [] }
+            ];
+        }
+
+        async function buildCharacterSearchIndex() {
+            if (characterSearchLoadPromise) return characterSearchLoadPromise;
+
+            characterSearchLoadPromise = (async () => {
+                const entries = [];
+                const lessonRequests = [];
+
+                for (const courseId of getSearchCourseIds()) {
+                    const config = getCourseConfig(courseId);
+                    for (let lessonNumber = 1; lessonNumber <= config.lessonCount; lessonNumber++) {
+                        const lessonId = `${config.docIdPrefix}lesson${lessonNumber}`;
+                        lessonRequests.push({
+                            courseId,
+                            lessonId,
+                            lessonNumber,
+                            request: db.collection('lessons').doc(lessonId).get()
+                        });
+                    }
+                }
+
+                const lessonDocs = await Promise.all(lessonRequests.map(item => item.request));
+                lessonDocs.forEach((doc, index) => {
+                    const { courseId, lessonId, lessonNumber } = lessonRequests[index];
+                    if (!doc.exists) return;
+
+                    getCharacterArrays(doc.data()).forEach(({ type, items }) => {
+                        items.forEach((characterData, itemIndex) => {
+                            const character = (characterData.character || '').trim();
+                            if (!character || character.startsWith('http')) return;
+                            entries.push({
+                                character,
+                                courseId,
+                                lessonId,
+                                lessonNumber,
+                                type,
+                                itemIndex,
+                                data: characterData
+                            });
+                        });
+                    });
+                });
+
+                entries.forEach(entry => {
+                    const existing = characterSearchIndex.get(entry.character) || [];
+                    existing.push(entry);
+                    characterSearchIndex.set(entry.character, existing);
+                });
+            })().catch(error => {
+                characterSearchLoadPromise = null;
+                throw error;
+            });
+
+            return characterSearchLoadPromise;
+        }
+
+        function getStoryPreview(story) {
+            return (story || '')
+                .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+                .replace(/[#*_>`~-]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function escapeSearchHtml(value) {
+            return String(value || '').replace(/[&<>'"]/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[character]));
+        }
+
+        function renderCharacterSearchResults(results, query) {
+            const status = document.getElementById('characterSearchStatus');
+            const container = document.getElementById('characterSearchResults');
+
+            if (!results.length) {
+                status.textContent = `找不到「${query}」的字卡`;
+                container.hidden = true;
+                container.innerHTML = '';
+                return;
+            }
+
+            status.textContent = `找到 ${results.length} 筆結果`;
+            container.hidden = false;
+            container.innerHTML = results.map((result, index) => {
+                const storyPreview = escapeSearchHtml(getStoryPreview(result.data.story));
+                return `
+                    <button type="button" class="character-search-result" data-search-result-index="${index}">
+                        <span class="search-result-heading">
+                            <span class="search-result-character">${escapeSearchHtml(result.character)}</span>
+                            <span class="search-result-meta">${escapeSearchHtml(getCourseConfig(result.courseId).label)} · Lesson ${result.lessonNumber} · ${escapeSearchHtml(result.type)}</span>
+                        </span>
+                        <span class="search-result-story">${storyPreview || '点击查看完整内容 / Click to view full details'}</span>
+                    </button>
+                `;
+            }).join('');
+
+            container.querySelectorAll('[data-search-result-index]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const result = results[Number(button.dataset.searchResultIndex)];
+                    navigateToSearchResult(result);
+                });
+            });
+        }
+
+        async function searchCharacters(query) {
+            const status = document.getElementById('characterSearchStatus');
+            const container = document.getElementById('characterSearchResults');
+            const normalizedQuery = query.trim();
+
+            if (!normalizedQuery) {
+                status.textContent = '';
+                container.hidden = true;
+                container.innerHTML = '';
+                return;
+            }
+
+            status.textContent = '正在搜尋課程資料...';
+            container.hidden = true;
+
+            try {
+                await buildCharacterSearchIndex();
+                renderCharacterSearchResults(characterSearchIndex.get(normalizedQuery) || [], normalizedQuery);
+            } catch (error) {
+                console.error('Failed to build character search index:', error);
+                status.textContent = '搜尋資料載入失敗，請稍後再試';
+                container.hidden = true;
+            }
+        }
+
+        function navigateToSearchResult(result) {
+            pendingSearchResult = result;
+            currentCourse = result.courseId;
+            updateUrl(result.courseId, result.lessonId);
+            renderLessonNavigation();
+            setActiveCourseMenu();
+            loadLesson();
+        }
+
+        function openPendingSearchResult() {
+            if (!pendingSearchResult || getLessonId() !== pendingSearchResult.lessonId) return;
+            const result = pendingSearchResult;
+            pendingSearchResult = null;
+            openCharacterModal(result.data);
+        }
+
         // ==================== Tab Switching ====================
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -1865,6 +2129,7 @@
 
                 // Show tabs
                 tabsNav.style.display = 'flex';
+                openPendingSearchResult();
                 
             } catch (error) {
                 errorMessage.textContent = '加载失败/Failed to load：' + error.message;
@@ -2773,6 +3038,9 @@ modalCharacter.innerHTML = displayContent;
             renderLessonNavigation();
             setActiveCourseMenu();
             loadLesson();
+            document.getElementById('characterSearchInput').addEventListener('input', event => {
+                searchCharacters(event.target.value);
+            });
         });
 
 
