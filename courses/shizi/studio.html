@@ -301,6 +301,7 @@
             align-items: center;
             gap: var(--spacing-sm);
             flex: 1;
+            flex-wrap: wrap;
         }
 
         .edit-panel-header-right {
@@ -319,6 +320,12 @@
         .edit-panel-title {
             font-size: var(--text-xl);
             font-weight: var(--font-bold);
+        }
+
+        .edit-panel-hint {
+            font-size: 0.8rem;
+            font-weight: var(--font-normal);
+            opacity: 0.9;
         }
 
         .edit-panel.collapsed .edit-panel-title {
@@ -496,6 +503,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .form-item-paste-hint {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            white-space: nowrap;
         }
 
         .form-item-card.collapsed .form-item-preview {
@@ -1103,6 +1116,7 @@
             <div class="edit-panel-header">
                 <div class="edit-panel-header-left">
                     <div class="edit-panel-title">編輯表單</div>
+                    <small class="edit-panel-hint">雙擊項目或按「展」查看圖片網址欄位；聚焦欄位後可直接貼上截圖上傳</small>
                 </div>
                 <div class="edit-panel-header-right">
                     <button class="btn-expand-all" id="btnExpandAll">+ 全部展開</button>
@@ -1474,6 +1488,7 @@
                         <div class="form-item-header" onclick="handleFormItemClick(${index})">
                             <span class="form-item-toggle-icon" onclick="event.stopPropagation(); toggleFormItem(${index})">展</span>
                             <div class="form-item-preview">${charDisplay || '新項目'}</div>
+                            <small class="form-item-paste-hint">展開後可貼上截圖</small>
                             <div class="publish-toggle" onclick="event.stopPropagation();">
                                 <label class="toggle-switch">
                                     <input type="checkbox" ${isPublished ? 'checked' : ''} onchange="togglePublish(${index}, this.checked)">
@@ -1490,10 +1505,10 @@
                             <input type="text" data-field="character" value="${item.character || ''}" placeholder="例如：夬">
                         </div>
                         <div class="form-field">
-                            <label>顯示圖片（字形補丁）</label>
-                            <input type="text" data-field="display_image" value="${item.display_image || ''}" placeholder="https://res.cloudinary.com/...">
+                            <label>顯示圖片（字形補丁；貼上截圖到下面輸入框）</label>
+                            <input type="text" data-field="display_image" value="${item.display_image || ''}" placeholder="點此輸入框後按 Ctrl+V 貼上截圖，會自動上傳">
                             <button type="button" class="btn-upload-cloudinary" data-upload-field="display_image">🖼️ 上傳字形補丁到 Cloudinary</button>
-                            <small>當字無法正常顯示時使用</small>
+                            <small>貼上位置就是上面的輸入框；也可以直接輸入 Cloudinary 網址，或使用下面按鈕選擇圖片</small>
                         </div>
                         <div class="form-field required">
                             <label>拼音</label>
@@ -1520,10 +1535,10 @@
                             <textarea data-field="pronunciation_cue" placeholder="例如：Sounds like **Gwhy**">${item.pronunciation_cue || ''}</textarea>
                         </div>
                         <div class="form-field">
-                            <label>圖片網址（輔助插圖）</label>
-                            <input type="text" data-field="image" value="${item.image || ''}" placeholder="https://res.cloudinary.com/...">
+                            <label>圖片網址（輔助插圖；貼上截圖到下面輸入框）</label>
+                            <input type="text" data-field="image" value="${item.image || ''}" placeholder="點此輸入框後按 Ctrl+V 貼上截圖，會自動上傳">
                             <button type="button" class="btn-upload-cloudinary" data-upload-field="image">🖼️ 上傳輔助插圖到 Cloudinary</button>
-                            <small>故事圖、象形演變圖等</small>
+                            <small>貼上位置就是上面的輸入框；也可以直接輸入 Cloudinary 網址，或使用下面按鈕選擇圖片</small>
                         </div>
                         <div class="form-field">
                             <label>詞組範例</label>
@@ -1818,9 +1833,46 @@
                 return;
             }
 
-            const imageWidget = cloudinary.createUploadWidget({
+            const cloudinaryConfig = {
                 cloudName: 'dxc8rcjuh',
-                uploadPreset: 'elisa_shizi',
+                uploadPreset: 'elisa_shizi'
+            };
+
+            async function uploadPastedImage(file, index, field) {
+                const folder = field === 'display_image'
+                    ? (COURSES_CONFIG[currentCourse]?.cloudinaryDisplayFolder || 'shizi-lessons/display-images')
+                    : (COURSES_CONFIG[currentCourse]?.cloudinaryFolder || 'shizi-lessons');
+                const formData = new FormData();
+                formData.append('file', file, file.name || 'pasted-image.png');
+                formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+                formData.append('folder', folder);
+
+                try {
+                    showMessage('⏳ 正在上傳剪貼簿圖片到 Cloudinary...', 'info');
+                    const response = await fetch(
+                        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
+                        { method: 'POST', body: formData }
+                    );
+                    const result = await response.json();
+                    if (!response.ok || !result.secure_url) {
+                        throw new Error(result.error?.message || 'Cloudinary upload failed');
+                    }
+
+                    setFormFieldValue(index, field, result.secure_url);
+                    showMessage(
+                        field === 'display_image'
+                            ? '🖼️ 字形補丁上傳成功！已自動填入網址'
+                            : '🖼️ 輔助插圖上傳成功！已自動填入網址',
+                        'success'
+                    );
+                } catch (error) {
+                    console.error('Pasted image upload failed:', error);
+                    showMessage(`圖片上傳失敗：${error.message}`, 'error');
+                }
+            }
+
+            const imageWidget = cloudinary.createUploadWidget({
+                ...cloudinaryConfig,
                 folder: COURSES_CONFIG[currentCourse]?.cloudinaryFolder || 'shizi-lessons',
                 cropping: false,
                 multiple: false,
@@ -1841,8 +1893,7 @@
             });
 
             const displayImageWidget = cloudinary.createUploadWidget({
-                cloudName: 'dxc8rcjuh',
-                uploadPreset: 'elisa_shizi',
+                ...cloudinaryConfig,
                 folder: COURSES_CONFIG[currentCourse]?.cloudinaryDisplayFolder || 'shizi-lessons/display-images',
                 cropping: false,
                 multiple: false,
@@ -1883,6 +1934,23 @@
                 } else if (btn.dataset.uploadField === 'image') {
                     imageWidget.open();
                 }
+            });
+
+            container.addEventListener('paste', (e) => {
+                const target = e.target.closest('input[data-field="image"], input[data-field="display_image"]');
+                if (!target) return;
+
+                const imageItem = Array.from(e.clipboardData?.items || []).find((item) => item.type.startsWith('image/'));
+                const file = imageItem?.getAsFile();
+                if (!file) return;
+
+                const card = target.closest('.form-item-card');
+                if (!card) return;
+                const index = parseInt(card.dataset.index, 10);
+                if (Number.isNaN(index) || !currentData[index]) return;
+
+                e.preventDefault();
+                uploadPastedImage(file, index, target.dataset.field);
             });
         }
 
