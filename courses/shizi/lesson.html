@@ -1934,9 +1934,10 @@
                 });
 
                 entries.forEach(entry => {
-                    const existing = characterSearchIndex.get(entry.character) || [];
+                    const searchKey = getCharacterSearchKey(entry.character);
+                    const existing = characterSearchIndex.get(searchKey) || [];
                     existing.push(entry);
-                    characterSearchIndex.set(entry.character, existing);
+                    characterSearchIndex.set(searchKey, existing);
                 });
             })().catch(error => {
                 characterSearchLoadPromise = null;
@@ -1952,6 +1953,10 @@
                 .replace(/[#*_>`~-]/g, '')
                 .replace(/\s+/g, ' ')
                 .trim();
+        }
+
+        function getCharacterSearchKey(character) {
+            return Array.from((character || '').trim())[0] || '';
         }
 
         function escapeSearchHtml(value) {
@@ -2001,7 +2006,7 @@
         async function searchCharacters(query) {
             const status = document.getElementById('characterSearchStatus');
             const container = document.getElementById('characterSearchResults');
-            const normalizedQuery = query.trim();
+            const normalizedQuery = getCharacterSearchKey(query);
 
             if (!normalizedQuery) {
                 status.textContent = '';
