@@ -14,5 +14,13 @@
     "book": "jinbu-1",
     "published": true,
     "tags": "课文 · 词语扩展 · 语言点"
+  },
+  {
+    "title": "给父母的一封信",
+    "path": "lessons/lesson-03.html",
+    "lessonNum": 3,
+    "book": "jinbu-1",
+    "published": true,
+    "tags": "课文 · 词语扩展 · 语言点"
   }
 ]
