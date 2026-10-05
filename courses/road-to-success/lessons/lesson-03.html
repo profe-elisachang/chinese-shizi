@@ -1,16 +1,12 @@
-<!--
-title: 给父母的一封信
-book: jinbu-1
-lessonNum: 3
-published: true
-tags: "课文 · 词语扩展 · 语言点"
--->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
     <title>给父母的一封信 · 课文课件</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
         /* ===== 全局重置 & 基础 ===== */
         * {
@@ -19,7 +15,7 @@ tags: "课文 · 词语扩展 · 语言点"
             padding: 0;
         }
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             background: #f5f1eb;
             color: #1e2b2c;
             padding: 16px;
@@ -58,12 +54,6 @@ tags: "课文 · 词语扩展 · 语言点"
             font-size: clamp(0.9rem, 2vw, 1.2rem);
             color: #4e5b5c;
         }
-        .subhead .badge {
-            background: #eae3d9;
-            padding: 4px 18px;
-            border-radius: 30px;
-            font-weight: 500;
-        }
 
         /* ===== Tab 导航 ===== */
         .tab-nav {
@@ -77,129 +67,131 @@ tags: "课文 · 词语扩展 · 语言点"
         .tab-btn {
             background: transparent;
             border: none;
-            padding: 10px 24px;
-            font-size: clamp(1rem, 1.4vw, 1.2rem);
+            padding: 10px 22px;
+            font-size: clamp(0.95rem, 1.4vw, 1.15rem);
             font-weight: 600;
             color: #7a6b5e;
             border-radius: 40px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s ease;
             font-family: inherit;
         }
         .tab-btn:hover {
             background: #f0e9e1;
+            color: #523f33;
         }
         .tab-btn.active {
             background: #d9b382;
             color: white;
+            box-shadow: 0 4px 12px rgba(217, 179, 130, 0.4);
         }
         .tab-content {
             display: none;
-            animation: fade 0.25s ease;
+            animation: fadeIn 0.25s ease;
         }
         .tab-content.active {
             display: block;
         }
-        @keyframes fade {
-            0% { opacity: 0.4; }
-            100% { opacity: 1; }
+        @keyframes fadeIn {
+            0% { opacity: 0.3; transform: translateY(4px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== 阅读布局：课文 + 侧边生词 ===== */
+        /* ===== 阅读布局：段落 + 对应生词 ===== */
         .lesson-row {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 24px;
+            display: block;
         }
         .text-column {
-            flex: 2;
-            min-width: 280px;
+            width: 100%;
         }
-        .vocab-column {
-            flex: 1;
-            min-width: 220px;
-            background: #fcf9f6;
-            border-radius: 28px;
-            padding: 18px 14px;
-            border: 1px solid #ede7df;
-            height: fit-content;
-            max-height: 80vh;
-            overflow-y: auto;
+        .paragraph-vocab {
+            display: block;
+            width: 100%;
+            margin: 12px 0 0;
         }
-        .vocab-column h3 {
-            font-size: clamp(1rem, 2vw, 1.3rem);
-            font-weight: 600;
-            color: #4f3e32;
-            border-bottom: 2px solid #d9c8b8;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
+        .paragraph-vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 6px;
+        }
+        .paragraph-vocab-item {
             display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .vocab-column h3::after {
-            content: "🔊";
-            font-size: 1.2rem;
-            margin-left: auto;
-        }
-        .vocab-item {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            padding: 6px 2px;
-            border-bottom: 1px solid #eee6dd;
-            font-size: clamp(0.85rem, 1.4vw, 1.05rem);
-            line-height: 1.7;
-            gap: 4px 8px;
-        }
-        .vocab-item .word {
-            font-weight: 600;
-            color: #2d3e3f;
-            background: #f0ebe4;
-            padding: 0 6px;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 2px;
+            min-width: 0;
+            min-height: 58px;
+            padding: 6px;
+            border: 1px solid #d5e6e6;
             border-radius: 6px;
+            background: #fff;
+            font-size: 0.78rem;
+            line-height: 1.35;
         }
-        .vocab-item .pinyin {
-            color: #7f6b5a;
-            font-size: 0.9em;
+        .paragraph-vocab-word {
+            color: #16476A;
+            font-weight: 700;
         }
-        .vocab-item .trans {
-            color: #5e4d3d;
-            font-style: italic;
-            font-size: 0.9em;
+        .paragraph-vocab-pinyin {
+            color: #3B9797;
+            font-size: 0.88em;
+        }
+        .paragraph-vocab-translation {
+            color: #666;
+            font-size: 0.82em;
+        }
+        .translation-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin: 0 0 14px;
+        }
+        .translation-toggle {
+            border: 1px solid #3B9797;
+            border-radius: 6px;
+            padding: 8px 14px;
+            background: #E3F2F2;
+            color: #16476A;
+            font: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .translation-toggle:hover {
+            background: #cce5e5;
         }
         .speaker-btn {
             background: #eae3d9;
             border: none;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 0.8rem;
+            width: 30px;
+            height: 30px;
+            font-size: 0.85rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             transition: 0.15s;
             flex-shrink: 0;
+            margin-left: auto;
         }
         .speaker-btn:hover {
-            background: #d9c8b8;
+            background: #d9b382;
+            color: white;
             transform: scale(1.1);
         }
         .speaker-btn:active {
             transform: scale(0.95);
         }
 
-        /* ===== 课文段落 ===== */
         .text-content {
-            font-size: clamp(1rem, 1.8vw, 1.35rem);
-            line-height: 2;
+            font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+            line-height: 2.1;
             color: #1f2a2b;
         }
         .para-block {
-            margin-bottom: 1.4em;
-            padding-bottom: 1em;
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
             border-bottom: 1px solid #eee8e0;
         }
         .para-block:last-child {
@@ -217,22 +209,26 @@ tags: "课文 · 词语扩展 · 语言点"
             background: none;
             border: none;
             color: #a6523a;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: 600;
             cursor: pointer;
-            padding: 2px 10px;
+            padding: 3px 12px;
             border-radius: 30px;
             background: #f0e9e1;
-            margin-top: 4px;
+            margin-top: 6px;
             font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        .para-block > .trans-toggle {
+            display: none;
         }
         .trans-toggle:hover {
             background: #e0d6c8;
         }
         .trans-box {
             display: none;
-            margin-top: 6px;
-            padding: 8px 12px;
+            margin-top: 8px;
+            padding: 10px 14px;
             background: #fcf9f6;
             border-radius: 16px;
             border-left: 4px solid #d9b382;
@@ -242,126 +238,121 @@ tags: "课文 · 词语扩展 · 语言点"
         }
         .trans-en {
             color: #3d5a5c;
-            font-size: 0.88em;
-            margin-bottom: 2px;
+            font-size: 0.9em;
+            margin-bottom: 4px;
         }
         .trans-es {
             color: #6b5f4e;
-            font-size: 0.88em;
+            font-size: 0.9em;
             font-style: italic;
         }
 
-        /* ===== 生词高亮 ===== */
+        /* ===== 生词 & 语法高亮 ===== */
         .hl-word {
             background: #fcefe6;
             border-radius: 6px;
-            padding: 0 3px;
-            cursor: help;
+            padding: 0 4px;
+            cursor: pointer;
             border-bottom: 2px solid #d9b382;
             display: inline-block;
             position: relative;
         }
-        .hl-word[data-tip]:hover::after {
+        .hl-word[data-tip]:hover::after,
+        .grammar-dot[data-tip]:hover::after,
+        .hl-teacher[data-tip]:hover::after {
             content: attr(data-tip);
             position: absolute;
             bottom: 130%;
             left: 50%;
-            transform: translateX(-50%) scale(1);
+            transform: translateX(-50%);
             background: #1f2a2b;
             color: #f2ede8;
-            font-size: 0.7rem;
-            padding: 4px 12px;
+            font-size: 0.75rem;
+            padding: 6px 14px;
             border-radius: 20px;
             white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            z-index: 20;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+            z-index: 50;
             font-family: system-ui, sans-serif;
             pointer-events: none;
         }
         .grammar-dot {
             border-bottom: 3px dotted #b5653e;
-            padding: 0 3px;
-            cursor: help;
+            padding: 0 4px;
+            cursor: pointer;
             background: #f7efe8;
             border-radius: 4px 4px 0 0;
             display: inline-block;
             position: relative;
         }
-        .grammar-dot[data-tip]:hover::after {
-            content: attr(data-tip);
-            position: absolute;
-            bottom: 130%;
-            left: 50%;
-            transform: translateX(-50%) scale(1);
-            background: #1f2a2b;
-            color: #f2ede8;
-            font-size: 0.7rem;
-            padding: 4px 12px;
-            border-radius: 20px;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            z-index: 20;
-            font-family: system-ui, sans-serif;
-            pointer-events: none;
+        .hl-teacher {
+            background: #d4e6f1;
+            border-bottom: 2px solid #2c7da0;
+            border-radius: 6px;
+            padding: 0 4px;
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
         }
 
         /* ===== 思考题 ===== */
         .think-box {
             background: #f2ede6;
-            padding: 14px 20px;
-            border-radius: 30px;
-            font-size: clamp(0.9rem, 1.4vw, 1.1rem);
-            margin-top: 16px;
+            padding: 16px 22px;
+            border-radius: 24px;
+            font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+            margin-top: 18px;
+            border-left: 5px solid #a6523a;
         }
 
         /* ===== 词语扩展 Tab ===== */
         .ext-entry {
-            margin-bottom: 32px;
+            margin-bottom: 28px;
             border-bottom: 2px dashed #e0d6c8;
-            padding-bottom: 24px;
+            padding-bottom: 20px;
         }
         .ext-entry:last-child {
             border-bottom: none;
         }
         .ext-title {
-            font-size: clamp(1.2rem, 2vw, 1.6rem);
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
             font-weight: 600;
             color: #a6523a;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .ext-structure {
             background: #f2ede6;
-            border-radius: 16px;
+            border-radius: 14px;
             padding: 8px 16px;
-            font-size: clamp(0.95rem, 1.3vw, 1.1rem);
-            margin: 4px 0 8px 0;
+            font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+            margin: 6px 0 10px 0;
             font-weight: 500;
             color: #2d3e3f;
         }
         .ext-explain {
             color: #2d4a4b;
             font-size: clamp(0.9rem, 1.2vw, 1.05rem);
-            margin-bottom: 8px;
-            padding: 4px 14px;
-            border-radius: 12px;
+            margin-bottom: 10px;
             line-height: 1.6;
         }
-        .ext-explain .en {
-            display: block;
-        }
         .ext-explain .es {
-            display: block;
             font-style: italic;
             color: #6b5f4e;
         }
         .ext-example {
-            padding: 6px 0 6px 12px;
+            padding: 8px 0 8px 14px;
             border-left: 4px solid #d9b382;
-            margin: 6px 0;
+            margin: 8px 0;
             font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+            background: #faf7f2;
+            border-radius: 0 12px 12px 0;
         }
         .ext-example .zh {
             font-weight: 500;
+            color: #1f2a2b;
         }
         .ext-example .en {
             color: #3d5a5c;
@@ -374,133 +365,232 @@ tags: "课文 · 词语扩展 · 语言点"
         }
         .ext-note {
             background: #f7f0e8;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
+            padding: 10px 18px;
+            border-radius: 18px;
+            font-size: 0.92em;
             color: #4f3e32;
-            margin-top: 8px;
-        }
-        .ext-note .en {
-            display: block;
-        }
-        .ext-note .es {
-            display: block;
-            font-style: italic;
-            color: #6b5f4e;
-        }
-        .ext-subtitle {
-            font-size: clamp(1.05rem, 1.6vw, 1.25rem);
-            font-weight: 600;
-            color: #6b4f36;
-            margin: 18px 0 8px;
+            margin-top: 10px;
         }
 
         /* ===== 语言点注释 Tab ===== */
         .grammar-entry {
-            margin-bottom: 32px;
+            margin-bottom: 28px;
             border-bottom: 2px dashed #e0d6c8;
-            padding-bottom: 24px;
+            padding-bottom: 20px;
         }
         .grammar-entry:last-child {
             border-bottom: none;
         }
         .grammar-title {
-            font-size: clamp(1.2rem, 2vw, 1.6rem);
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
             font-weight: 600;
             color: #a6523a;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
         .grammar-explain {
-            font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+            font-size: clamp(0.95rem, 1.3vw, 1.05rem);
             line-height: 1.7;
             color: #1f2a2b;
-            margin-bottom: 10px;
-        }
-        .grammar-explain .en {
-            display: block;
-        }
-        .grammar-explain .es {
-            display: block;
-            font-style: italic;
-            color: #6b5f4e;
-        }
-        .grammar-placeholder {
-            background: #fcf9f6;
-            border: 1px dashed #ddd2c5;
-            border-radius: 24px;
-            padding: 28px 24px;
-            text-align: center;
-            color: #6b5f4e;
+            margin-bottom: 12px;
         }
 
-        /* ===== 响应式 ===== */
-        @media (max-width: 700px) {
+        /* ===== 互动练习卡片与测试 ===== */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 680px;
+            min-height: 360px;
+            margin: 0 auto 20px;
+            cursor: pointer;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            min-height: 360px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 24px;
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px;
+            border: 2px solid #e0d6c8;
+            box-sizing: border-box;
+        }
+        .card-front {
+            background: #ffffff;
+            color: #a6523a;
+        }
+        .card-back {
+            background: #fbf8f3;
+            color: #2d3e3f;
+            transform: rotateY(180deg);
+            overflow-y: auto;
+        }
+
+        /* ===== 响应式适配 ===== */
+        @media (max-width: 768px) {
             .container {
                 padding: 16px 12px;
             }
-            .vocab-column {
-                min-width: 100%;
-                max-height: none;
-            }
             .tab-btn {
-                padding: 8px 16px;
-                font-size: 0.9rem;
+                padding: 8px 14px;
+                font-size: 0.88rem;
             }
             .hl-word[data-tip]:hover::after,
-            .grammar-dot[data-tip]:hover::after {
+            .grammar-dot[data-tip]:hover::after,
+            .hl-teacher[data-tip]:hover::after {
                 white-space: normal;
-                max-width: 200px;
-                font-size: 0.65rem;
+                max-width: 220px;
+                font-size: 0.7rem;
             }
-        }
-        @media (min-width: 1200px) {
-            .container {
-                padding: 36px 40px;
-            }
-            .text-content {
-                font-size: 1.4rem;
+            .flashcard-container, .flashcard {
+                min-height: 420px;
             }
         }
 
-        /* ===== 辅助 ===== */
-        .footnote {
-            margin-top: 28px;
-            border-top: 1px solid #ddd2c5;
-            padding-top: 16px;
-            font-size: 0.8rem;
-            color: #6b5f54;
-            text-align: center;
+        /* ===== 打印样式 ===== */
+        @media print {
+            @page { size: Letter portrait; margin: 12mm; }
+            body { background: white; color: #1e2b2c; padding: 0; display: block; }
+            .container { width: 100%; max-width: none; box-shadow: none; border-radius: 0; padding: 0; }
+            .tab-nav, .translation-controls, .trans-toggle, .speaker-btn, .think-box, .footnote,
+            .text-column > div[style],
+            #tab-vocab-ext, #tab-grammar, #tab-quiz { display: none !important; }
+            #tab-reading { display: block !important; }
+            .lesson-row, .text-column { display: block; width: 100%; }
+            .text-content { font-size: 12pt; line-height: 1.8; }
+            .para-block { margin-bottom: 18pt; padding-bottom: 12pt; }
+            .trans-box { display: none !important; }
+            .paragraph-vocab-grid {
+                display: grid;
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+                gap: 4pt;
+            }
+            .paragraph-vocab-item {
+                min-height: 34pt;
+                padding: 4pt;
+                border: 0.75pt solid #d5e6e6;
+                background: #fff !important;
+                font-size: 8.5pt;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .paragraph-vocab-word { color: #16476A; font-weight: 700; }
+            .paragraph-vocab-pinyin { color: #287b7b; font-size: 9pt; }
+            .paragraph-vocab-translation { font-size: 9pt; }
+            .hl-word, .grammar-dot, .hl-teacher {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
-        .footnote span {
-            display: inline-block;
-            margin: 0 8px;
+
+        :root {
+            --color-background-main: #16476A;
+            --color-background-panel: #fff;
+            --color-background-light-accent: #E3F2F2;
+            --color-background-warning: #FFF4E6;
+            --color-text-deep: #132440;
+            --color-text-on-dark: #fff;
+            --color-text-primary: #333;
+            --color-text-secondary: #666;
+            --color-text-pinyin: #FF6B6B;
+            --color-accent-secondary: #3B9797;
+            --color-accent-strong: #FF6B6B;
+            --color-accent-warning: #FFA500;
+            --color-gradient-start: #f5f7fa;
+        }
+        body {
+            background: linear-gradient(135deg, var(--color-gradient-start), var(--color-background-light-accent));
+            color: var(--color-text-primary);
+        }
+        h1, .ext-title, .grammar-title { color: var(--color-background-main); }
+        h1 { border-left-color: var(--color-accent-secondary); }
+        .subhead { border-bottom-color: var(--color-background-light-accent); color: var(--color-text-secondary); }
+        .tab-nav { border-bottom-color: var(--color-accent-secondary); }
+        .tab-btn { color: var(--color-background-main); }
+        .tab-btn:hover { background: var(--color-background-light-accent); color: var(--color-background-main); }
+        .tab-btn.active { background: var(--color-accent-secondary); color: var(--color-text-on-dark); box-shadow: 0 4px 12px rgba(59, 151, 151, 0.24); }
+        .speaker-btn { background: var(--color-background-light-accent); }
+        .speaker-btn:hover { background: var(--color-accent-secondary); color: var(--color-text-on-dark); }
+        .text-content, .grammar-explain, .ext-example .zh { color: var(--color-text-primary); }
+        .para-block, .ext-entry, .grammar-entry { border-color: var(--color-background-light-accent); }
+        .letter-meta, .ext-example .es, .ext-explain .es { color: var(--color-text-secondary); }
+        .trans-toggle { color: var(--color-background-main); background: var(--color-background-light-accent); }
+        .trans-toggle:hover { background: #cce5e5; }
+        .translation-toggle { border-color: var(--color-accent-secondary); background: var(--color-background-light-accent); color: var(--color-background-main); }
+        .trans-box { background: var(--color-background-light-accent); border-left-color: var(--color-accent-secondary); }
+        .trans-en, .ext-example .en { color: var(--color-accent-secondary); }
+        .trans-es { color: var(--color-text-secondary); }
+        .hl-word { background: var(--color-background-warning); border-bottom-color: var(--color-accent-strong); }
+        .grammar-dot { background: #fff4e6; border-bottom-color: var(--color-accent-warning); }
+        .hl-teacher { background: var(--color-background-light-accent); border-bottom-color: var(--color-accent-secondary); }
+        .think-box { background: var(--color-background-warning); border-left-color: var(--color-accent-strong); }
+        .ext-structure, .ext-note { background: var(--color-background-warning); color: var(--color-text-deep); }
+        .ext-explain { color: var(--color-text-deep); }
+        .ext-example { background: #f7fafa; border-left-color: var(--color-accent-secondary); }
+        .card-front, .card-back { border-color: var(--color-background-light-accent); border-radius: 8px; }
+        .card-front { color: var(--color-background-main); }
+        .card-back { background: #f7fafa; color: var(--color-text-primary); }
+        [class*="bg-amber-50"] { background-color: #f2f8f8 !important; }
+        [class*="bg-amber-100"], [class*="bg-amber-200"] { background-color: #E3F2F2 !important; }
+        [class*="bg-amber-700"], [class*="bg-amber-800"] { background-color: #3B9797 !important; }
+        [class*="text-amber-"] { color: #16476A !important; }
+        [class*="border-amber-"] { border-color: #b7dada !important; }
+        [class*="hover:bg-amber-"]:hover { background-color: #cce5e5 !important; }
+        [class*="bg-emerald-"] { background-color: #E3F2F2 !important; }
+        [class*="text-emerald-"], [class*="text-teal-"] { color: #3B9797 !important; }
+        [style*="#5e4d3d"], [style*="#7f6b5a"] { color: #666 !important; }
+        [style*="#f7f4ef"] { background: #f2f8f8 !important; }
+        @media print {
+            body { background: #fff; }
+            .translation-controls, .para-block > .trans-toggle { display: none !important; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- 标题 -->
+    <!-- 标题栏 -->
     <h1>给父母的一封信</h1>
     <div class="subhead">
         <span>你现在还写信吗？你用汉语写过信吗？</span>
-        <span class="badge">📅 2月6日</span>
+        <span class="text-sm bg-amber-100 text-amber-900 px-3 py-1 rounded-full font-medium">语法与课文</span>
     </div>
 
     <!-- ===== Tab 导航 ===== -->
     <div class="tab-nav">
-        <button class="tab-btn active" data-tab="tab-reading">📖 课文</button>
+        <button class="tab-btn active" data-tab="tab-reading">📖 课文与生词</button>
         <button class="tab-btn" data-tab="tab-vocab-ext">📝 词语扩展</button>
         <button class="tab-btn" data-tab="tab-grammar">📌 语言点注释</button>
+        <button class="tab-btn" data-tab="tab-guided">💬 活动一：情境复述卡片 (20张)</button>
+        <button class="tab-btn" data-tab="tab-quiz">🎯 课文理解测试</button>
     </div>
 
     <!-- ========================================================= -->
-    <!-- TAB 1: 课文 -->
+    <!-- TAB 1: 课文与生词 -->
     <!-- ========================================================= -->
     <div id="tab-reading" class="tab-content active">
+
         <div class="lesson-row">
+            <!-- 课文左侧栏 -->
             <div class="text-column">
-                <div class="text-content">
+                <div class="translation-controls">
+                    <button type="button" class="translation-toggle" aria-pressed="false" onclick="toggleAllTranslations(this)">🌐 显示翻译 / Show translation / Mostrar traducción</button>
+                </div>
+                <div class="text-content" id="articleBody">
 
                     <div class="para-block">
                         <div class="para-zh">
@@ -535,7 +625,7 @@ tags: "课文 · 词语扩展 · 语言点"
 
                     <div class="para-block">
                         <div class="para-zh">
-                            我刚从中国的南方旅行回来。这次我去了很多地方，有上海、<strong class="hl-word" data-tip="苏州 Sūzhōu · Suzhou">苏州</strong>、<strong class="hl-word" data-tip="杭州 Hángzhōu · Hangzhou">杭州</strong>，还有<strong class="hl-word" data-tip="桂林 Guìlín · Guilin">桂林</strong>和<strong class="hl-word" data-tip="阳朔 Yángshuò · Yangshuo">阳朔</strong>。以前我在汉语<strong class="hl-word" data-tip="课本 kèběn · textbook">课本</strong>里学过“上有<strong class="hl-word" data-tip="天堂 tiāntáng · paradise; heaven">天堂</strong>，下有苏杭”这<strong class="hl-word" data-tip="句 jù · measure word for sentences">句</strong><strong class="hl-word" data-tip="话 huà · words; saying">话</strong>，现在我才<strong class="hl-word" data-tip="真正 zhēnzhèng · really; truly">真正</strong><strong class="hl-word" data-tip="理解 lǐjiě · understand">理解</strong>了它的意思。桂林和阳朔的风景也<strong class="hl-word" data-tip="美 měi · beautiful">美</strong>极了，人们都说“桂林山水<strong class="hl-word" data-tip="甲 jiǎ · first; the best">甲</strong><strong class="hl-word" data-tip="天下 tiānxià · the world">天下</strong>”。
+                            我刚从中国的南方旅行回来。这次我去了很多地方，有上海、<strong class="hl-word" data-tip="苏州 Sūzhōu · Suzhou">苏州</strong>、<strong class="hl-word" data-tip="杭州 Hángzhōu · Hangzhou">杭州</strong>，还有<strong class="hl-word" data-tip="桂林 Guìlín · Guilin">桂林</strong>和<strong class="hl-word" data-tip="阳朔 Yángshuò · Yangshuo">阳朔</strong>。以前我在汉语<strong class="hl-word" data-tip="课本 kèběn · textbook">课本</strong>里学过“上有<strong class="hl-word" data-tip="天堂 tiāntáng · paradise; heaven">天堂</strong>，下有苏杭”这<strong class="hl-word" data-tip="句 jù · measure word for sentences">句</strong><strong class="hl-word" data-tip="话 huà · words; saying">话</strong>，现在我才<strong class="hl-word" data-tip="真正 zhēnzhèng · really; truly">真正</strong><strong class="hl-word" data-tip="理解 lǐjiě · understand">理解</strong>了它的意思。桂林和阳朔的<strong class="hl-teacher" data-tip="风景 fēngjǐng · scenery">风景</strong>也<strong class="hl-word" data-tip="美 měi · beautiful">美</strong>极了，人们都说“桂林山水<strong class="hl-word" data-tip="甲 jiǎ · first; the best">甲</strong><strong class="hl-word" data-tip="天下 tiānxià · the world">天下</strong>”。
                         </div>
                         <button class="trans-toggle" onclick="toggleTrans(this)">🌐 显示翻译 / Show translation / Mostrar traducción</button>
                         <div class="trans-box">
@@ -546,7 +636,7 @@ tags: "课文 · 词语扩展 · 语言点"
 
                     <div class="para-block">
                         <div class="para-zh">
-                            这次去旅行，我的<strong class="hl-word" data-tip="收获 shōuhuò · gains">收获</strong>很多。<strong class="hl-word" data-tip="不仅 bùjǐn · not only">不仅</strong>欣赏了美丽的<strong class="hl-word" data-tip="自然 zìrán · nature">自然</strong><strong class="hl-word" data-tip="风光 fēngguāng · scenery">风光</strong>，而且还了解了一些当地的<strong class="hl-word" data-tip="风俗 fēngsú · custom">风俗</strong>习惯。<strong class="grammar-dot" data-tip="另外 lìngwài · in addition">另外</strong>，还吃到了很多好吃的东西，特别是各地<strong class="hl-word" data-tip="风味 fēngwèi · local flavor">风味</strong>不同的<strong class="hl-word" data-tip="小吃 xiǎochī · snacks">小吃</strong>。虽然都是南方人，苏杭<strong class="hl-word" data-tip="一带 yídài · surrounding area">一带</strong>的人口味比较清淡，但是桂林人比较喜欢吃辣的，口味要<strong class="hl-word" data-tip="重 zhòng · strongly flavored">重</strong>一些。
+                            这次去旅行，我的<strong class="hl-word" data-tip="收获 shōuhuò · gains">收获</strong>很多。<strong class="grammar-dot" data-tip="不仅……而且…… bùjǐn...érqiě... · Not only... but also...">不仅</strong>欣赏了美丽的<strong class="hl-word" data-tip="自然 zìrán · nature">自然</strong><strong class="hl-word" data-tip="风光 fēngguāng · scenery">风光</strong>，<strong class="grammar-dot" data-tip="不仅……而且…… bùjǐn...érqiě... · Not only... but also...">而且</strong>还<strong class="hl-teacher" data-tip="了解 liǎojiě · know about">了解</strong>了一些<strong class="hl-teacher" data-tip="当地 dāngdì · local">当地</strong>的<strong class="hl-word" data-tip="风俗 fēngsú · custom">风俗</strong>习惯。<strong class="grammar-dot" data-tip="另外 lìngwài · in addition">另外</strong>，还吃到了很多好吃的东西，特别是各地<strong class="hl-word" data-tip="风味 fēngwèi · local flavor">风味</strong>不同的<strong class="hl-word" data-tip="小吃 xiǎochī · snacks">小吃</strong>。虽然都是南方人，苏杭<strong class="hl-word" data-tip="一带 yídài · surrounding area">一带</strong>的人<strong class="hl-teacher" data-tip="口味 kǒuwèi · taste/flavor">口味</strong>比较<strong class="hl-teacher" data-tip="清淡 qīngdàn · light/mild">清淡</strong>，但是桂林人比较喜欢吃<strong class="hl-teacher" data-tip="辣 là · spicy">辣</strong>的，口味要<strong class="hl-word" data-tip="重 zhòng · strongly flavored">重</strong>一些。
                         </div>
                         <button class="trans-toggle" onclick="toggleTrans(this)">🌐 显示翻译 / Show translation / Mostrar traducción</button>
                         <div class="trans-box">
@@ -557,12 +647,12 @@ tags: "课文 · 词语扩展 · 语言点"
 
                     <div class="para-block">
                         <div class="para-zh">
-                            这次去旅行，我的<strong class="grammar-dot" data-tip="另外 lìngwài · another; in addition">另外</strong>一个收获就是被邀请去中国人家里<strong class="hl-word" data-tip="过年 ɡuò nián · celebrate Spring Festival">过年</strong>，<strong class="hl-word" data-tip="感受 ɡǎnshòu · experience; feel">感受</strong>到了中国人过年时的热闹、<strong class="hl-word" data-tip="欢乐 huānlè · joyous">欢乐</strong>的气氛。那是我旅行到桂林的时候，<strong class="hl-word" data-tip="正 zhèng · just; exactly">正</strong><strong class="hl-word" data-tip="赶上 ɡǎnshàng · happen to; catch">赶上</strong>中国最大的节日——春节。过春节的时候，中国人一定要全家人<strong class="hl-word" data-tip="聚 jù · get together">聚</strong>在一起吃<strong class="hl-word" data-tip="团圆 tuányuán · reunion">团圆</strong>饭。看到我<strong class="hl-word" data-tip="独自 dúzì · alone">独自</strong>一人，导游就热情地邀请我去他家。因为他的爸爸是北方人，妈妈是南方人，所以我们又<strong class="hl-word" data-tip="包 bāo · wrap">包</strong>饺子，又吃<strong class="hl-word" data-tip="年糕 niángāo · New Year cake">年糕</strong>。他还带我一起去给他的<strong class="hl-word" data-tip="亲戚 qīnqi · relative">亲戚</strong>、朋友<strong class="hl-word" data-tip="拜年 bài nián · pay a New Year call">拜年</strong>。这让我<strong class="grammar-dot" data-tip="特别感动 · especially moved">特别</strong><strong class="hl-word" data-tip="感动 ɡǎndòng · move; touch">感动</strong>。
+                            这次去旅行，我的<strong class="grammar-dot" data-tip="另外 lìngwài · another; in addition">另外</strong>一个收获就是被<strong class="hl-teacher" data-tip="邀请 yāoqǐng · invite">邀请</strong>去中国人家里<strong class="hl-word" data-tip="过年 ɡuò nián · celebrate Spring Festival">过年</strong>，<strong class="hl-word" data-tip="感受 ɡǎnshòu · experience; feel">感受</strong>到了中国人过年时的<strong class="hl-teacher" data-tip="热闹 rènao · lively">热闹</strong>、<strong class="hl-word" data-tip="欢乐 huānlè · joyous">欢乐</strong>的<strong class="hl-teacher" data-tip="气氛 qìfēn · atmosphere">气氛</strong>。那是我旅行到桂林的时候，<strong class="hl-word" data-tip="正 zhèng · just; exactly">正</strong><strong class="hl-word" data-tip="赶上 ɡǎnshàng · happen to; catch">赶上</strong>中国最大的<strong class="hl-teacher" data-tip="节日 jiérì · festival">节日</strong>——春节。过春节的时候，中国人一定要全家人<strong class="hl-word" data-tip="聚 jù · get together">聚</strong>在一起吃<strong class="hl-word" data-tip="团圆 tuányuán · reunion">团圆</strong>饭。看到我<strong class="hl-word" data-tip="独自 dúzì · alone">独自</strong>一人，导游就热情地邀请我去他家。因为他的爸爸是北方人，妈妈是南方人，所以我们又<strong class="hl-word" data-tip="包 bāo · wrap">包</strong>饺子，又吃<strong class="hl-word" data-tip="年糕 niángāo · New Year cake">年糕</strong>。他还带我一起去给他的<strong class="hl-word" data-tip="亲戚 qīnqi · relative">亲戚</strong>、朋友<strong class="hl-word" data-tip="拜年 bài nián · pay a New Year call">拜年</strong>。这让我<strong class="grammar-dot" data-tip="特别感动 · especially moved">特别</strong><strong class="hl-word" data-tip="感动 ɡǎndòng · move; touch">感动</strong>。
                         </div>
                         <button class="trans-toggle" onclick="toggleTrans(this)">🌐 显示翻译 / Show translation / Mostrar traducción</button>
                         <div class="trans-box">
                             <div class="trans-en">Another thing I gained from this trip was being invited to spend the New Year in a Chinese family, and I felt the lively, joyful atmosphere of Chinese New Year. That was when I was traveling in Guilin, and I happened to be there during China’s biggest festival—the Spring Festival. During Spring Festival, Chinese people always get the whole family together for a reunion dinner. Seeing that I was alone, the tour guide warmly invited me to his home. Because his father is from the north and his mother is from the south, we both wrapped dumplings and ate New Year cake. He also took me along to pay New Year visits to his relatives and friends. This moved me especially.</div>
-                            <div class="trans-es">Otro fruto de este viaje fue que me invitaron a pasar el Año Nuevo en casa de una familia china, y sentí el ambiente animado y alegre de esa fiesta. Fue cuando viajaba por Guilin y justo coincidí con la fiesta más importante de China: el Festival de Primavera. En esa fecha, las familias chinas se reúnen para la cena de reunión familiar. Al verme sola, el guía me invitó con entusiasmo a su casa. Como su padre es del norte y su madre del sur, hicimos tanto jiaozi como niangao. También me llevó a felicitar el Año Nuevo a sus parientes y amigos. Esto me emocionó de verdad.</div>
+                            <div class="trans-es">Otro fruto de este viaje fue que me invitaron a pasar el Año Nuevo en casa de una familia china, y sentí el ambiente animado y alegre de esa fiesta. Fue cuando viajaba por Guilin y justo coincidí con la fiesta más importante de China: el Festival de Primavera. En esa fecha, las familias chinas se reúnen para la cena de reunión familiar. Al verme sola, el guía me invitó con entusiasmo a su casa. Como su padre es del norte y su mother del sur, hicimos tanto jiaozi como niangao. También me llevó a felicitar el Año Nuevo a sus parientes y amigos. Esto me emocionó de verdad.</div>
                         </div>
                     </div>
 
@@ -593,18 +683,11 @@ tags: "课文 · 词语扩展 · 语言点"
                     请你说一说瑞贝卡这次去旅行的收获是什么。<br>
                     <span style="font-size:0.85em;color:#5e4d3d;">What did Rebecca gain from this trip? · ¿Qué ganó Rebeca con este viaje?</span>
                 </div>
-                <div style="margin-top:12px;font-size:0.8rem;color:#7f6b5a;text-align:center;background:#f7f4ef;border-radius:30px;padding:6px 12px;">
+                <div style="margin-top:12px;font-size:0.82rem;color:#7f6b5a;text-align:center;background:#f7f4ef;border-radius:30px;padding:8px 14px;">
                     💡 鼠标悬停高亮词可看拼音和翻译 · Hover on highlighted words for pinyin &amp; translation
                 </div>
             </div>
 
-            <div class="vocab-column" id="vocabColumn">
-                <h3>生词 · Vocab · Vocabulario</h3>
-                <div id="vocabList"></div>
-                <div style="margin-top:12px;font-size:0.75rem;color:#7f6b5a;text-align:center;">
-                    🔊 点击喇叭听发音 · Click to listen
-                </div>
-            </div>
         </div>
     </div>
 
@@ -612,175 +695,98 @@ tags: "课文 · 词语扩展 · 语言点"
     <!-- TAB 2: 词语扩展 -->
     <!-- ========================================================= -->
     <div id="tab-vocab-ext" class="tab-content">
-
+        <!-- 1. 理解 -->
         <div class="ext-entry">
-            <div class="ext-title">1. 理解 (lǐjiě) — understand / comprehend</div>
-            <div class="ext-structure">Structure: 理解 + 意思 / 问题 / 人 (understand a meaning, a point, or a person)</div>
+            <div class="ext-title">1. 理解 (lǐjiě) — understand / comprehend / comprender</div>
+            <div class="ext-structure">📘 Structure: 理解 + 意思 / 问题 / 人 (understand a meaning, a problem, or a person)</div>
             <div class="ext-explain">
-                <span class="en">“理解” means you grasp the meaning of something, or you can put yourself in someone’s place and understand their feelings or reasons.</span>
-                <span class="es">“理解” significa captar el sentido de algo, o ponerte en el lugar de alguien y comprender sus sentimientos o sus razones.</span>
+                <span class="zh">“理解” 表示了解事情的意义或懂得了某人的想法，包含深层的体会与包容。</span>
+                <span class="en">"理解" means grasping the deeper meaning of something or understanding someone's thoughts.</span>
+                <span class="es">"理解" significa comprender el sentido profundo de algo o entender los pensamientos de alguien.</span>
             </div>
             <div class="ext-example">
-                <div class="zh">① “上有天堂，下有苏杭”这句话，现在我才真正理解它的意思。</div>
-                <div class="en">It’s only now that I truly understand what the saying “There is paradise above, and Suzhou and Hangzhou below” means.</div>
-                <div class="es">Recién ahora entiendo de verdad lo que significa el dicho: «Arriba está el paraíso y abajo, Suzhou y Hangzhou».</div>
+                <div class="zh">① 我非常理解你的心情。</div>
+                <div class="en">I understand your feelings very well.</div>
+                <div class="es">Entiendo muy bien cómo te sientes.</div>
             </div>
             <div class="ext-example">
-                <div class="zh">② 父母和孩子应该互相理解。</div>
-                <div class="en">Parents and children should understand each other.</div>
-                <div class="es">Los padres y los hijos deberían comprenderse mutuamente.</div>
+                <div class="zh">② 读了这封信，我才真正理解了“上有天堂，下有苏杭”的意思。</div>
+                <div class="en">After reading this letter, I truly understood the saying "There is paradise above, and Suzhou and Hangzhou below."</div>
+                <div class="es">Tras leer esta carta, entendí verdaderamente el dicho «Arriba el paraíso, abajo Suzhou y Hangzhou».</div>
             </div>
-            <div class="ext-example">
-                <div class="zh">③ 他这样做是对的，可是大家都不理解他。</div>
-                <div class="en">What he did was right, but nobody understands him.</div>
-                <div class="es">Lo que hizo estuvo bien, pero nadie lo comprende.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">④ 刚才老师讲了两个问题，我只理解了一个。</div>
-                <div class="en">The teacher just explained two points, but I only understood one of them.</div>
-                <div class="es">El profesor acaba de explicar dos puntos, pero yo solo entendí uno.</div>
-            </div>
-
-            <div class="ext-subtitle">理解 vs. 了解</div>
             <div class="ext-note">
-                <span class="en"><strong>Note:</strong> 理解 = understand meaning / feelings / reasons. 了解 = know about a place, a situation, or a person (get information, become familiar).</span>
-                <span class="es"><strong>Nota:</strong> 理解 = comprender el sentido / los sentimientos / las razones. 了解 = conocer un lugar, una situación o a una persona (obtener información, familiarizarse).</span>
-            </div>
-            <div class="ext-example">
-                <div class="zh">⑤ 我打算暑假的时候去旅行，这样可以更好地了解中国。</div>
-                <div class="en">I’m planning to travel during the summer vacation so that I can get to know China better.</div>
-                <div class="es">Pienso viajar durante las vacaciones de verano para conocer mejor China.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">⑥ 我打算暑假的时候去旅行，这样可以更好地理解中国。</div>
-                <div class="en">I’m planning to travel during the summer vacation so that I can better understand China.</div>
-                <div class="es">Pienso viajar durante las vacaciones de verano para comprender mejor China.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">⑦ 父母问我为什么不结婚，我把我的想法告诉了他们，可是他们不理解。</div>
-                <div class="en">My parents asked me why I don’t want to get married. I told them what I think, but they don’t understand me.</div>
-                <div class="es">Mis padres me preguntaron por qué no quiero casarme. Les expliqué lo que pienso, pero no me comprenden.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">⑧ 父母问我为什么不结婚，我把我的想法告诉了他们，可是他们不了解。</div>
-                <div class="en">My parents asked me why I don’t want to get married. I told them what I think, but they don’t really know me or my situation.</div>
-                <div class="es">Mis padres me preguntaron por qué no quiero casarme. Les expliqué lo que pienso, pero no conocen realmente mi forma de pensar ni mi situación.</div>
+                <strong>辨析 Comparison:</strong> “理解” vs “明白/懂得”<br>
+                “明白”侧重于清楚事实；“理解”侧重于深刻懂得原因、道理或情感。
             </div>
         </div>
 
+        <!-- 2. 感受 -->
         <div class="ext-entry">
-            <div class="ext-title">2. 一带 (yídài) — surrounding area / this region</div>
-            <div class="ext-structure">Structure: place + 一带 (the area around a place)</div>
+            <div class="ext-title">2. 感受 (gǎnshòu) — feel / experience / sentir</div>
+            <div class="ext-structure">📘 Structure: 感受 + 气氛 / 热情 / 快乐 (feel/experience atmosphere, warmth, or joy)</div>
             <div class="ext-explain">
-                <span class="en">“一带” refers to a region or the area around a place, not one single point.</span>
-                <span class="es">“一带” se refiere a una zona o al área alrededor de un lugar, no a un solo punto.</span>
+                <span class="zh">动词或名词。指接触客观事物后产生的体会或心理反应。</span>
+                <span class="en">Verb or noun. To feel or experience emotionally/sensorially; or an impression/feeling.</span>
+                <span class="es">Verbo o sustantivo. Sentir, experimentar o la impresión/sensación experimentada.</span>
             </div>
             <div class="ext-example">
-                <div class="zh">① 虽然都是南方人，苏杭一带的人口味比较清淡，……</div>
-                <div class="en">Although they are all from southern China, people in the Suzhou and Hangzhou area tend to prefer lighter flavors.</div>
-                <div class="es">Aunque todos son del sur de China, a la gente de la zona de Suzhou y Hangzhou suelen gustarle los sabores más ligeros.</div>
+                <div class="zh">① 在桂林过年，我感受到了中国人过年时的热闹气氛。</div>
+                <div class="en">Spending New Year in Guilin, I felt the lively atmosphere of the Chinese New Year.</div>
+                <div class="es">Pasando el Año Nuevo en Guilin, sentí el ambiente animado del Año Nuevo Chino.</div>
             </div>
             <div class="ext-example">
-                <div class="zh">② 你能给我们介绍一下北京一带有名的小吃吗？</div>
-                <div class="en">Could you introduce some famous local snacks from the Beijing area?</div>
-                <div class="es">¿Podrías presentarnos algunos aperitivos famosos de la zona de Beijing?</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">③ 天气预报说，明后两天这一带有大雨。</div>
-                <div class="en">The weather forecast says there will be heavy rain in this area over the next two days.</div>
-                <div class="es">El pronóstico del tiempo dice que habrá fuertes lluvias por esta zona durante los próximos dos días.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">④ 我去过海南岛很多次，所以很了解那一带的风俗习惯。</div>
-                <div class="en">I’ve been to Hainan Island many times, so I know the customs and traditions of that area quite well.</div>
-                <div class="es">He estado muchas veces en la isla de Hainan, así que conozco bastante bien las costumbres y tradiciones de esa zona.</div>
+                <div class="zh">② 请你谈一谈在中国生活的感受。(名词 Noun)</div>
+                <div class="en">Please talk about your feelings/impressions of living in China.</div>
+                <div class="es">Por favor, habla de tus impresiones de vivir en China.</div>
             </div>
         </div>
 
+        <!-- 3. 收获 -->
         <div class="ext-entry">
-            <div class="ext-title">3. 正 (zhèng) — just / exactly / right</div>
-            <div class="ext-structure">Structure: 正 + verb (just then / happen to) · 正 + 合适 (just right)</div>
+            <div class="ext-title">3. 收获 (shōuhuò) — harvest / gains / logros; frutos</div>
+            <div class="ext-structure">📘 Structure: 有很多收获 / 收获很大 / 收获知识与友情</div>
             <div class="ext-explain">
-                <span class="en">“正” can mean something happens at that exact moment, or that something is just right / a perfect match.</span>
-                <span class="es">“正” puede indicar que algo ocurre justo en ese momento, o que algo encaja / es exactamente lo adecuado.</span>
+                <span class="zh">原指农作物成熟后收割，引申为取得的成果或收益。</span>
+                <span class="en">Originally refers to agricultural harvest; extended to mean knowledge, experience, or fruits of effort gained.</span>
+                <span class="es">Originalmente la cosecha agrícola; por extensión, los conocimientos o ganancias fruto del esfuerzo.</span>
             </div>
             <div class="ext-example">
-                <div class="zh">① 那是我旅行到桂林的时候，正赶上中国最大的节日——春节。</div>
-                <div class="en">That was when I was traveling in Guilin, and I happened to be there during China’s biggest festival—the Spring Festival.</div>
-                <div class="es">Eso fue cuando estaba viajando por Guilin y justo coincidí con la celebración de la fiesta más importante de China: el Festival de Primavera.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">② 这双黑皮鞋，弟弟穿着不大不小，正合适。</div>
-                <div class="en">These black leather shoes fit my younger brother perfectly—they’re neither too big nor too small.</div>
-                <div class="es">Estos zapatos negros de cuero le quedan perfectos a mi hermano menor: ni grandes ni pequeños.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">③ 我吃五个包子正合适，再多就吃不了了。</div>
-                <div class="en">Five steamed buns are just the right amount for me. I wouldn’t be able to eat any more.</div>
-                <div class="es">Cinco baozi son justo la cantidad adecuada para mí. No podría comer más.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">④ 我正要去她的宿舍找她，她却来了。</div>
-                <div class="en">I was just about to go to her dorm to look for her when she came over.</div>
-                <div class="es">Justo iba a ir a su residencia a buscarla cuando ella vino.</div>
+                <div class="zh">① 这次旅行我的收获很大，不仅学会了做饺子，还交到了新朋友。</div>
+                <div class="en">I gained a lot from this trip: not only did I learn to make dumplings, but I also made new friends.</div>
+                <div class="es">Gané mucho con este viaje: no solo aprendí a hacer jiaozi, sino que también hice nuevos amigos.</div>
             </div>
         </div>
 
+        <!-- 4. “风”字词语对比 -->
         <div class="ext-entry">
-            <div class="ext-title">4. 赶上 (gǎnshàng) — catch up / happen to / make it in time</div>
-            <div class="ext-structure">Structure: 赶上 + event / person / vehicle</div>
-            <div class="ext-explain">
-                <span class="en">“赶上” can mean you happen to arrive during an event, you catch up with someone, or you make it in time (or fail to: 没赶上).</span>
-                <span class="es">“赶上” puede significar coincidir con un acontecimiento, alcanzar a alguien, o llegar a tiempo (o no: 没赶上).</span>
-            </div>
-            <div class="ext-example">
-                <div class="zh">① 当我旅行到桂林的时候，正赶上中国最大的节日——春节。</div>
-                <div class="en">When I traveled to Guilin, I happened to be there during China’s biggest festival—the Spring Festival.</div>
-                <div class="es">Cuando viajé a Guilin, justo coincidí con la celebración de la fiesta más importante de China: el Festival de Primavera.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">② 我去他家的时候，赶上他们全家在吃晚饭，他们让我跟他们一起吃。</div>
-                <div class="en">When I went to his house, I happened to arrive while his whole family was having dinner, and they invited me to eat with them.</div>
-                <div class="es">Cuando fui a su casa, llegué justo cuando toda su familia estaba cenando y me invitaron a comer con ellos.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">③ 请您开快一点，赶上前面那辆车。</div>
-                <div class="en">Could you drive a little faster and catch up with the car ahead of us?</div>
-                <div class="es">Por favor, conduzca un poco más rápido para alcanzar el coche que está delante de nosotros.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">④ 昨天他们到火车站的时候已经两点多了，没赶上火车。</div>
-                <div class="en">When they got to the train station yesterday, it was already after two, so they missed the train.</div>
-                <div class="es">Ayer, cuando llegaron a la estación de tren, ya eran más de las dos, así que perdieron el tren.</div>
+            <div class="ext-title">4. 词根对比：风光 / 风俗 / 风味</div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-3">
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                    <strong class="text-amber-900 block mb-1">自然风光 (fēngguāng)</strong>
+                    <span class="text-xs text-gray-600">Scenery / Landscape / Paisaje natural</span>
+                    <p class="text-sm mt-2 text-gray-800">桂林的自然风光非常独特。</p>
+                </div>
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                    <strong class="text-amber-900 block mb-1">风俗习惯 (fēngsú)</strong>
+                    <span class="text-xs text-gray-600">Customs / Costumbres</span>
+                    <p class="text-sm mt-2 text-gray-800">各地有不同的过年风俗。</p>
+                </div>
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                    <strong class="text-amber-900 block mb-1">地方风味 (fēngwèi)</strong>
+                    <span class="text-xs text-gray-600">Local flavor / Sabor local</span>
+                    <p class="text-sm mt-2 text-gray-800">我非常喜欢吃桂林风味的小吃。</p>
+                </div>
             </div>
         </div>
 
+        <!-- 5. 独自 -->
         <div class="ext-entry">
-            <div class="ext-title">5. 聚 (jù) — get together / gather</div>
-            <div class="ext-structure">Structure: 聚在一起 · 聚聚 / 聚了聚 (get together, often informal)</div>
-            <div class="ext-explain">
-                <span class="en">“聚” means people come together. 聚聚 / 聚了聚 sounds casual and friendly.</span>
-                <span class="es">“聚” significa reunirse. 聚聚 / 聚了聚 suena informal y cercano.</span>
-            </div>
+            <div class="ext-title">5. 独自 (dúlì / dúzì) — alone / by oneself / en solo</div>
+            <div class="ext-structure">📘 Structure: 独自 + 一人 / 旅行 / 生活 / 完成</div>
             <div class="ext-example">
-                <div class="zh">① 过春节的时候，中国人一定要全家人聚在一起吃团圆饭。</div>
-                <div class="en">During the Spring Festival, Chinese families traditionally get together to have a reunion dinner.</div>
-                <div class="es">Durante el Festival de Primavera, las familias chinas suelen reunirse para celebrar una cena de reunión familiar.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">② 这个周末咱们几个找个地方聚聚吧。</div>
-                <div class="en">Let’s get together somewhere this weekend.</div>
-                <div class="es">Vamos a buscar un lugar para reunirnos este fin de semana.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">③ 上个星期，我们几个多年不见的老同学一起聚了聚。</div>
-                <div class="en">Last week, a few of us old classmates who hadn’t seen each other for years got together.</div>
-                <div class="es">La semana pasada, varios antiguos compañeros de clase que no nos habíamos visto durante años nos reunimos.</div>
-            </div>
-            <div class="ext-example">
-                <div class="zh">④ 要是明天大家都有时间，我们就聚在一起商量商量这件事，看看该怎么办。</div>
-                <div class="en">If everyone has time tomorrow, let’s get together to discuss this matter and figure out what we should do.</div>
-                <div class="es">Si mañana todos tenemos tiempo, reunámonos para hablar de este asunto y ver qué deberíamos hacer.</div>
+                <div class="zh">① 看到我独自一人，导游热情地邀请我去他家过年。</div>
+                <div class="en">Seeing that I was alone, the tour guide warmly invited me to his house for New Year.</div>
+                <div class="es">Al verme sola, el guía me invitó con entusiasmo a su casa para Año Nuevo.</div>
             </div>
         </div>
     </div>
@@ -789,139 +795,715 @@ tags: "课文 · 词语扩展 · 语言点"
     <!-- TAB 3: 语言点注释 -->
     <!-- ========================================================= -->
     <div id="tab-grammar" class="tab-content">
-        <div class="grammar-placeholder">
-            <div class="grammar-title" style="margin-bottom:10px;">📌 语言点注释</div>
-            <p>本课语言点稍后补充。</p>
-            <p class="en" style="margin-top:8px;color:#3d5a5c;">Grammar notes for this lesson will be added here.</p>
-            <p class="es" style="margin-top:4px;font-style:italic;">Las notas gramaticales de esta lección se añadirán aquí.</p>
+        <!-- 1. 快……了 -->
+        <div class="grammar-entry">
+            <div class="grammar-title">1. 快……了 (kuài... le) — Almost / Soon</div>
+            <div class="grammar-explain">
+                表示动作或状态很快就会发生，或者时间即将达到某一数量。<br>
+                <span class="text-sm text-gray-600">Indicates that an event is about to happen or a time period is almost reached.</span>
+            </div>
+            <div class="ext-example">
+                <div class="zh">① 我来北京学习汉语<strong>快半年了</strong>。(时间即将满半年)</div>
+                <div class="en">I've been in Beijing studying Chinese for almost half a year.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">② 火车<strong>快开走了</strong>，我们快点儿走吧！</div>
+                <div class="en">The train is about to leave, let's hurry up!</div>
+            </div>
+        </div>
+
+        <!-- 2. 不仅……而且…… -->
+        <div class="grammar-entry">
+            <div class="grammar-title">2. 不仅……而且…… (bùjǐn... érqiě...) — Not only... but also...</div>
+            <div class="grammar-explain">
+                递进复句关联词。主语相同时，“不仅”放在主语后；主语不同时，“不仅”放在主语前。<br>
+                <span class="text-sm text-gray-600">Used to express progressive relationship. "Not only... but also..."When the subjects are the same, "not only" is placed after the subject; when the subjects are different, "不仅" is placed before the subject..</span>
+            </div>
+            <div class="ext-example">
+                <div class="zh">① 我<strong>不仅</strong>欣赏了美丽的自然风光，<strong>而且</strong>还了解了当地的风俗习惯。</div>
+                <div class="en">I not only enjoyed the beautiful natural scenery, but also learned about local customs.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">② 这家饭馆的小吃<strong>不仅</strong>便宜，<strong>而且</strong>非常好吃。</div>
+                <div class="en">The snacks at this restaurant are not only cheap, but also delicious.</div>
+            </div>
+        </div>
+
+        <!-- 3. 另外 -->
+        <div class="grammar-entry">
+            <div class="grammar-title">3. 另外 (lìngwài) — In addition / Besides / Another</div>
+            <div class="grammar-explain">
+                ① 连词 Conjunction：表示在前面说的之外补充说明 (In addition / Besides)。<br>
+                Indicates additional information beyond what was mentioned above.
+            </div>
+            <div class="ext-example">
+                <div class="zh">① 欣赏了风光，<strong>另外</strong>，还吃到了很多小吃。</div>
+                <div class="en">(Conjunction) Enjoyed the scenery; in addition, ate many snacks.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">这个周末我想去看个朋友，<strong>另外</strong>，还想跟马丁去看场电影。</div>
+                <div class="en">This weekend I want to visit a friend. In addition, I also want to go see a movie with Martin.</div>
+            </div>
+            <div class="grammar-explain">
+                ② 代词/形容词 Pronoun/Adj：表示范围之外的
+                indicates something additional or outside the group (another / other).
+            </div>
+            <div class="ext-example">
+                <div class="zh">② 这次去旅行，我的<strong>另外</strong>一个收获就是去中国人家里过年。</div>
+                <div class="en">(Pronoun) Another harvest of my trip was celebrating New Year at a Chinese home.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">③ 他只告诉了我这些，另外的事情他没说。</div>
+                <div class="en">He only told me these things; he didn't mention anything else.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">④ 就剩这一张报纸了，另外的都被他们拿走了。</div>
+                <div class="en">Only this newspaper is left; they took all the others.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">⑤ 老师说，明天上课时再给我们讲另外一个问题。</div>
+                <div class="en">The teacher said they would explain another question to us in class tomorrow.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">⑥ 你们几个先坐火车走，另外的人明天坐飞机去。</div>
+                <div class="en">A few of you go by train first; the others will fly tomorrow.</div>
+            </div>
+            <div class="grammar-explain">
+                ③ 副词 Adverb：表示超出上文所说的范围，常和“还”“再”“又”等副词连用。<br>
+                Means "in addition to what has been mentioned" and often appears with adverbs such as 还, 再, and 又.
+            </div>
+            <div class="ext-example">
+                <div class="zh">① 这本《汉英词典》送给你吧，我<strong>另外</strong>还有一本。</div>
+                <div class="en">You can have this Chinese-English dictionary; I have another one as well.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">② 快上课了，这件事我们<strong>另外</strong>再找时间商量吧。</div>
+                <div class="en">Class is about to start. Let's find another time to discuss this matter.</div>
+            </div>
+            <div class="ext-example">
+                <div class="zh">③ 他又<strong>另外</strong>找了几个人帮忙，才把这个大箱子搬走。</div>
+                <div class="en">He found a few more people to help, and only then did they manage to move the big box.</div>
+            </div>
+        </div>
+
+        <!-- 4. 正赶上 -->
+        <div class="grammar-entry">
+            <div class="grammar-title">4. 正赶上 (zhèng gǎnshàng) — Happen to coincide with</div>
+            <div class="grammar-explain">
+                恰好遇到某种机会、情况或节日。<br>
+                <span class="text-sm text-gray-600">To happen to encounter a specific event, opportunity, or festival.</span>
+            </div>
+            <div class="ext-example">
+                <div class="zh">① 我旅行到桂林的时候，<strong>正赶上</strong>中国最大的节日——春节。</div>
+                <div class="en">When I traveled to Guilin, it happened to be during China's biggest festival—Spring Festival.</div>
+            </div>
         </div>
     </div>
 
-    <div class="footnote">
-        <span>⚡ 鼠标悬停高亮词看拼音+翻译</span>
-        <span>🌐 点击按钮展开翻译</span>
-        <span>🔊 侧边栏听生词发音</span>
+    <!-- ========================================================= -->
+    <!-- TAB 4: 活动一：情境复述卡片 (COMPLETE 20 CARDS) -->
+    <!-- ========================================================= -->
+    <div id="tab-guided" class="tab-content">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-5 text-center">
+                <h2 class="text-xl font-bold text-amber-900 mb-1">🎴 活动一：情境词块与复述卡片 (20 张完整卡片)</h2>
+                <p class="text-sm text-amber-800">
+                    正面为情境词块与引导问题，背面为课文原句、拼音及双语对照。点击卡片翻面，使用底部按钮切换卡片。
+                </p>
+            </div>
+
+            <!-- 主题筛选按钮 -->
+            <div class="flex flex-wrap justify-center gap-2 mb-6" id="themeNav">
+                <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-700 text-white shadow" onclick="filterByTheme(-1)">所有卡片 (1-20)</button>
+                <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 hover:bg-amber-200" onclick="filterByTheme(0)">📍 主题一：旅行与风光 (1-4)</button>
+                <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 hover:bg-amber-200" onclick="filterByTheme(1)">🥟 主题二：风味与风俗 (5-9)</button>
+                <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 hover:bg-amber-200" onclick="filterByTheme(2)">🧨 主题三：桂林过年 (10-16)</button>
+                <button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 hover:bg-amber-200" onclick="filterByTheme(3)">❤️ 主题四：收获与愿望 (17-20)</button>
+            </div>
+
+            <!-- 翻转卡片容器 -->
+            <div class="flashcard-container" onclick="flipGuidedCard()">
+                <div class="flashcard" id="guidedCardElement">
+                    <!-- 卡片正面：词块 + 引导问题 -->
+                    <div class="card-front text-left">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs bg-amber-100 text-amber-900 px-3 py-1 rounded-full font-bold" id="cardBadge">卡片 1 / 20</span>
+                                <span class="text-xs text-amber-800 font-semibold" id="themeTitle">📍 主题一：旅行与风光</span>
+                            </div>
+
+                            <div class="bg-amber-50/80 p-3.5 rounded-xl border border-amber-200 my-3">
+                                <div class="text-xs text-amber-900 font-bold mb-1">💡 核心引导词块 (Key Chunks):</div>
+                                <div class="text-lg font-bold text-amber-950" id="cardChunks">快……了 / 第一次……</div>
+                            </div>
+
+                            <div class="mt-4">
+                                <div class="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">❓ 引导问题 (Question):</div>
+                                <h3 class="text-xl font-bold text-gray-800 leading-snug" id="cardQuestion">瑞贝卡来北京多久了？这是她第一次做什么？</h3>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-xs text-amber-700 font-semibold border-t border-amber-100 pt-2.5 mt-2">
+                            🔄 点击卡片翻看课文原句 (Click to view textbook sentence)
+                        </div>
+                    </div>
+
+                    <!-- 卡片背面：课文原句 + 拼音 + 双语 -->
+                    <div class="card-back text-left">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold">📖 课文原句 (Original Sentence)</span>
+                                <button class="bg-amber-700 text-white px-3 py-1 rounded-full text-xs font-semibold hover:bg-amber-800 transition" onclick="event.stopPropagation(); playCardAudio()">🔊 听发音</button>
+                            </div>
+
+                            <div class="text-lg font-bold text-gray-900 leading-relaxed my-2" id="cardZh">
+                                我来北京学习汉语快半年了，这是我第一次用汉语写信。
+                            </div>
+
+                            <div class="text-sm font-medium text-amber-900 bg-amber-50 p-2.5 rounded-lg border border-amber-100 my-2" id="cardPinyin">
+                                Wǒ lái Běijīng xuéxí Hànyǔ kuài bàn nián le, zhè shì wǒ dì-yī cì yòng Hànyǔ xiě xìn.
+                            </div>
+
+                            <div class="space-y-1 mt-2 text-xs">
+                                <p class="text-teal-800" id="cardEn">🇬🇧 I have been in Beijing studying Chinese for almost half a year now, and this is the first time I am writing a letter in Chinese.</p>
+                                <p class="text-amber-800 italic" id="cardEs">🇪🇸 Llevo casi medio año en Beijing estudiando chino, y esta es la primera vez que escribo una carta en chino.</p>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-xs text-gray-400 border-t border-amber-200 pt-2 mt-2">
+                            再次点击翻回正面
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部切换控制栏 -->
+            <div class="flex justify-center items-center gap-4 mt-4">
+                <button class="bg-amber-200 text-amber-900 px-5 py-2 rounded-full font-bold hover:bg-amber-300 transition" onclick="prevGuidedCard()">← 上一张 Prev</button>
+                <span class="font-bold text-gray-700" id="guidedCounter">1 / 20</span>
+                <button class="bg-amber-700 text-white px-5 py-2 rounded-full font-bold hover:bg-amber-800 transition" onclick="nextGuidedCard()">下一张 Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 5: 课文理解测试 -->
+    <!-- ========================================================= -->
+    <div id="tab-quiz" class="tab-content">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-xl font-bold text-center text-amber-900 mb-6">🎯 课文理解小测试 (Comprehension Test)</h2>
+            
+            <div id="quizContainer" class="space-y-6">
+                <!-- Question 1 -->
+                <div class="bg-amber-50 p-5 rounded-2xl border border-amber-200">
+                    <p class="font-semibold text-gray-800 text-lg mb-1">1. 瑞贝卡来北京学习汉语多长时间了？</p>
+                    <p class="text-xs text-gray-500 mb-3">(How long has Rebecca been studying Chinese in Beijing?)</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q1" value="A"> A. 快一年了 <span class="text-xs text-gray-500">(kuài yì nián le · almost 1 year)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q1" value="B"> B. 快半年了 <span class="text-xs text-gray-500">(kuài bàn nián le · almost half a year)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q1" value="C"> C. 刚来一个月 <span class="text-xs text-gray-500">(gāng lái yí gè yuè · just 1 month)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="bg-amber-50 p-5 rounded-2xl border border-amber-200">
+                    <p class="font-semibold text-gray-800 text-lg mb-1">2. 俗话说“上有天堂，下有……”？</p>
+                    <p class="text-xs text-gray-500 mb-3">(As the saying goes: "There is paradise above, and ... below"?)</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q2" value="A"> A. 桂林 <span class="text-xs text-gray-500">(Guìlín)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q2" value="B"> B. 京津 <span class="text-xs text-gray-500">(Jīng-Jīn · Beijing & Tianjin)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q2" value="C"> C. 苏杭 <span class="text-xs text-gray-500">(Sū-Háng · Suzhou & Hangzhou)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="bg-amber-50 p-5 rounded-2xl border border-amber-200">
+                    <p class="font-semibold text-gray-800 text-lg mb-1">3. 导游为什么邀请瑞贝卡去他家里过年？</p>
+                    <p class="text-xs text-gray-500 mb-3">(Why did the tour guide invite Rebecca to celebrate New Year at his home?)</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q3" value="A"> A. 因为瑞贝卡是他的学生 <span class="text-xs text-gray-500">(because she is his student)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q3" value="B"> B. 因为看到瑞贝卡独自一人，非常热情 <span class="text-xs text-gray-500">(saw she was alone, very warmhearted)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-amber-100 cursor-pointer">
+                            <input type="radio" name="q3" value="C"> C. 因为瑞贝卡会做北方饺子 <span class="text-xs text-gray-500">(because she could make northern dumplings)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button class="bg-amber-700 text-white font-bold px-8 py-3 rounded-full text-lg shadow-lg hover:bg-amber-800 transition" onclick="checkQuiz()">提交答案 Submit Test</button>
+                </div>
+                <div id="quizResult" class="text-center text-lg font-bold mt-4 hidden p-4 rounded-xl"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footnote text-center text-xs text-gray-500 mt-8 pt-4 border-t border-amber-200">
+        <span>📘 对外汉语/华文教学课件</span>
+        <span>•</span>
+        <span>给父母的一封信</span>
+        <span>•</span>
+        <span>词汇与语法</span>
     </div>
 </div>
 
 <script>
-    (function() {
-        const tabs = document.querySelectorAll('.tab-btn');
-        const allContents = document.querySelectorAll('.tab-content');
+const vocabData = [
+    { word: "亲爱", pinyin: "qīn'ài", trans: "dear; beloved / querido" },
+    { word: "课本", pinyin: "kèběn", trans: "textbook / libro de texto" },
+    { word: "天堂", pinyin: "tiāntáng", trans: "paradise; heaven / paraíso" },
+    { word: "句", pinyin: "jù", trans: "MW for sentences / clasificador de frases" },
+    { word: "话", pinyin: "huà", trans: "words; speech / palabras" },
+    { word: "真正", pinyin: "zhēnzhèng", trans: "truly; really / verdaderamente" },
+    { word: "理解", pinyin: "lǐjiě", trans: "understand / comprender" },
+    { word: "风景", pinyin: "fēngjǐng", trans: "scenery / paisaje" },
+    { word: "美", pinyin: "měi", trans: "beautiful / hermoso" },
+    { word: "甲", pinyin: "jiǎ", trans: "first; top / el primero" },
+    { word: "天下", pinyin: "tiānxià", trans: "the world / el mundo" },
+    { word: "收获", pinyin: "shōuhuò", trans: "gains; harvest / logros" },
+    { word: "自然", pinyin: "zìrán", trans: "nature / naturaleza" },
+    { word: "风光", pinyin: "fēngguāng", trans: "scenery / paisaje" },
+    { word: "了解", pinyin: "liǎojiě", trans: "understand; know / conocer" },
+    { word: "当地", pinyin: "dāngdì", trans: "local / local" },
+    { word: "风俗", pinyin: "fēngsú", trans: "custom / costumbre" },
+    { word: "另外", pinyin: "lìngwài", trans: "in addition / además" },
+    { word: "风味", pinyin: "fēngwèi", trans: "local flavor / sabor local" },
+    { word: "小吃", pinyin: "xiǎochī", trans: "snacks / aperitivos" },
+    { word: "一带", pinyin: "yídài", trans: "surrounding area / zona" },
+    { word: "口味", pinyin: "kǒuwèi", trans: "taste / gusto" },
+    { word: "清淡", pinyin: "qīngdàn", trans: "light (flavor) / suave" },
+    { word: "辣", pinyin: "là", trans: "spicy / picante" },
+    { word: "重", pinyin: "zhòng", trans: "heavy; strong (flavor) / fuerte" },
+    { word: "邀请", pinyin: "yāoqǐng", trans: "invite / invitar" },
+    { word: "过年", pinyin: "guò nián", trans: "celebrate New Year / celebrar Año Nuevo" },
+    { word: "感受", pinyin: "gǎnshòu", trans: "feel; experience / sentir" },
+    { word: "热闹", pinyin: "rènao", trans: "lively / animado" },
+    { word: "欢乐", pinyin: "huānlè", trans: "joyous / alegre" },
+    { word: "气氛", pinyin: "qìfēn", trans: "atmosphere / ambiente" },
+    { word: "正", pinyin: "zhèng", trans: "just; exactly / justo" },
+    { word: "赶上", pinyin: "gǎnshàng", trans: "catch; coincide with / coincidir" },
+    { word: "节日", pinyin: "jiérì", trans: "festival / fiesta" },
+    { word: "聚", pinyin: "jù", trans: "gather / reunirse" },
+    { word: "团圆", pinyin: "tuányuán", trans: "reunion / reunión" },
+    { word: "独自", pinyin: "dúzì", trans: "alone / solo" },
+    { word: "包", pinyin: "bāo", trans: "wrap / envolver" },
+    { word: "年糕", pinyin: "niángāo", trans: "New Year cake / pastel de Año Nuevo" },
+    { word: "亲戚", pinyin: "qīnqi", trans: "relative / pariente" },
+    { word: "拜年", pinyin: "bài nián", trans: "pay New Year visit / felicitar Año Nuevo" },
+    { word: "感动", pinyin: "gǎndòng", trans: "moved; touched / emocionado" }
+];
 
-        tabs.forEach(btn => {
-            btn.addEventListener('click', function() {
-                tabs.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                const target = this.dataset.tab;
-                allContents.forEach(c => c.classList.toggle('active', c.id === target));
-            });
-        });
+function renderParagraphVocab() {
+    const paragraphs = document.querySelectorAll('#articleBody .para-block');
+    paragraphs.forEach(paragraph => {
+        const text = paragraph.querySelector('.para-zh')?.textContent.replace(/\s/g, '') || '';
+        const items = vocabData.filter(item => text.includes(item.word.replace(/\s/g, '')));
+        if (items.length === 0) return;
 
-        window.toggleTrans = function(btn) {
-            const box = btn.nextElementSibling;
-            if (box.classList.contains('open')) {
-                box.classList.remove('open');
-                btn.textContent = '🌐 显示翻译 / Show translation / Mostrar traducción';
-            } else {
-                box.classList.add('open');
-                btn.textContent = '🌐 隐藏翻译 / Hide translation / Ocultar traducción';
+        const list = document.createElement('section');
+        list.className = 'paragraph-vocab';
+        list.innerHTML = `
+            <div class="paragraph-vocab-grid">
+                ${items.map(item => `
+                    <div class="paragraph-vocab-item">
+                        <span class="paragraph-vocab-word">${item.word}</span>
+                        <span class="paragraph-vocab-pinyin">${item.pinyin}</span>
+                        <span class="paragraph-vocab-translation">${item.trans.split(' / ')[0]}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        paragraph.appendChild(list);
+    });
+}
+
+function toggleAllTranslations(btn) {
+    const showTranslations = btn.getAttribute('aria-pressed') !== 'true';
+    document.querySelectorAll('#articleBody .trans-box').forEach(box => {
+        box.classList.toggle('open', showTranslations);
+    });
+    btn.setAttribute('aria-pressed', String(showTranslations));
+    btn.innerText = showTranslations
+        ? '🙈 隐藏翻译 / Hide translation / Ocultar traducción'
+        : '🌐 显示翻译 / Show translation / Mostrar traducción';
+}
+
+function initTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            const target = btn.getAttribute('data-tab');
+            if (target) {
+                document.getElementById(target)?.classList.add('active');
             }
-        };
+        });
+    });
+}
 
-        const vocabData = [
-            { word: '亲爱', pinyin: "qīn'ài", trans: 'dear; beloved' },
-            { word: '课本', pinyin: 'kèběn', trans: 'textbook' },
-            { word: '天堂', pinyin: 'tiāntáng', trans: 'paradise; heaven' },
-            { word: '句', pinyin: 'jù', trans: 'MW for sentences' },
-            { word: '话', pinyin: 'huà', trans: 'word; saying' },
-            { word: '真正', pinyin: 'zhēnzhèng', trans: 'really; truly' },
-            { word: '理解', pinyin: 'lǐjiě', trans: 'understand' },
-            { word: '美', pinyin: 'měi', trans: 'beautiful' },
-            { word: '甲', pinyin: 'jiǎ', trans: 'the first; the best' },
-            { word: '天下', pinyin: 'tiānxià', trans: 'the world' },
-            { word: '收获', pinyin: 'shōuhuò', trans: 'gains; to gain' },
-            { word: '不仅', pinyin: 'bùjǐn', trans: 'not only' },
-            { word: '自然', pinyin: 'zìrán', trans: 'nature' },
-            { word: '风光', pinyin: 'fēngguāng', trans: 'scenery' },
-            { word: '风俗', pinyin: 'fēngsú', trans: 'custom' },
-            { word: '另外', pinyin: 'lìngwài', trans: 'in addition' },
-            { word: '风味', pinyin: 'fēngwèi', trans: 'local flavor' },
-            { word: '小吃', pinyin: 'xiǎochī', trans: 'snacks' },
-            { word: '一带', pinyin: 'yídài', trans: 'surrounding area' },
-            { word: '重', pinyin: 'zhòng', trans: 'strongly flavored' },
-            { word: '过年', pinyin: 'guò nián', trans: 'celebrate Spring Festival' },
-            { word: '感受', pinyin: 'gǎnshòu', trans: 'experience; feel' },
-            { word: '欢乐', pinyin: 'huānlè', trans: 'happy; joyous' },
-            { word: '正', pinyin: 'zhèng', trans: 'just; exactly' },
-            { word: '赶上', pinyin: 'gǎnshàng', trans: 'happen to; catch' },
-            { word: '聚', pinyin: 'jù', trans: 'get together' },
-            { word: '团圆', pinyin: 'tuányuán', trans: 'reunion' },
-            { word: '独自', pinyin: 'dúzì', trans: 'alone' },
-            { word: '包', pinyin: 'bāo', trans: 'wrap' },
-            { word: '年糕', pinyin: 'niángāo', trans: 'New Year cake' },
-            { word: '亲戚', pinyin: 'qīnqi', trans: 'relative' },
-            { word: '拜年', pinyin: 'bài nián', trans: 'pay a New Year call' },
-            { word: '感动', pinyin: 'gǎndòng', trans: 'move; touch' },
-            { word: '苏州', pinyin: 'Sūzhōu', trans: 'Suzhou' },
-            { word: '杭州', pinyin: 'Hángzhōu', trans: 'Hangzhou' },
-            { word: '桂林', pinyin: 'Guìlín', trans: 'Guilin' },
-            { word: '阳朔', pinyin: 'Yángshuò', trans: 'Yangshuo' }
-        ];
+// ===== Web Speech API 朗读功能 =====
+function speakText(text) {
+    if (!('speechSynthesis' in window)) {
+        alert('您的浏览器暂不支持语音合成朗读。 Your browser does not support Speech Synthesis.');
+        return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN';
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
+}
 
-        const container = document.getElementById('vocabList');
-        if (container) {
-            vocabData.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'vocab-item';
+// =========================================================
+// 活动一：20张完整卡片数据集与互动逻辑 (Activity 1 Cards)
+// =========================================================
+const activityCards = [
+    // 主题一：旅行与风光（卡片 1 - 4）
+    {
+        id: 1,
+        themeId: 0,
+        themeTitle: "📍 主题一：旅行与风光",
+        chunks: "快……了 / 第一次……",
+        question: "瑞贝卡来北京多久了？这是她第一次做什么？",
+        zh: "我来北京学习汉语快半年了，这是我第一次用汉语写信。",
+        pinyin: "Wǒ lái Běijīng xuéxí Hànyǔ kuài bàn nián le, zhè shì wǒ dì-yī cì yòng Hànyǔ xiě xìn.",
+        en: "I have been in Beijing studying Chinese for almost half a year now, and this is the first time I am writing a letter in Chinese.",
+        es: "Llevo casi medio año en Beijing estudiando chino, y esta es la primera vez que escribo una carta en chino."
+    },
+    {
+        id: 2,
+        themeId: 0,
+        themeTitle: "📍 主题一：旅行与风光",
+        chunks: "刚……回来 / 去了很多地方",
+        question: "她刚从哪里旅行回来？去了哪些地方？",
+        zh: "我刚从中国的南方旅行回来。这次我去了很多地方，有上海、苏州、杭州，还有桂林和阳朔。",
+        pinyin: "Wǒ gāng cóng Zhōngguó de nánfāng lǚxíng huílái. Zhè cì wǒ qù le hěn duō dìfang, yǒu Shànghǎi, Sūzhōu, Hángzhōu, hái yǒu Guìlín hé Yángshuò.",
+        en: "I have just come back from a trip to southern China. This time I went to many places: Shanghai, Suzhou, Hangzhou, and also Guilin and Yangshuo.",
+        es: "Acabo de volver de un viaje por el sur de China. Esta vez fui a muchos lugares: Shanghái, Suzhou, Hangzhou, y también Guilin y Yangshuo."
+    },
+    {
+        id: 3,
+        themeId: 0,
+        themeTitle: "📍 主题一：旅行与风光",
+        chunks: "以前……，现在才真正……",
+        question: "她以前在课本里学过什么？为什么现在才真正理解？",
+        zh: "以前我在汉语课本里学过“上有天堂，下有苏杭”这句话，现在我才真正理解了它的意思。",
+        pinyin: "Yǐqián wǒ zài Hànyǔ kèběn lǐ xué guò “shàng yǒu tiāntáng, xià yǒu Sū-Háng” zhè jù huà, xiànzài wǒ cái zhēnzhèng lǐjiě le tā de yìsi.",
+        en: "I had learned the saying “There is paradise above, and Suzhou and Hangzhou below” in my Chinese textbook before, but only now do I truly understand what it means.",
+        es: "Antes había aprendido en el libro de texto el dicho «Arriba está el paraíso y abajo, Suzhou y Hangzhou», pero recién ahora entiendo de verdad lo que significa."
+    },
+    {
+        id: 4,
+        themeId: 0,
+        themeTitle: "📍 主题一：旅行与风光",
+        chunks: "风景美极了 / 甲天下",
+        question: "人们怎么说桂林和阳朔的风景？",
+        zh: "桂林和阳朔的风景也美极了，人们都说“桂林山水甲天下”。",
+        pinyin: "Guìlín hé Yángshuò de fēngjǐng yě měi jí le, rénmen dōu shuō “Guìlín shānshuǐ jiǎ tiānxià”.",
+        en: "The scenery in Guilin and Yangshuo is extremely beautiful, too. People all say, “Guilin’s mountains and waters are the finest under heaven.”",
+        es: "El paisaje de Guilin y Yangshuo también es hermosísimo. Todo el mundo dice: «Las montañas y las aguas de Guilin son las mejores bajo el cielo»."
+    },
 
-                const wordSpan = document.createElement('span');
-                wordSpan.className = 'word';
-                wordSpan.textContent = item.word;
+    // 主题二：风味与风俗（卡片 5 - 9）
+    {
+        id: 5,
+        themeId: 1,
+        themeTitle: "🥟 主题二：风味与风俗",
+        chunks: "收获很多",
+        question: "这次旅行，瑞贝卡的收获多不多？",
+        zh: "这次去旅行，我的收获很多。",
+        pinyin: "Zhè cì qù lǚxíng, wǒ de shōuhuò hěn duō.",
+        en: "I gained a lot from this trip.",
+        es: "Gané mucho con este viaje."
+    },
+    {
+        id: 6,
+        themeId: 1,
+        themeTitle: "🥟 主题二：风味与风俗",
+        chunks: "不仅……而且……",
+        question: "除了欣赏风光，她还做了什么？",
+        zh: "不仅欣赏了美丽的自然风光，而且还了解了一些当地的风俗习惯。",
+        pinyin: "Bùjǐn xīnshǎng le měilì de zìrán fēngguāng, érqiě hái liǎojiě le yìxiē dāngdì de fēngsú xíguàn.",
+        en: "Not only did I enjoy the beautiful natural scenery, I also learned about some local customs.",
+        es: "No solo disfruté del hermoso paisaje natural, sino que también conocí algunas costumbres locales."
+    },
+    {
+        id: 7,
+        themeId: 1,
+        themeTitle: "🥟 主题二：风味与风俗",
+        chunks: "另外，还吃到……",
+        question: "她还吃到了什么？",
+        zh: "另外，还吃到了很多好吃的东西，特别是各地风味不同的小吃。",
+        pinyin: "Lìngwài, hái chī dào le hěn duō hǎochī de dōngxi, tèbié shì gèdì fēngwèi bùtóng de xiǎochī.",
+        en: "In addition, I ate a lot of delicious food, especially snacks with different local flavors.",
+        es: "Además, comí muchas cosas ricas, sobre todo aperitivos de distintos sabores locales."
+    },
+    {
+        id: 8,
+        themeId: 1,
+        themeTitle: "🥟 主题二：风味与风俗",
+        chunks: "口味清淡 / 喜欢吃辣",
+        question: "苏杭人和桂林人的口味有什么不一样？",
+        zh: "苏杭一带的人口味比较清淡，但是桂林人比较喜欢吃辣的，口味要重一些。",
+        pinyin: "Sū-Háng yídài de rén kǒuwèi bǐjiào qīngdàn, dànshì Guìlínrén bǐjiào xǐhuān chī là de, kǒuwèi yào zhòng yìxiē.",
+        en: "People in the Suzhou–Hangzhou area prefer lighter tastes, while people in Guilin like spicy food and stronger flavors.",
+        es: "A la gente de la zona de Suzhou y Hangzhou le gustan los sabores más suaves, mientras que a la gente de Guilin le gusta más lo picante y los sabores más intensos."
+    },
+    {
+        id: 9,
+        themeId: 1,
+        themeTitle: "🥟 主题二：风味与风俗",
+        chunks: "虽然……但是……",
+        question: "都是南方人，口味一样吗？",
+        zh: "虽然都是南方人，苏杭一带的人口味比较清淡，但是桂林人比较喜欢吃辣的，口味要重一些。",
+        pinyin: "Suīrán dōu shì nánfāngrén, Sū-Háng yídài de rén kǒuwèi bǐjiào qīngdàn, dànshì Guìlínrén bǐjiào xǐhuān chī là de, kǒuwèi yào zhòng yìxiē.",
+        en: "Although they are all southerners, people in Suzhou-Hangzhou prefer lighter tastes, while people in Guilin like spicy food and stronger flavors.",
+        es: "Aunque todos son del sur, a la gente de Suzhou y Hangzhou le gustan los sabores suaves, mientras que a la gente de Guilin le gusta lo picante."
+    },
 
-                const pinyinSpan = document.createElement('span');
-                pinyinSpan.className = 'pinyin';
-                pinyinSpan.textContent = item.pinyin;
+    // 主题三：桂林过年（卡片 10 - 16）
+    {
+        id: 10,
+        themeId: 2,
+        themeTitle: "🧨 主题三：桂林过年",
+        chunks: "被邀请去……过年",
+        question: "她的另一个收获是什么？",
+        zh: "这次去旅行，我的另外一个收获就是被邀请去中国人家里过年。",
+        pinyin: "Zhè cì qù lǚxíng, wǒ de lìngwài yí gè shōuhuò jiùshì bèi yāoqǐng qù Zhōngguórén jiālǐ guò nián.",
+        en: "Another thing I gained from this trip was being invited to spend the New Year in a Chinese family.",
+        es: "Otro fruto de este viaje fue que me invitaron a pasar el Año Nuevo en casa de una familia china."
+    },
+    {
+        id: 11,
+        themeId: 2,
+        themeTitle: "🧨 主题三：桂林过年",
+        chunks: "感受到……的气氛",
+        question: "她在中国人家里过年，感受到了什么？",
+        zh: "感受到了中国人过年时的热闹、欢乐的气氛。",
+        pinyin: "Gǎnshòu dào le Zhōngguórén guò nián shí de rènao, huānlè de qìfēn.",
+        en: "I felt the lively, joyful atmosphere of Chinese New Year.",
+        es: "Sentí el ambiente animado y alegre del Año Nuevo Chino."
+    },
+    {
+        id: 12,
+        themeId: 2,
+        themeTitle: "🧨 主题三：桂林过年",
+        chunks: "正赶上……",
+        question: "她到桂林的时候，正赶上什么节日？",
+        zh: "那是我旅行到桂林的时候，正赶上中国最大的节日——春节。",
+        pinyin: "Nà shì wǒ lǚxíng dào Guìlín de shíhou, zhèng gǎnshàng Zhōngguó zuì dà de jiérì——Chūnjié.",
+        en: "That was when I was traveling in Guilin, and I happened to be there during China’s biggest festival—the Spring Festival.",
+        es: "Fue cuando viajaba por Guilin y justo coincidí con la fiesta más importante de China: el Festival de Primavera."
+    },
+    {
+        id: 13,
+        themeId: 2,
+        themeTitle: "🧨 主题三：桂林过年",
+        chunks: "全家人聚在一起",
+        question: "春节的时候，中国人一定要做什么？",
+        zh: "过春节的时候，中国人一定要全家人聚在一起吃团圆饭。",
+        pinyin: "Guò Chūnjié de shíhou, Zhōngguórén yídìng yào quánjiā rén jù zài yìqǐ chī tuányuán fàn.",
+        en: "During Spring Festival, Chinese people always get the whole family together for a reunion dinner.",
+        es: "En esa fecha, las familias chinas se reúnen para la cena de reunión familiar."
+    },
+    {
+        id: 14,
+        themeId: 2,
+        themeTitle: "🧨 主题三：桂林过年",
+        chunks: "看到……独自一人",
+        question: "导游为什么邀请她去他家？",
+        zh: "看到我独自一人，导游就热情地邀请我去他家。",
+        pinyin: "Kàndào wǒ dúzì yì rén, dǎoyóu jiù rèqíng de yāoqǐng wǒ qù tā jiā.",
+        en: "Seeing that I was alone, the tour guide warmly invited me to his home.",
+        es: "Al verme sola, el guía me invitó con entusiasmo a su casa."
+    },
+    {
+        id: 15,
+        themeId: 2,
+        themeTitle: "🧨 主题三：桂林过年",
+        chunks: "又包……，又吃……",
+        question: "因为导游的爸妈一个是北方人、一个是南方人，他们吃了什么？",
+        zh: "因为他的爸爸是北方人，妈妈是南方人，所以我们又包饺子，又吃年糕。",
+        pinyin: "Yīnwèi tā de bàba shì běifāngrén, māma shì nánfāngrén, suǒyǐ wǒmen yòu bāo jiǎozi, yòu chī niángāo.",
+        en: "Because his father is from the north and his mother is from the south, we both wrapped dumplings and ate New Year cake.",
+        es: "Como su padre es del norte y su mother del sur, hicimos tanto jiaozi como niangao."
+    },
+    {
+        id: 16,
+        themeId: 2,
+        themeTitle: "🧨 主题三：桂林过年",
+        chunks: "拜年 / 特别感动",
+        question: "导游还带她去做了什么？她的心情怎么样？",
+        zh: "他还带我一起去给他的亲戚、朋友拜年。这让我特别感动。",
+        pinyin: "Tā hái dài wǒ yìqǐ qù gěi tā de qīnqi, péngyou bài nián. Zhè ràng wǒ tèbié gǎndòng.",
+        en: "He also took me along to pay New Year visits to his relatives and friends. This moved me especially.",
+        es: "También me llevó a felicitar el Año Nuevo a sus parientes y amigos. Esto me emocionó de verdad."
+    },
 
-                const transSpan = document.createElement('span');
-                transSpan.className = 'trans';
-                transSpan.textContent = item.trans;
+    // 主题四：收获与愿望（卡片 17 - 20）
+    {
+        id: 17,
+        themeId: 3,
+        themeTitle: "❤️ 主题四：收获与愿望",
+        chunks: "您觉得……怎么样了？",
+        question: "她想问爸爸什么问题？",
+        zh: "爸爸，您觉得我现在的汉语怎么样了？",
+        pinyin: "Bàba, nín juéde wǒ xiànzài de Hànyǔ zěnmeyàng le?",
+        en: "Dad, how do you think my Chinese is now?",
+        es: "Papá, ¿qué te parece mi chino ahora?"
+    },
+    {
+        id: 18,
+        themeId: 3,
+        themeTitle: "❤️ 主题四：收获与愿望",
+        chunks: "更想……，更多地了解……",
+        question: "这次旅行让她有什么新的想法？",
+        zh: "这次旅行让我更想学好汉语，想更多地了解中国。",
+        pinyin: "Zhè cì lǚxíng ràng wǒ gèng xiǎng xué hǎo Hànyǔ, xiǎng gèng duō de liǎojiě Zhōngguó.",
+        en: "This trip has made me want even more to learn Chinese well and to know China better.",
+        es: "Este viaje me ha hecho querer aún más aprender bien el chino y conocer mejor China."
+    },
+    {
+        id: 19,
+        themeId: 3,
+        themeTitle: "❤️ 主题四：收获与愿望",
+        chunks: "以后我也要跟……一样",
+        question: "她以后想做什么？为什么？",
+        zh: "以后我也要跟您一样，当一名汉语老师。",
+        pinyin: "Yǐhòu wǒ yě yào gēn nín yíyàng, dāng yì míng Hànyǔ lǎoshī.",
+        en: "In the future I also want to be a Chinese teacher, just like you.",
+        es: "En el futuro también quiero ser profesora de chino, igual que tú."
+    },
+    {
+        id: 20,
+        themeId: 3,
+        themeTitle: "❤️ 主题四：收获与愿望",
+        chunks: "祝……身体健康",
+        question: "信的结尾她写了什么？",
+        zh: "祝爸爸、妈妈身体健康！爱你们的女儿 瑞贝卡",
+        pinyin: "Zhù bàba, māma shēntǐ jiànkāng! Ài nǐmen de nǚ'ér Ruìbèikǎ.",
+        en: "Wishing Dad and Mom good health! Your daughter who loves you, Rebecca.",
+        es: "¡Les deseo a papá y a mamá buena salud! Su hija que los quiere, Rebeca."
+    }
+];
 
-                const btn = document.createElement('button');
-                btn.className = 'speaker-btn';
-                btn.textContent = '🔊';
-                btn.setAttribute('aria-label', '播放 ' + item.word);
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    if (window.speechSynthesis) {
-                        const utterance = new SpeechSynthesisUtterance(item.word);
-                        utterance.lang = 'zh-CN';
-                        utterance.rate = 0.9;
-                        utterance.pitch = 1;
-                        const voices = window.speechSynthesis.getVoices();
-                        const zhVoice = voices.find(v => v.lang.startsWith('zh') && v.name.includes('Female'))
-                            || voices.find(v => v.lang && v.lang.startsWith('zh'));
-                        if (zhVoice) utterance.voice = zhVoice;
-                        window.speechSynthesis.speak(utterance);
-                    }
-                });
+let activeFilterTheme = -1; // -1 means all cards
+let filteredCards = [...activityCards];
+let currentCardIndex = 0;
 
-                div.appendChild(wordSpan);
-                div.appendChild(pinyinSpan);
-                div.appendChild(transSpan);
-                div.appendChild(btn);
-                container.appendChild(div);
-            });
+function filterByTheme(themeIdx) {
+    activeFilterTheme = themeIdx;
+    if (themeIdx === -1) {
+        filteredCards = [...activityCards];
+    } else {
+        filteredCards = activityCards.filter(c => c.themeId === themeIdx);
+    }
+    currentCardIndex = 0;
+    
+    // Highlight active filter tab button
+    const btns = document.querySelectorAll('#themeNav button');
+    btns.forEach((btn, idx) => {
+        if ((themeIdx === -1 && idx === 0) || (themeIdx === idx - 1)) {
+            btn.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-700 text-white shadow";
+        } else {
+            btn.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 hover:bg-amber-200";
         }
+    });
 
-        if (window.speechSynthesis) {
-            window.speechSynthesis.getVoices();
-            window.speechSynthesis.onvoiceschanged = function() {
-                window.speechSynthesis.getVoices();
-            };
-        }
-    })();
+    renderCurrentCard();
+}
+
+function renderCurrentCard() {
+    if (filteredCards.length === 0) return;
+    const card = filteredCards[currentCardIndex];
+    
+    document.getElementById('cardBadge').innerText = `卡片 ${card.id} / 20`;
+    document.getElementById('themeTitle').innerText = card.themeTitle;
+    document.getElementById('cardChunks').innerText = card.chunks;
+    document.getElementById('cardQuestion').innerText = card.question;
+    
+    document.getElementById('cardZh').innerText = card.zh;
+    document.getElementById('cardPinyin').innerText = card.pinyin;
+    document.getElementById('cardEn').innerText = '🇬🇧 ' + card.en;
+    document.getElementById('cardEs').innerText = '🇪🇸 ' + card.es;
+
+    document.getElementById('guidedCounter').innerText = `${currentCardIndex + 1} / ${filteredCards.length}`;
+
+    // Reset card to front
+    document.getElementById('guidedCardElement').classList.remove('flipped');
+}
+
+function flipGuidedCard() {
+    document.getElementById('guidedCardElement').classList.toggle('flipped');
+}
+
+function prevGuidedCard() {
+    if (currentCardIndex > 0) {
+        currentCardIndex--;
+        renderCurrentCard();
+    }
+}
+
+function nextGuidedCard() {
+    if (currentCardIndex < filteredCards.length - 1) {
+        currentCardIndex++;
+        renderCurrentCard();
+    }
+}
+
+function playCardAudio() {
+    if (filteredCards[currentCardIndex]) {
+        speakText(filteredCards[currentCardIndex].zh);
+    }
+}
+
+// ===== 测试题检查 =====
+function checkQuiz() {
+    let score = 0;
+    const q1 = document.querySelector('input[name="q1"]:checked');
+    const q2 = document.querySelector('input[name="q2"]:checked');
+    const q3 = document.querySelector('input[name="q3"]:checked');
+
+    if (q1 && q1.value === 'B') score += 33;
+    if (q2 && q2.value === 'C') score += 33;
+    if (q3 && q3.value === 'B') score += 34;
+
+    const resultDiv = document.getElementById('quizResult');
+    resultDiv.classList.remove('hidden', 'bg-green-100', 'bg-red-100', 'text-green-800', 'text-red-800');
+
+    if (score >= 90) {
+        resultDiv.classList.add('bg-green-100', 'text-green-800');
+        resultDiv.innerText = `🎉 太棒了！满分 ${score} 分！测试全部正确！`;
+    } else {
+        resultDiv.classList.add('bg-amber-100', 'text-amber-900');
+        resultDiv.innerText = `👍 得分: ${score} 分。正确答案：1.B (快半年了)  2.C (苏杭)  3.B (看到独自一人很热情)。`;
+    }
+}
+
+// 页面加载完成初始化
+window.onload = function() {
+    initTabs();
+    renderParagraphVocab();
+    filterByTheme(-1);
+};
 </script>
-
 </body>
 </html>

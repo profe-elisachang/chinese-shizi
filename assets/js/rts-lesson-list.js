@@ -38,7 +38,7 @@
             if (!Array.isArray(lessons)) throw new Error('Invalid list.json');
 
             var published = lessons.filter(function (item) {
-                return item.published !== false;
+                return item.published === true;
             });
 
             var grouped = {};
@@ -63,15 +63,14 @@
                 });
 
                 var section = listEl.closest('.book-section');
-                var placeholder = section ? section.querySelector('.placeholder') : null;
 
                 if (items.length === 0) {
                     listEl.innerHTML = '';
-                    if (placeholder) placeholder.style.display = '';
+                    if (section) section.hidden = true;
                     return;
                 }
 
-                if (placeholder) placeholder.style.display = 'none';
+                if (section) section.hidden = false;
                 listEl.innerHTML = items.map(renderLesson).join('');
             });
         } catch (err) {
