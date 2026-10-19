@@ -19,8 +19,8 @@
       height: 100vh;
       overflow: hidden;
       font-family: 'Noto Sans SC', sans-serif;
-      background-color: #0f172a;
-      color: #f8fafc;
+      background-color: #f1f5f9;
+      color: #1e293b;
     }
 
     /* Fullscreen Widescreen Layout */
@@ -30,7 +30,7 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
+      background: radial-gradient(circle at 50% 0%, #ffffff 0%, #eff6ff 100%);
     }
 
     /* Slide Frame */
@@ -56,7 +56,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
-      border-bottom: 2px solid #334155;
+      border-bottom: 2px solid #cbd5e1;
       padding-bottom: 10px;
       flex-shrink: 0;
     }
@@ -64,7 +64,7 @@
     .slide-title {
       font-size: 30px;
       font-weight: 700;
-      color: #38bdf8;
+      color: #0369a1;
       display: flex;
       align-items: center;
       gap: 14px;
@@ -72,9 +72,9 @@
 
     .slide-badge {
       font-size: 20px;
-      color: #FF8C42;
-      background: rgba(255, 140, 66, 0.12);
-      border: 1.5px solid rgba(255, 140, 66, 0.4);
+      color: #c2410c;
+      background: #fff7ed;
+      border: 1.5px solid #fed7aa;
       padding: 4px 18px;
       border-radius: 999px;
       font-weight: 700;
@@ -93,20 +93,20 @@
     /* Left Side: Lesson Main Text with Ruby Pinyin */
     .text-column {
       flex: 1.2;
-      background: #1e293b;
-      border: 2px solid #334155;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
       border-radius: 18px;
       padding: 28px 36px;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12);
       overflow-y: auto;
     }
 
     .section-label {
       font-size: 22px;
-      color: #94a3b8;
+      color: #475569;
       font-weight: 700;
       margin-bottom: 16px;
       display: flex;
@@ -119,7 +119,7 @@
     .lesson-text {
       font-size: 36px;
       line-height: 2.2;
-      color: #f8fafc;
+      color: #1e293b;
       text-align: justify;
       letter-spacing: 1px;
       font-weight: 500;
@@ -128,11 +128,11 @@
     /* Ruby & Pinyin Styling */
     ruby {
       ruby-position: over;
-      background: rgba(255, 140, 66, 0.15);
-      color: #ffffff;
+      background: #fff7ed;
+      color: #1e293b;
       padding: 2px 8px 4px 8px;
       border-radius: 8px;
-      border: 1px solid rgba(255, 140, 66, 0.5);
+      border: 1px solid #fdba74;
       margin: 0 3px;
       display: inline-block;
       line-height: 1.5;
@@ -140,7 +140,7 @@
 
     rt {
       font-size: 20px;
-      color: #FF8C42;
+      color: #c2410c;
       font-weight: 700;
       letter-spacing: 0;
       padding-bottom: 2px;
@@ -149,8 +149,8 @@
     /* Right Side: Vocab Cards Container */
     .vocab-column {
       flex: 0.8;
-      background: rgba(15, 23, 42, 0.7);
-      border: 2px solid #FF8C42;
+      background: #fffaf5;
+      border: 2px solid #fdba74;
       border-radius: 18px;
       padding: 22px;
       display: flex;
@@ -168,11 +168,11 @@
 
     /* Individual Vocab Card */
     .vocab-card {
-      background: #1e293b;
+      background: #ffffff;
       border-radius: 14px;
       padding: 16px 20px;
-      border: 1.5px solid #334155;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.1);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -188,20 +188,20 @@
     .vocab-hanzi {
       font-size: 34px;
       font-weight: 900;
-      color: #38bdf8;
+      color: #0369a1;
     }
 
     .vocab-pinyin {
       font-size: 24px;
       font-weight: 700;
-      color: #FF8C42;
+      color: #c2410c;
     }
 
     .vocab-pos {
       font-size: 18px;
       font-style: italic;
-      color: #cbd5e1;
-      background: #334155;
+      color: #475569;
+      background: #f1f5f9;
       padding: 2px 8px;
       border-radius: 6px;
       font-weight: 600;
@@ -209,7 +209,7 @@
 
     .vocab-trans {
       font-size: 22px;
-      color: #f1f5f9;
+      color: #334155;
       margin-top: 6px;
       font-weight: 500;
     }
@@ -217,39 +217,39 @@
     .vocab-example {
       margin-top: 8px;
       padding-top: 8px;
-      border-top: 1px dashed #475569;
+      border-top: 1px dashed #cbd5e1;
       font-size: 19px;
       line-height: 1.4;
     }
 
     .vocab-example-pinyin {
-      color: #38bdf8;
+      color: #0369a1;
       font-weight: 600;
     }
 
     .vocab-example-en {
-      color: #94a3b8;
+      color: #64748b;
     }
 
     /* Bottom Translation Panel */
     .translation-panel {
-      background: rgba(30, 41, 59, 0.9);
-      border: 2px solid #3b82f6;
+      background: #eff6ff;
+      border: 2px solid #93c5fd;
       border-radius: 14px;
       padding: 14px 24px;
       display: flex;
       align-items: center;
       gap: 16px;
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
     }
 
     .trans-label {
       font-size: 18px;
       font-weight: 800;
-      color: #38bdf8;
+      color: #0369a1;
       text-transform: uppercase;
-      background: rgba(56, 189, 248, 0.15);
+      background: #dbeafe;
       padding: 4px 12px;
       border-radius: 6px;
       white-space: nowrap;
@@ -257,7 +257,7 @@
 
     .trans-text {
       font-size: 26px;
-      color: #e2e8f0;
+      color: #1e293b;
       line-height: 1.4;
       font-weight: 400;
     }
@@ -265,8 +265,8 @@
     /* Navigation Footer Bar */
     .controls-footer {
       height: 72px;
-      background: #0f172a;
-      border-top: 2px solid #1e293b;
+      background: #ffffff;
+      border-top: 2px solid #cbd5e1;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -276,7 +276,7 @@
 
     .nav-btn {
       background: #FF8C42;
-      color: #0f172a;
+      color: #1e293b;
       border: none;
       padding: 10px 28px;
       border-radius: 12px;
@@ -296,7 +296,7 @@
     }
 
     .nav-btn:disabled {
-      background: #334155;
+      background: #e2e8f0;
       color: #64748b;
       cursor: not-allowed;
       transform: none;
@@ -313,7 +313,7 @@
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      background: #334155;
+      background: #cbd5e1;
       cursor: pointer;
       transition: all 0.25s ease;
     }
@@ -327,7 +327,7 @@
 
     /* Slide 1: Cover Page */
     .cover-slide {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1c1917 100%);
+      background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 52%, #fff7ed 100%);
       justify-content: center;
       align-items: center;
       text-align: center;
@@ -336,29 +336,29 @@
 
     .cover-tag {
       font-size: 26px;
-      color: #FF8C42;
+      color: #c2410c;
       letter-spacing: 4px;
       font-weight: 800;
       margin-bottom: 24px;
       text-transform: uppercase;
-      background: rgba(255, 140, 66, 0.15);
+      background: #fff7ed;
       padding: 8px 24px;
       border-radius: 999px;
-      border: 1.5px solid rgba(255, 140, 66, 0.4);
+      border: 1.5px solid #fed7aa;
     }
 
     .cover-title {
       font-size: 84px;
       font-weight: 900;
-      color: #ffffff;
+      color: #0f172a;
       margin-bottom: 24px;
       letter-spacing: 2px;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      text-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
     }
 
     .cover-subtitle {
       font-size: 32px;
-      color: #38bdf8;
+      color: #0369a1;
       margin-bottom: 48px;
       font-weight: 600;
     }
@@ -379,10 +379,12 @@
     <!-- SLIDE 1: COVER -->
     <div class="slide cover-slide active" id="slide-1">
       <div class="cover-tag">
-        HSK 3 汉语教学课件
+        汉语教学课件
+       <br> （Difficulty HSK 3） </br>
       </div>
-      <h1 class="cover-title">课文 我想去北京</h1>
-      <p class="cover-subtitle">65寸大屏投屏版 · 正文生词注音 · 英文对照翻译</p>
+      <h1 class="cover-title">我想去北京</h1>
+      <p class="cover-subtitle"> 英文对照翻译</br>
+      <br>English-Chinese Parallel Translation</p>
       <div class="cover-line"></div>
     </div>
 
@@ -400,11 +402,11 @@
             <i class="fa-solid fa-align-left" style="color:#FF8C42;"></i> 课文正文
           </div>
           <div class="lesson-text">
-            我是在 1997 年喜欢上汉语、开始学习汉语的。那年，我刚考上<ruby>大学<rt>dà xué</rt></ruby>，学校里新开了中文<ruby>系<rt>xì</rt></ruby>，每个学生都可以学习汉语。虽然我知道汉字对我们外国人来说很<ruby>难<rt>nán</rt></ruby>，而且写汉字就像<ruby>画画<rt>huà huà</rt></ruby>一样，但我觉得非常很有<ruby>意思<rt>yì si</rt></ruby>，<ruby>决定<rt>jué dìng</rt></ruby>先学几个月<ruby>试一试<rt>shì yi shì</rt></ruby>。
+            我是在 1997 年喜欢上汉语、开始学习汉语的。那年，我刚考上<ruby>大学<rt>dà xué</rt></ruby>，学校里新开了中文<ruby>系<rt>xì</rt></ruby>，每个学生都可以学习汉语。虽然我知道汉字对我们外国人来说很<ruby>难<rt>nán</rt></ruby>，而且写汉字就像<ruby>画画<rt>huà huà</rt></ruby>一样，但我觉得非常有<ruby>意思<rt>yì si</rt></ruby>，<ruby>决定<rt>jué dìng</rt></ruby>先学几个月<ruby>试一试<rt>shì yi shì</rt></ruby>。
           </div>
         </div>
         <div class="vocab-column">
-          <div class="section-label" style="color: #FF8C42;">
+          <div class="section-label" style="color: #c2410c;">
             <i class="fa-solid fa-spell-check"></i> Vocabulary
           </div>
           <div class="vocab-list">
@@ -454,7 +456,7 @@
       <!-- Bottom English Translation -->
       <div class="translation-panel">
         <span class="trans-label"><i class="fa-solid fa-language"></i> Translation</span>
-        <span class="trans-text">I fell in love with Chinese and started learning it in 1997. That year, I was just admitted to college, and the school opened a new Chinese department...</span>
+        <span class="trans-text">I became interested in Chinese and began studying it in 1997. That year, I had just been admitted to university, and a Chinese department had just opened at my school. Every student could study Chinese. Although I knew that Chinese characters would be very difficult for us foreigners, and that writing them was like drawing pictures, I found them very interesting, so I decided to study Chinese for a few months and give it a try.</span>
       </div>
     </div>
 
@@ -476,7 +478,7 @@
           </div>
         </div>
         <div class="vocab-column">
-          <div class="section-label" style="color: #FF8C42;">
+          <div class="section-label" style="color: #c2410c;">
             <i class="fa-solid fa-spell-check"></i> Vocabulary
           </div>
           <div class="vocab-list">
@@ -527,7 +529,7 @@
       <!-- Bottom English Translation -->
       <div class="translation-panel">
         <span class="trans-label"><i class="fa-solid fa-language"></i> Translation</span>
-        <span class="trans-text">The Chinese department had teachers from China as well as from Pakistan. Most Chinese teachers came from Beijing, while our local teachers also graduated from Beijing universities...</span>
+        <span class="trans-text">The Chinese department had teachers from China as well as teachers from Pakistan. Most of the Chinese teachers came from Beijing, while our teachers from Pakistan had all graduated from universities in Beijing. Whether in class or outside of class, they often talked about Beijing.</span>
       </div>
     </div>
 
@@ -549,7 +551,7 @@
           </div>
         </div>
         <div class="vocab-column">
-          <div class="section-label" style="color: #FF8C42;">
+          <div class="section-label" style="color: #c2410c;">
             <i class="fa-solid fa-spell-check"></i> Vocabulary
           </div>
           <div class="vocab-list">
@@ -593,14 +595,21 @@
               </div>
               <div class="vocab-trans">Rich; abundant</div>
             </div>
-
+<div class="vocab-card">
+              <div class="vocab-head">
+                <span class="vocab-hanzi">名胜古迹</span>
+                <span class="vocab-pinyin">míng shèng gǔ jì</span>
+                <span class="vocab-pos">n.</span>
+              </div>
+              <div class="vocab-trans">Places of historic interest and scenic beauty</div>
+            </div>
           </div>
         </div>
       </div>
       <!-- Bottom English Translation -->
       <div class="translation-panel">
         <span class="trans-label"><i class="fa-solid fa-language"></i> Translation</span>
-        <span class="trans-text">From their conversations, I gradually came to know Beijing, learning that Beijing is very beautiful, rich in culture, and has many places of historical interest...</span>
+        <span class="trans-text">From their conversations, I gradually learned about Beijing. I found out that it is very beautiful, has a rich culture, and is home to many famous scenic and historic sites, among other things.</span>
       </div>
     </div>
 
@@ -622,7 +631,7 @@
           </div>
         </div>
         <div class="vocab-column">
-          <div class="section-label" style="color: #FF8C42;">
+          <div class="section-label" style="color: #c2410c;">
             <i class="fa-solid fa-spell-check"></i> Vocabulary
           </div>
           <div class="vocab-list">
@@ -663,7 +672,7 @@
       <!-- Bottom English Translation -->
       <div class="translation-panel">
         <span class="trans-label"><i class="fa-solid fa-language"></i> Translation</span>
-        <span class="trans-text">Our textbooks also had some lessons about Beijing. I was particularly interested in photos of historical sites. That's how I fell in love with Beijing and really hope to visit...</span>
+        <span class="trans-text">Our textbooks also contained some passages about Beijing, and I was especially interested in the photos of its famous scenic and historic sites. That was how I came to love Beijing. I really hoped to visit and see the Forbidden City, the Great Wall, and the Summer Palace.</span>
       </div>
     </div>
 
