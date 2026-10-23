@@ -669,6 +669,17 @@
             resize: vertical;
         }
 
+        .form-field textarea[data-field="book_explanation"] {
+            min-height: 220px;
+        }
+
+        .form-field small code {
+            font-size: 0.9em;
+            background: var(--bg-light);
+            padding: 0 0.25em;
+            border-radius: 3px;
+        }
+
         .form-field small {
             display: block;
             color: var(--text-secondary);
@@ -1502,29 +1513,35 @@
                         <div class="form-item-body">
                         <div class="form-field required">
                             <label>字</label>
-                            <input type="text" data-field="character" value="${item.character || ''}" placeholder="例如：夬">
+                            <input type="text" data-field="character" value="${item.character || ''}" placeholder="可貼上書本解釋後自動填入">
+                            <small>通常不用手填：貼上書本解釋後會從 <code>### 字 (拼音)</code> 自動填入</small>
                         </div>
                         <div class="form-field">
                             <label>顯示圖片（字形補丁；貼上截圖到下面輸入框）</label>
                             <input type="text" data-field="display_image" value="${item.display_image || ''}" placeholder="點此輸入框後按 Ctrl+V 貼上截圖，會自動上傳">
                             <button type="button" class="btn-upload-cloudinary" data-upload-field="display_image">🖼️ 上傳字形補丁到 Cloudinary</button>
-                            <small>貼上位置就是上面的輸入框；也可以直接輸入 Cloudinary 網址，或使用下面按鈕選擇圖片</small>
+                            <small>貼上位置就是上面的輸入框；也可以直接輸入 Cloudinary 網址，或使用按鈕選擇圖片</small>
+                           
                         </div>
                         <div class="form-field required">
                             <label>拼音</label>
-                            <input type="text" data-field="pinyin" value="${item.pinyin || ''}" placeholder="例如：guài">
+                            <input type="text" data-field="pinyin" value="${item.pinyin || ''}" placeholder="可貼上書本解釋後自動填入">
+                            <small>從書本解釋第一行括號自動填入，可再微調</small>
                         </div>
                         <div class="form-field required">
-                            <label>意思（英文）</label>
-                            <input type="text" data-field="meaning" value="${item.meaning || ''}" placeholder="例如：to cut apart / separate">
+                            <label>意思</label>
+                            <input type="text" data-field="meaning" value="${item.meaning || ''}" placeholder="可貼上書本解釋後自動填入">
+                            <small>從書本解釋 <code>### [意思]</code> 自動填入，可含多語</small>
+                        </div>
+                        <div class="form-field">
+                            <label>書本解釋（貼上 AI Markdown）</label>
+                            <textarea data-field="book_explanation" placeholder="貼上完整 Markdown，例如：&#10;### 曼 (màn)&#10;### [Graceful / Extended / Gracioso / Extendido]&#10;&#10;---&#10;#### Basic Structure&#10;- 亠: Lid&#10;- 曰: Say&#10;...">${item.book_explanation || ''}</textarea>
+                            <small>貼上後會自動填入字／拼音／意思，以及從 <code>Basic Structure</code> 擷取部件拆解；原文整篇留在這裡給學生看。輔助插圖請用下面的貼圖欄，不會被覆蓋。</small>
+                            <small>文中插圖用這三種：<code>![comp](網址)</code> 字形補丁　<code>![origin](網址)</code> 象形演變　<code>![story](網址)</code> 故事插圖。沒寫 alt 仍會顯示，但沒有專用樣式。</small>
                         </div>
                         <div class="form-field">
                             <label>部件拆解</label>
-                            <input type="text" data-field="components_breakdown" value="${item.components_breakdown || ''}" placeholder="例如：ユ + 人">
-                        </div>
-                        <div class="form-field">
-                            <label>書本解釋（支援 Markdown）</label>
-                            <textarea data-field="book_explanation" placeholder="可使用 Markdown 格式...">${item.book_explanation || ''}</textarea>
+                            <input type="text" data-field="components_breakdown" value="${item.components_breakdown || ''}" placeholder="例如：辶 + 井">
                         </div>
                         <div class="form-field">
                             <label>記憶故事（支援 Markdown）</label>
@@ -1539,6 +1556,7 @@
                             <input type="text" data-field="image" value="${item.image || ''}" placeholder="點此輸入框後按 Ctrl+V 貼上截圖，會自動上傳">
                             <button type="button" class="btn-upload-cloudinary" data-upload-field="image">🖼️ 上傳輔助插圖到 Cloudinary</button>
                             <small>貼上位置就是上面的輸入框；也可以直接輸入 Cloudinary 網址，或使用下面按鈕選擇圖片</small>
+
                         </div>
                         <div class="form-field">
                             <label>詞組範例</label>
@@ -1780,6 +1798,136 @@
             if (!input || !currentData[index]) return;
             input.value = value;
             input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        function parseCharacterMarkdownHeader(markdown) {
+            if (!markdown || typeof markdown !== 'string') return null;
+
+            let character = '';
+            let pinyin = '';
+            let meaning = '';
+
+            const lines = markdown.split(/\r?\n/);
+            let inBasicStructure = false;
+            const basicComponents = [];
+
+            for (const rawLine of lines) {
+                const line = rawLine.trim();
+                const headingMatch = line.match(/^#{2,6}\s+(.+?)\s*#*\s*$/);
+                if (headingMatch) {
+                    const heading = headingMatch[1].replace(/[*_`]/g, '').trim();
+                    inBasicStructure = /^Basic Structure$/i.test(heading);
+                } else if (inBasicStructure) {
+                    if (/^---+$/.test(line)) {
+                        inBasicStructure = false;
+                    } else {
+                        const componentMatch = line.match(/^[-*+]\s+(.+?)\s*[:：]\s*.+$/);
+                        if (componentMatch) {
+                            const component = componentMatch[1].replace(/[*_`]/g, '').trim();
+                            if (component && !basicComponents.includes(component)) {
+                                basicComponents.push(component);
+                            }
+                        }
+                    }
+                }
+
+                if (!line.startsWith('###') || line.startsWith('####')) continue;
+
+                const title = line.replace(/^###\s*/, '').trim();
+                if (!title) continue;
+
+                if (!character) {
+                    const charMatch = title.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+                    if (charMatch && !title.startsWith('[')) {
+                        character = charMatch[1].trim();
+                        pinyin = charMatch[2].trim();
+                        continue;
+                    }
+                }
+
+                if (!meaning) {
+                    const meaningMatch = title.match(/^\[(.+)\]\s*$/);
+                    if (meaningMatch) {
+                        meaning = meaningMatch[1].trim();
+                    }
+                }
+            }
+
+            const components = basicComponents.join(' + ');
+
+            if (!character && !pinyin && !meaning && !components) return null;
+            return { character, pinyin, meaning, components };
+        }
+
+        function applyMarkdownHeaderFields(index, markdown, options = {}) {
+            if (!currentData[index]) return false;
+
+            const parsed = parseCharacterMarkdownHeader(markdown);
+            if (!parsed) {
+                if (options.notifyOnMiss) {
+                    showMessage('未偵測到「### 字 (拼音)」或「### [意思]」，字／拼音／意思未自動填入', 'info');
+                }
+                return false;
+            }
+
+            const fieldLabels = {
+                character: '字',
+                pinyin: '拼音',
+                meaning: '意思',
+                components: '部件拆解'
+            };
+            const applied = [];
+
+            [
+                ['character', parsed.character],
+                ['pinyin', parsed.pinyin],
+                ['meaning', parsed.meaning],
+                ['components_breakdown', parsed.components]
+            ].forEach(([field, nextValue]) => {
+                if (!nextValue) return;
+                if ((currentData[index][field] || '') === nextValue) return;
+                setFormFieldValue(index, field, nextValue);
+                applied.push(fieldLabels[field === 'components_breakdown' ? 'components' : field]);
+            });
+
+            if (applied.length) {
+                showMessage(`已從 Markdown 自動填入：${applied.join('、')}`, 'success');
+                return true;
+            }
+
+            return false;
+        }
+
+        function initBookExplanationImport() {
+            const container = document.getElementById('editPanelContent');
+            if (!container || container.dataset.bookExplanationImportInit) return;
+            container.dataset.bookExplanationImportInit = '1';
+
+            container.addEventListener('paste', (e) => {
+                const el = e.target;
+                if (!el.matches('textarea[data-field="book_explanation"]')) return;
+                el.dataset.pendingMarkdownImport = '1';
+            });
+
+            container.addEventListener('input', (e) => {
+                const el = e.target;
+                if (!el.matches('textarea[data-field="book_explanation"]')) return;
+                if (el.dataset.pendingMarkdownImport !== '1') return;
+                el.dataset.pendingMarkdownImport = '';
+                const card = el.closest('.form-item-card');
+                const index = parseInt(card?.dataset.index, 10);
+                if (Number.isNaN(index)) return;
+                applyMarkdownHeaderFields(index, el.value, { notifyOnMiss: true });
+            });
+
+            container.addEventListener('focusout', (e) => {
+                const el = e.target;
+                if (!el.matches('textarea[data-field="book_explanation"]')) return;
+                const card = el.closest('.form-item-card');
+                const index = parseInt(card?.dataset.index, 10);
+                if (Number.isNaN(index)) return;
+                applyMarkdownHeaderFields(index, el.value);
+            });
         }
 
         function addMarkdownFormat(textarea, prefix, suffix) {
@@ -2480,6 +2628,7 @@
         initToggleEdit();
         initDragAndDrop();
         initMarkdownShortcuts();
+        initBookExplanationImport();
         initCloudinaryUpload();
 
         // 載入全域導航腳本
